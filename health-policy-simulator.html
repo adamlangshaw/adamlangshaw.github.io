@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Health Policy Simulator | Adam Langshaw</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --sim-red: #8C1515;
+      --sim-blue: #0066CC;
+      --sim-green: #2D8659;
+      --sim-orange: #D97706;
+      --sim-gray: #6B7280;
+      --sim-bg: #ffffff;
+      --sim-card: #f9fafb;
+      --sim-border: #e5e7eb;
+    }
+
+    body {
+      background: var(--sim-bg);
+    }
+
+    .sim-header {
+      background: linear-gradient(135deg, var(--sim-red) 0%, #6B0F0F 100%);
+      color: white;
+      padding: 3rem 1.5rem;
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .sim-header h1 {
+      font-family: "DM Serif Display", serif;
+      font-size: 2.5rem;
+      margin: 0 0 0.5rem;
+      font-weight: 400;
+    }
+
+    .sim-header p {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      margin: 0;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .sim-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem 4rem;
+    }
+
+    .sim-nav {
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .sim-nav a {
+      color: var(--sim-red);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .sim-nav a:hover {
+      text-decoration: underline;
+    }
+
+    .policy-selector {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .policy-card {
+      background: var(--sim-card);
+      border: 2px solid var(--sim-border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+
+    .policy-card:hover {
+      border-color: var(--sim-red);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(140, 21, 21, 0.1);
+    }
+
+    .policy-card.selected {
+      border-color: var(--sim-red);
+      background: rgba(140, 21, 21, 0.05);
+      box-shadow: 0 4px 16px rgba(140, 21, 21, 0.15);
+    }
+
+    .policy-card h3 {
+      font-family: "DM Serif Display", serif;
+      font-size: 1.35rem;
+      margin: 0 0 0.5rem;
+      color: var(--sim-red);
+    }
+
+    .policy-card p {
+      margin: 0;
+      color: var(--sim-gray);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .sim-results {
+      display: none;
+      animation: fadeIn 0.4s;
+    }
+
+    .sim-results.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .results-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .results-header h2 {
+      font-family: "DM Serif Display", serif;
+      font-size: 2rem;
+      margin: 0 0 0.5rem;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .metric-card {
+      background: white;
+      border: 1px solid var(--sim-border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .metric-card h3 {
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--sim-gray);
+      margin: 0 0 0.75rem;
+      font-weight: 600;
+    }
+
+    .metric-value {
+      font-size: 2rem;
+      font-weight: 600;
+      margin: 0 0 0.25rem;
+    }
+
+    .metric-value.positive {
+      color: var(--sim-green);
+    }
+
+    .metric-value.negative {
+      color: var(--sim-red);
+    }
+
+    .metric-value.neutral {
+      color: var(--sim-blue);
+    }
+
+    .metric-label {
+      font-size: 0.9rem;
+      color: var(--sim-gray);
+      margin: 0;
+    }
+
+    .who-pays {
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border: 2px solid #f59e0b;
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .who-pays h3 {
+      font-family: "DM Serif Display", serif;
+      font-size: 1.5rem;
+      margin: 0 0 1rem;
+      color: #92400e;
+    }
+
+    .payers-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .payer-item {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      border-left: 4px solid var(--sim-orange);
+    }
+
+    .payer-item h4 {
+      margin: 0 0 0.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .payer-amount {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--sim-orange);
+      margin: 0;
+    }
+
+    .beneficiaries {
+      background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+      border: 2px solid var(--sim-blue);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .beneficiaries h3 {
+      font-family: "DM Serif Display", serif;
+      font-size: 1.5rem;
+      margin: 0 0 1rem;
+      color: #1e40af;
+    }
+
+    .beneficiary-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .beneficiary-item {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      border-left: 4px solid var(--sim-blue);
+    }
+
+    .beneficiary-item h4 {
+      margin: 0 0 0.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .beneficiary-count {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--sim-blue);
+      margin: 0;
+    }
+
+    .tradeoffs {
+      background: white;
+      border: 2px solid var(--sim-border);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .tradeoffs h3 {
+      font-family: "DM Serif Display", serif;
+      font-size: 1.5rem;
+      margin: 0 0 1rem;
+    }
+
+    .tradeoff-item {
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      border-left: 4px solid var(--sim-gray);
+      background: var(--sim-card);
+      border-radius: 4px;
+    }
+
+    .tradeoff-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .tradeoff-item h4 {
+      margin: 0 0 0.25rem;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .tradeoff-item p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--sim-gray);
+    }
+
+    .reset-btn {
+      display: block;
+      margin: 2rem auto 0;
+      padding: 0.75rem 2rem;
+      background: var(--sim-red);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .reset-btn:hover {
+      background: #6B0F0F;
+    }
+
+    .fiscal-controls {
+      background: white;
+      border: 2px solid var(--sim-border);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .fiscal-controls h3 {
+      font-family: "DM Serif Display", serif;
+      font-size: 1.5rem;
+      margin: 0 0 1rem;
+    }
+
+    .slider-container {
+      margin-bottom: 1.5rem;
+    }
+
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .slider-label span {
+      color: var(--sim-gray);
+      font-weight: 400;
+    }
+
+    .slider {
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: var(--sim-border);
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--sim-red);
+      cursor: pointer;
+    }
+
+    .slider::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--sim-red);
+      cursor: pointer;
+      border: none;
+    }
+
+    .slider-value {
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--sim-red);
+      margin-top: 0.5rem;
+    }
+
+    .debt-section {
+      background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+      border: 2px solid #dc2626;
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .debt-section h3 {
+      font-family: "DM Serif Display", serif;
+      font-size: 1.5rem;
+      margin: 0 0 1rem;
+      color: #991b1b;
+    }
+
+    .debt-timeline {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .debt-year {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: center;
+      border-left: 4px solid #dc2626;
+    }
+
+    .debt-year h4 {
+      margin: 0 0 0.5rem;
+      font-size: 0.875rem;
+      color: var(--sim-gray);
+      font-weight: 600;
+    }
+
+    .debt-amount {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #dc2626;
+      margin: 0;
+    }
+
+    .tax-impact {
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border: 2px solid #f59e0b;
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .tax-impact h3 {
+      font-family: "DM Serif Display", serif;
+      font-size: 1.5rem;
+      margin: 0 0 1rem;
+      color: #92400e;
+    }
+
+    .tax-breakdown {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .tax-item {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      border-left: 4px solid #f59e0b;
+    }
+
+    .tax-item h4 {
+      margin: 0 0 0.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .tax-amount {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #f59e0b;
+      margin: 0;
+    }
+
+    .subsidy-analysis {
+      background: white;
+      border: 2px solid var(--sim-border);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .subsidy-analysis h3 {
+      font-family: "DM Serif Display", serif;
+      font-size: 1.5rem;
+      margin: 0 0 1rem;
+    }
+
+    .subsidy-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .subsidy-group {
+      background: var(--sim-card);
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 1px solid var(--sim-border);
+    }
+
+    .subsidy-group h4 {
+      margin: 0 0 1rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--sim-red);
+    }
+
+    .subsidy-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--sim-border);
+    }
+
+    .subsidy-item:last-child {
+      border-bottom: none;
+    }
+
+    .subsidy-label {
+      font-size: 0.9rem;
+      color: var(--sim-gray);
+    }
+
+    .subsidy-value {
+      font-weight: 600;
+      color: var(--sim-red);
+    }
+
+    .subsidy-net {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 2px solid var(--sim-red);
+      display: flex;
+      justify-content: space-between;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    @media (max-width: 640px) {
+      .sim-header h1 {
+        font-size: 2rem;
+      }
+
+      .policy-selector {
+        grid-template-columns: 1fr;
+      }
+
+      .results-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="sim-header">
+    <h1>Health Policy Simulator</h1>
+    <p>Explore the trade-offs: Who pays for lunch? Someone always does. Adjust spending levels to see the real cost—debt, taxes, and who really subsidizes whom.</p>
+  </div>
+
+  <div class="sim-container">
+    <div class="sim-nav">
+      <a href="index.html">← Back to Home</a>
+    </div>
+
+    <div class="policy-selector" id="policySelector">
+      <div class="policy-card" data-policy="medicaid">
+        <h3>Medicaid Expansion</h3>
+        <p>Extend coverage to low-income adults in non-expansion states. Covers millions, shifts costs to federal/state budgets.</p>
+      </div>
+      <div class="policy-card" data-policy="drug-pricing">
+        <h3>Drug Price Negotiation</h3>
+        <p>Allow Medicare to negotiate prescription drug prices. Reduces costs for seniors, impacts pharma revenue.</p>
+      </div>
+      <div class="policy-card" data-policy="preventive">
+        <h3>Preventive Care Mandate</h3>
+        <p>Require insurers to cover preventive services at no cost. Improves outcomes long-term, increases premiums.</p>
+      </div>
+      <div class="policy-card" data-policy="single-payer">
+        <h3>Medicare for All</h3>
+        <p>Universal government-funded healthcare. Eliminates uninsured, requires major tax increases.</p>
+      </div>
+      <div class="policy-card" data-policy="telehealth">
+        <h3>Telehealth Expansion</h3>
+        <p>Permanent coverage for remote care. Improves access, reduces facility costs, shifts to tech infrastructure.</p>
+      </div>
+      <div class="policy-card" data-policy="mental-health">
+        <h3>Mental Health Parity</h3>
+        <p>Equal coverage for mental and physical health. Addresses care gaps, increases utilization and costs.</p>
+      </div>
+      <div class="policy-card" data-policy="long-term-care">
+        <h3>Long-Term Care Expansion</h3>
+        <p>Universal coverage for nursing home and home care. Addresses aging population, massive cost burden.</p>
+      </div>
+      <div class="policy-card" data-policy="price-transparency">
+        <h3>Price Transparency Mandate</h3>
+        <p>Require hospitals to publish all prices upfront. Empowers consumers, reduces surprise billing.</p>
+      </div>
+      <div class="policy-card" data-policy="value-based">
+        <h3>Value-Based Care Incentives</h3>
+        <p>Shift from fee-for-service to outcomes-based payments. Improves quality, disrupts provider revenue.</p>
+      </div>
+      <div class="policy-card" data-policy="aca-repeal">
+        <h3>ACA Repeal & Reduction</h3>
+        <p>Eliminate or significantly reduce Affordable Care Act subsidies and mandates. Saves billions, increases uninsured.</p>
+      </div>
+      <div class="policy-card" data-policy="medicare-cuts">
+        <h3>Medicare Benefit Cuts</h3>
+        <p>Reduce Medicare coverage, raise eligibility age, increase cost-sharing. Reduces federal spending, shifts costs to seniors.</p>
+      </div>
+      <div class="policy-card" data-policy="medicaid-restrictions">
+        <h3>Medicaid Restrictions</h3>
+        <p>Tighten eligibility, add work requirements, reduce benefits. Saves state/federal budgets, reduces coverage.</p>
+      </div>
+    </div>
+
+    <div class="sim-results" id="results">
+      <div class="results-header">
+        <h2 id="selectedPolicyTitle"></h2>
+        <p style="color: var(--sim-gray); margin: 0;">Simulated outcomes over 10 years</p>
+      </div>
+
+      <div class="results-grid">
+        <div class="metric-card">
+          <h3>People Covered</h3>
+          <div class="metric-value positive" id="metricCovered">0</div>
+          <p class="metric-label">Additional individuals with coverage</p>
+        </div>
+        <div class="metric-card">
+          <h3 id="costLabel">Annual Cost</h3>
+          <div class="metric-value negative" id="metricCost">$0B</div>
+          <p class="metric-label" id="costLabelDesc">Additional annual spending</p>
+        </div>
+        <div class="metric-card">
+          <h3>Lives Saved</h3>
+          <div class="metric-value positive" id="metricLives">0</div>
+          <p class="metric-label">Estimated preventable deaths/year</p>
+        </div>
+        <div class="metric-card">
+          <h3>Economic Impact</h3>
+          <div class="metric-value neutral" id="metricEconomic">$0B</div>
+          <p class="metric-label">GDP impact (positive or negative)</p>
+        </div>
+        <div class="metric-card">
+          <h3>Premium Impact</h3>
+          <div class="metric-value neutral" id="metricPremium">$0</div>
+          <p class="metric-label">Estimated annual change per household</p>
+        </div>
+      </div>
+
+      <div class="who-pays">
+        <h3>💰 Who Pays for Lunch?</h3>
+        <div class="payers-list" id="payersList"></div>
+      </div>
+
+      <div class="beneficiaries">
+        <h3>✅ Who Benefits?</h3>
+        <div class="beneficiary-list" id="beneficiariesList"></div>
+      </div>
+
+      <div class="tradeoffs">
+        <h3>⚖️ Trade-offs & Unintended Consequences</h3>
+        <div id="tradeoffsList"></div>
+      </div>
+
+      <div class="fiscal-controls">
+        <h3>💰 Adjust Policy Scope</h3>
+        <p style="color: var(--sim-gray); margin-bottom: 1.5rem;" id="sliderDescription">
+          Move from the status quo (0%) to the policy as proposed (100%) or an even more aggressive version (200%).
+        </p>
+        <div class="slider-container">
+          <div class="slider-label">
+            <span id="sliderLeft">Status quo (0% change)</span>
+            <span>Proposal (100%)</span>
+            <span id="sliderRight">More aggressive proposal</span>
+          </div>
+          <input type="range" min="0" max="200" value="100" class="slider" id="spendingSlider" oninput="updateFiscalImpact()">
+          <div class="slider-value" id="spendingValue">100%</div>
+        </div>
+      </div>
+
+      <div class="debt-section">
+        <h3 id="debtTitle">📈 Debt Accumulation: The Burden on Future Taxpayers</h3>
+        <p style="color: #991b1b; margin-bottom: 1rem; font-weight: 600;">Current U.S. National Debt: ~$34 Trillion</p>
+        <p style="color: var(--sim-gray); margin-bottom: 1rem;" id="debtDescription">Additional debt from this policy over 10 years (assuming no spending cuts elsewhere):</p>
+        <div class="debt-timeline" id="debtTimeline"></div>
+        <p style="color: var(--sim-gray); margin-top: 1rem; font-size: 0.9rem;">Interest payments alone add billions annually. Future generations inherit this burden.</p>
+      </div>
+
+      <div class="tax-impact">
+        <h3 id="taxTitle">💸 Your Tax Change</h3>
+        <p style="color: var(--sim-gray); margin-bottom: 1rem;" id="taxDescription">
+          How much your total tax bill changes annually (federal + state), based on a median household income of $70,000.
+        </p>
+        <div class="tax-breakdown" id="taxBreakdown"></div>
+        <p style="color: var(--sim-gray); margin-top: 1rem; font-size: 0.9rem;" id="taxDisclaimer">
+          These are annual changes — negative values mean lower taxes (taxpayers net recipients), positive values mean
+          higher taxes. Over time they compound.
+        </p>
+      </div>
+
+      <div class="subsidy-analysis">
+        <h3>🔍 Who Really Subsidizes Whom?</h3>
+        <p style="color: var(--sim-gray); margin-bottom: 1rem;">
+          Net transfer analysis: Who pays more than they receive? All values below are <strong>per member of each group</strong>
+          (per household, per enrollee, per hospital, etc.), not per the whole population.
+        </p>
+        <div class="subsidy-grid" id="subsidyGrid"></div>
+      </div>
+
+      <button class="reset-btn" onclick="resetSimulator()">Try Another Policy</button>
+    </div>
+  </div>
+
+  <script>
+    let currentPolicy = null;
+    let currentSpendingLevel = 100;
+
+    function formatCurrency(value) {
+      const absValue = Math.abs(value);
+      if (absValue >= 1000) {
+        return (value >= 0 ? '+' : '-') + '$' + (absValue / 1000).toFixed(1) + 'T';
+      }
+      return (value >= 0 ? '+' : '-') + '$' + absValue.toFixed(1) + 'B';
+    }
+
+    function formatDollars(value) {
+      const sign = value > 0 ? "+" : value < 0 ? "-" : "";
+      const abs = Math.round(Math.abs(value));
+      return `${sign}$${abs.toLocaleString()}`;
+    }
+
+    const policyData = {
+      medicaid: {
+        title: "Medicaid Expansion",
+        covered: "4.2M",
+        cost: "$12.5B",
+        baseCost: 12.5,
+        premiumDelta: 65,
+        lives: "18,500",
+        economic: "+$8.2B",
+        debtMultiplier: 1.15,
+        taxBase: 350,
+        subsidies: {
+          "High-income earners (>$200k)": { pay: 4200, receive: 0 },
+          "Middle-income families ($50-100k)": { pay: 850, receive: 1200 },
+          "Low-income families (<$50k)": { pay: 180, receive: 4800 },
+          "Medicaid recipients": { pay: 0, receive: 12000 }
+        },
+        payers: [
+          { name: "Federal Government", amount: "$8.1B/year" },
+          { name: "State Governments", amount: "$4.4B/year" },
+          { name: "Hospitals (uncompensated)", amount: "-$2.3B saved" }
+        ],
+        beneficiaries: [
+          { group: "Low-income adults (18-64)", count: "4.2M people" },
+          { group: "Rural communities", count: "1.8M people" },
+          { group: "Minority populations", count: "2.1M people" }
+        ],
+        tradeoffs: [
+          {
+            title: "Provider capacity strain",
+            text: "Increased demand may overwhelm primary care networks, leading to longer wait times for all patients."
+          },
+          {
+            title: "State budget pressure",
+            text: "States face 10% cost share, potentially crowding out education or infrastructure spending."
+          },
+          {
+            title: "Employer coverage shifts",
+            text: "Some employers may drop coverage, pushing employees to Medicaid—costs shift from private to public."
+          }
+        ]
+      },
+      "drug-pricing": {
+        title: "Drug Price Negotiation",
+        covered: "52M",
+        cost: "-$98B",
+        baseCost: -98,
+        premiumDelta: -120,
+        lives: "12,000",
+        economic: "+$45B",
+        debtMultiplier: 0.95,
+        taxBase: -450,
+        subsidies: {
+          "Pharmaceutical companies": { pay: 9800, receive: 0 },           // bear lost revenue
+          "Medicare beneficiaries": { pay: 0, receive: 1200 },             // lower drug costs
+          "Taxpayers (savings)": { pay: 0, receive: 450 },                // lower program cost
+          "Future patients (less R&D)": { pay: 800, receive: 0 }          // fewer new treatments
+        },
+        payers: [
+          { name: "Pharmaceutical Companies", amount: "-$98B revenue/year" },
+          { name: "Medicare Trust Fund", amount: "-$45B saved" },
+          { name: "Seniors (out-of-pocket)", amount: "-$12B saved" }
+        ],
+        beneficiaries: [
+          { group: "Medicare beneficiaries", count: "52M people" },
+          { group: "Chronic disease patients", count: "18M people" },
+          { group: "Low-income seniors", count: "8.5M people" }
+        ],
+        tradeoffs: [
+          {
+            title: "R&D investment decline",
+            text: "Reduced pharma revenue may decrease new drug development by 15-20% over a decade."
+          },
+          {
+            title: "Innovation pipeline risk",
+            text: "Fewer breakthrough treatments for rare diseases, as ROI becomes less attractive."
+          },
+          {
+            title: "International price effects",
+            text: "U.S. price cuts may lead pharma to raise prices in other countries to maintain margins."
+          }
+        ]
+      },
+      preventive: {
+        title: "Preventive Care Mandate",
+        covered: "180M",
+        cost: "$8.7B",
+        baseCost: 8.7,
+        premiumDelta: 240,
+        lives: "45,000",
+        economic: "+$22B",
+        debtMultiplier: 1.08,
+        taxBase: 280,
+        subsidies: {
+          "Healthy individuals": { pay: 480, receive: 200 },
+          "Chronic disease patients": { pay: 480, receive: 2400 },
+          "Insurance companies": { pay: 0, receive: 0 },
+          "Employers": { pay: 520, receive: 0 }
+        },
+        payers: [
+          { name: "Insurance Premiums", amount: "+$48/year average" },
+          { name: "Employers (group plans)", amount: "$5.2B/year" },
+          { name: "Federal Government (ACA)", amount: "$3.5B/year" }
+        ],
+        beneficiaries: [
+          { group: "All insured Americans", count: "180M people" },
+          { group: "Early detection cases", count: "2.3M/year" },
+          { group: "Chronic disease prevention", count: "1.1M/year" }
+        ],
+        tradeoffs: [
+          {
+            title: "Premium increases",
+            text: "Average family premiums rise $200-300/year, disproportionately affecting healthy individuals."
+          },
+          {
+            title: "Overutilization risk",
+            text: "Free preventive care may lead to unnecessary screenings, increasing costs without clear benefit."
+          },
+          {
+            title: "Provider reimbursement",
+            text: "Preventive visits pay less than treatment, potentially reducing provider participation."
+          }
+        ]
+      },
+      "single-payer": {
+        title: "Medicare for All",
+        covered: "28M",
+        cost: "$3.2T",
+        baseCost: 3200,
+        premiumDelta: -5200,
+        lives: "68,000",
+        economic: "-$180B",
+        debtMultiplier: 1.25,
+        taxBase: 8500,
+        subsidies: {
+          "Top 1% earners (>$500k)": { pay: 45000, receive: 12000 },
+          "High earners ($200-500k)": { pay: 12000, receive: 12000 },
+          "Middle class ($50-200k)": { pay: 4500, receive: 12000 },
+          "Low-income (<$50k)": { pay: 800, receive: 12000 },
+          "Uninsured (new coverage)": { pay: 0, receive: 12000 }
+        },
+        payers: [
+          { name: "Federal Taxpayers", amount: "+$2.8T/year" },
+          { name: "Employers (payroll tax)", amount: "$1.2T/year" },
+          { name: "High Earners (surtax)", amount: "$450B/year" },
+          { name: "Insurance Industry", amount: "-$850B revenue" }
+        ],
+        beneficiaries: [
+          { group: "Uninsured Americans", count: "28M people" },
+          { group: "Underinsured families", count: "31M people" },
+          { group: "All Americans (universal)", count: "330M people" }
+        ],
+        tradeoffs: [
+          {
+            title: "Massive tax increases",
+            text: "Middle-class families see $3,000-5,000/year tax increase, despite eliminating premiums."
+          },
+          {
+            title: "Provider payment cuts",
+            text: "Medicare-for-all rates 40% below private insurance, risking provider shortages."
+          },
+          {
+            title: "Wait times and rationing",
+            text: "Universal coverage increases demand; without capacity expansion, wait times may double."
+          },
+          {
+            title: "Economic disruption",
+            text: "2.3M insurance industry jobs at risk; transition costs estimated at $200B over 5 years."
+          }
+        ]
+      },
+      telehealth: {
+        title: "Telehealth Expansion",
+        covered: "45M",
+        cost: "$2.1B",
+        baseCost: 2.1,
+        premiumDelta: 35,
+        lives: "3,200",
+        economic: "+$15B",
+        debtMultiplier: 1.05,
+        taxBase: 95,
+        subsidies: {
+          "Rural residents": { pay: 95, receive: 450 },
+          "Urban taxpayers": { pay: 95, receive: 120 },
+          "Tech companies": { pay: 0, receive: 1800 },
+          "Rural hospitals": { pay: 180, receive: 0 }                     // revenue loss
+        },
+        payers: [
+          { name: "Medicare/Medicaid", amount: "$1.4B/year" },
+          { name: "Private Insurers", amount: "$700M/year" },
+          { name: "Rural Hospitals", amount: "-$180M revenue" }
+        ],
+        beneficiaries: [
+          { group: "Rural residents", count: "18M people" },
+          { group: "Mobility-limited seniors", count: "12M people" },
+          { group: "Mental health patients", count: "15M people" }
+        ],
+        tradeoffs: [
+          {
+            title: "Rural hospital closures",
+            text: "Telehealth reduces in-person visits, accelerating closure of already-struggling rural facilities."
+          },
+          {
+            title: "Digital divide",
+            text: "Low-income and elderly populations lack broadband access, creating new health disparities."
+          },
+          {
+            title: "Quality concerns",
+            text: "Remote care may miss physical exam findings, leading to delayed diagnoses in some cases."
+          }
+        ]
+      },
+      "mental-health": {
+        title: "Mental Health Parity",
+        covered: "65M",
+        cost: "$18.5B",
+        baseCost: 18.5,
+        premiumDelta: 190,
+        lives: "22,000",
+        economic: "+$32B",
+        debtMultiplier: 1.12,
+        taxBase: 680,
+        payers: [
+          { name: "Insurance Premiums", amount: "+$85/year average" },
+          { name: "Employers", amount: "$11.2B/year" },
+          { name: "State Mental Health", amount: "$7.3B/year" }
+        ],
+        beneficiaries: [
+          { group: "Mental health patients", count: "65M people" },
+          { group: "Substance use disorders", count: "21M people" },
+          { group: "Youth & adolescents", count: "8.5M people" }
+        ],
+        tradeoffs: [
+          {
+            title: "Provider shortage",
+            text: "Demand for mental health services exceeds supply; wait times increase despite coverage."
+          },
+          {
+            title: "Premium increases",
+            text: "Mental health utilization rises 40%, driving up costs for all policyholders."
+          },
+          {
+            title: "Stigma reduction vs. costs",
+            text: "Increased access reduces stigma but also increases overall healthcare spending."
+          }
+        ],
+        subsidies: {
+          "Mental health patients": { pay: 85, receive: 2400 },
+          "General population": { pay: 85, receive: 180 },
+          "Employers": { pay: 1120, receive: 0 },
+          "State governments": { pay: 730, receive: 0 }
+        }
+      },
+      "long-term-care": {
+        title: "Long-Term Care Expansion",
+        covered: "12M",
+        cost: "$450B",
+        baseCost: 450,
+        premiumDelta: -850,
+        lives: "85,000",
+        economic: "-$120B",
+        debtMultiplier: 1.35,
+        taxBase: 11200,
+        payers: [
+          { name: "Federal Government", amount: "$320B/year" },
+          { name: "State Governments", amount: "$130B/year" },
+          { name: "Working-age taxpayers", amount: "$11,200/year avg" }
+        ],
+        beneficiaries: [
+          { group: "Seniors (65+)", count: "12M people" },
+          { group: "Disabled adults", count: "3.5M people" },
+          { group: "Family caregivers", count: "8M people" }
+        ],
+        tradeoffs: [
+          {
+            title: "Massive tax burden",
+            text: "Average household tax increase of $11,200/year—more than many families' annual savings."
+          },
+          {
+            title: "Intergenerational transfer",
+            text: "Working-age taxpayers fund care for retirees; younger generations pay for older generations."
+          },
+          {
+            title: "Provider capacity",
+            text: "Nursing home and home care workforce insufficient; quality may decline with increased demand."
+          }
+        ],
+        subsidies: {
+          "Seniors (65+)": { pay: 0, receive: 37500 },
+          "Working families ($50-100k)": { pay: 11200, receive: 0 },
+          "High earners ($200k+)": { pay: 35000, receive: 0 },
+          "Medicaid (current recipients)": { pay: 0, receive: 0 }
+        }
+      },
+      "price-transparency": {
+        title: "Price Transparency Mandate",
+        covered: "330M",
+        cost: "-$45B",
+        baseCost: -45,
+        premiumDelta: -300,
+        lives: "8,500",
+        economic: "+$28B",
+        debtMultiplier: 0.98,
+        taxBase: -180,
+        payers: [
+          { name: "Hospitals (revenue loss)", amount: "-$32B/year" },
+          { name: "Insurers (negotiating power)", amount: "-$13B/year" },
+          { name: "Consumers (savings)", amount: "-$45B saved" }
+        ],
+        beneficiaries: [
+          { group: "All healthcare consumers", count: "330M people" },
+          { group: "Self-pay patients", count: "12M people" },
+          { group: "High-deductible plans", count: "45M people" }
+        ],
+        tradeoffs: [
+          {
+            title: "Hospital financial stress",
+            text: "Revenue losses may force closures, especially in rural areas already struggling."
+          },
+          {
+            title: "Complexity for consumers",
+            text: "Price lists may be overwhelming; many consumers still won't shop around effectively."
+          },
+          {
+            title: "Quality vs. price",
+            text: "Cheapest option may not be best; consumers may sacrifice quality for lower costs."
+          }
+        ],
+        subsidies: {
+          "Hospitals": { pay: 3200, receive: 0 },                          // revenue loss
+          "Insurers": { pay: 1300, receive: 0 },                           // lower margins
+          "Consumers": { pay: 0, receive: 450 },                           // savings
+          "Price comparison services": { pay: 0, receive: 280 }
+        }
+      },
+      "value-based": {
+        title: "Value-Based Care Incentives",
+        covered: "180M",
+        cost: "$22B",
+        baseCost: 22,
+        premiumDelta: -110,
+        lives: "35,000",
+        economic: "+$48B",
+        debtMultiplier: 1.10,
+        taxBase: 420,
+        payers: [
+          { name: "Medicare/Medicaid", amount: "$15B/year" },
+          { name: "Private Insurers", amount: "$7B/year" },
+          { name: "Providers (transition costs)", amount: "$8B one-time" }
+        ],
+        beneficiaries: [
+          { group: "Medicare beneficiaries", count: "65M people" },
+          { group: "Chronic disease patients", count: "45M people" },
+          { group: "High-quality providers", count: "2.1M providers" }
+        ],
+        tradeoffs: [
+          {
+            title: "Provider revenue disruption",
+            text: "Fee-for-service providers see 20-30% revenue decline; some may exit Medicare."
+          },
+          {
+            title: "Risk adjustment gaming",
+            text: "Providers may manipulate coding to maximize risk-adjusted payments, undermining savings."
+          },
+          {
+            title: "Rural provider challenges",
+            text: "Small practices lack resources for quality metrics; may consolidate or close."
+          }
+        ],
+        subsidies: {
+          "High-performing providers": { pay: 0, receive: 12000 },
+          "Low-performing providers": { pay: 4500, receive: 0 },          // revenue loss
+          "Medicare beneficiaries": { pay: 0, receive: 800 },
+          "Taxpayers": { pay: 420, receive: 0 }
+        }
+      },
+      "aca-repeal": {
+        title: "ACA Repeal & Reduction",
+        covered: "-15M",
+        cost: "-$180B",
+        baseCost: -180,
+        premiumDelta: 1400,
+        lives: "-24,000",
+        economic: "-$95B",
+        debtMultiplier: 0.85,
+        taxBase: -720,
+        payers: [
+          { name: "Federal Government", amount: "-$180B/year saved" },
+          { name: "Previously Insured", amount: "+$4,200/year premiums" },
+          { name: "Hospitals (uncompensated)", amount: "+$12B costs" }
+        ],
+        beneficiaries: [
+          { group: "Taxpayers (savings)", count: "All taxpayers" },
+          { group: "High-income earners", count: "No subsidy loss" },
+          { group: "Young & healthy", count: "Lower premiums" }
+        ],
+        tradeoffs: [
+          {
+            title: "Massive coverage loss",
+            text: "15 million lose insurance; pre-existing condition protections eliminated; millions more underinsured."
+          },
+          {
+            title: "Increased mortality",
+            text: "Studies show 24,000+ additional preventable deaths annually without ACA coverage."
+          },
+          {
+            title: "Cost shift to hospitals",
+            text: "Uncompensated care costs rise $12B/year; hospitals raise prices for insured patients."
+          },
+          {
+            title: "Economic drag",
+            text: "Reduced healthcare spending decreases GDP by $95B; fewer jobs in healthcare sector."
+          }
+        ],
+        subsidies: {
+          "Taxpayers": { pay: 0, receive: 720 },                          // lower taxes
+          "Previously insured (lost coverage)": { pay: 4200, receive: 0 },
+          "Hospitals": { pay: 1200, receive: 0 },                         // more uncompensated care
+          "High-income earners": { pay: 0, receive: 180 }                 // larger tax cut
+        }
+      },
+      "medicare-cuts": {
+        title: "Medicare Benefit Cuts",
+        covered: "-8M",
+        cost: "-$320B",
+        baseCost: -320,
+        premiumDelta: 950,
+        lives: "-42,000",
+        economic: "-$180B",
+        debtMultiplier: 0.75,
+        taxBase: -1280,
+        payers: [
+          { name: "Federal Government", amount: "-$320B/year saved" },
+          { name: "Medicare Beneficiaries", amount: "+$8,400/year out-of-pocket" },
+          { name: "Families (supporting parents)", amount: "+$12,000/year" }
+        ],
+        beneficiaries: [
+          { group: "Taxpayers (savings)", count: "All taxpayers" },
+          { group: "Future generations", count: "Reduced debt burden" },
+          { group: "Young workers", count: "Lower payroll taxes" }
+        ],
+        tradeoffs: [
+          {
+            title: "Seniors bear the burden",
+            text: "Average senior pays $8,400 more annually; many skip necessary care due to costs."
+          },
+          {
+            title: "Intergenerational transfer",
+            text: "Costs shift from government to families; adult children pay $12,000/year supporting parents."
+          },
+          {
+            title: "Increased mortality",
+            text: "42,000+ additional deaths annually as seniors delay or skip critical care."
+          },
+          {
+            title: "Provider exits",
+            text: "Lower Medicare rates cause providers to stop accepting Medicare patients."
+          }
+        ],
+        subsidies: {
+          "Taxpayers": { pay: 0, receive: 1280 },                          // lower taxes
+          "Medicare beneficiaries": { pay: 8400, receive: 0 },
+          "Adult children (supporting parents)": { pay: 12000, receive: 0 },
+          "Future generations": { pay: 0, receive: 320 }                   // lower long-run debt
+        }
+      },
+      "medicaid-restrictions": {
+        title: "Medicaid Restrictions",
+        covered: "-12M",
+        cost: "-$95B",
+        baseCost: -95,
+        premiumDelta: 620,
+        lives: "-18,500",
+        economic: "-$52B",
+        debtMultiplier: 0.88,
+        taxBase: -380,
+        payers: [
+          { name: "Federal/State Governments", amount: "-$95B/year saved" },
+          { name: "Former Medicaid Recipients", amount: "+$3,200/year premiums" },
+          { name: "Hospitals", amount: "+$8.5B uncompensated care" }
+        ],
+        beneficiaries: [
+          { group: "Taxpayers (savings)", count: "All taxpayers" },
+          { group: "States (budget relief)", count: "State governments" },
+          { group: "Fiscal conservatives", count: "Reduced spending" }
+        ],
+        tradeoffs: [
+          {
+            title: "Coverage loss",
+            text: "12 million lose Medicaid; work requirements exclude many who can't find jobs or have disabilities."
+          },
+          {
+            title: "Health outcomes worsen",
+            text: "18,500+ preventable deaths annually; increased emergency room use for preventable conditions."
+          },
+          {
+            title: "Rural hospital closures",
+            text: "Loss of Medicaid revenue accelerates closure of rural hospitals; communities lose access."
+          },
+          {
+            title: "Cost shift",
+            text: "Uncompensated care costs rise $8.5B; hospitals raise prices, increasing premiums for all."
+          }
+        ],
+        subsidies: {
+          "Taxpayers": { pay: 0, receive: 380 },                           // lower taxes
+          "Former Medicaid recipients": { pay: 3200, receive: 0 },
+          "Hospitals": { pay: 850, receive: 0 },                           // more uncompensated care
+          "States": { pay: 0, receive: 950 }                               // budget relief
+        }
+      }
+    };
+
+    document.querySelectorAll(".policy-card").forEach(card => {
+      card.addEventListener("click", function() {
+        document.querySelectorAll(".policy-card").forEach(c => c.classList.remove("selected"));
+        this.classList.add("selected");
+        
+        const policy = this.dataset.policy;
+        showResults(policy);
+      });
+    });
+
+    function showResults(policy) {
+      currentPolicy = policy;
+      const data = policyData[policy];
+      if (!data) return;
+
+      const isCutting = data.baseCost < 0;
+
+      document.getElementById("selectedPolicyTitle").textContent = data.title;
+      const coveredEl = document.getElementById("metricCovered");
+      coveredEl.textContent = data.covered;
+      
+      // Format cost - use billions unless >1T
+      const costValue = data.baseCost;
+      const costEl = document.getElementById("metricCost");
+      costEl.textContent = formatCurrency(costValue);
+      costEl.className = isCutting ? "metric-value positive" : "metric-value negative";
+      
+      // Update labels for cutting measures
+      if (isCutting) {
+        document.getElementById("costLabel").textContent = "Annual Savings";
+        document.getElementById("costLabelDesc").textContent = "Reduction in annual spending";
+        document.getElementById("sliderLeft").textContent = "Status quo (no cuts)";
+        document.getElementById("sliderRight").textContent = "More aggressive cuts";
+        document.getElementById("sliderDescription").textContent =
+          "0% = status quo (no cuts), 100% = cuts as proposed, 200% = more aggressive version of the same cuts.";
+        document.getElementById("debtTitle").textContent = "💰 Debt Reduction: Savings for Future Taxpayers";
+        document.getElementById("debtDescription").textContent = "Debt reduction from this policy over 10 years (assuming savings aren't spent elsewhere):";
+        document.getElementById("taxTitle").textContent = "💸 Your Tax Change (Likely Lower)";
+        document.getElementById("taxDescription").textContent =
+          "Estimated change in annual taxes per household — here, negative values mean tax cuts/savings.";
+        document.getElementById("taxDisclaimer").textContent =
+          "These are annual changes — negative values mean lower taxes (taxpayers net recipients of money), positive values mean higher taxes.";
+      } else {
+        document.getElementById("costLabel").textContent = "Annual Cost";
+        document.getElementById("costLabelDesc").textContent = "Additional annual spending";
+        document.getElementById("sliderLeft").textContent = "Status quo (no expansion)";
+        document.getElementById("sliderRight").textContent = "More generous proposal";
+        document.getElementById("sliderDescription").textContent =
+          "0% = status quo, 100% = proposal as described, 200% = more generous version of the proposal.";
+        document.getElementById("debtTitle").textContent = "📈 Debt Accumulation: The Burden on Future Taxpayers";
+        document.getElementById("debtDescription").textContent = "Additional debt from this policy over 10 years (assuming no spending cuts elsewhere):";
+        document.getElementById("taxTitle").textContent = "💸 Your Tax Change (Likely Higher)";
+        document.getElementById("taxDescription").textContent =
+          "Estimated change in annual taxes per household — here, values are generally positive (tax increases).";
+        document.getElementById("taxDisclaimer").textContent =
+          "These are annual changes — positive values mean higher taxes, negative values (if present) mean lower taxes.";
+      }
+      
+      const livesEl = document.getElementById("metricLives");
+      livesEl.textContent = data.lives;
+      
+      // Format economic impact - use billions unless >1T
+      const economicValue = parseFloat(data.economic.replace(/[^0-9.-]/g, '')) * (data.economic.includes('-') ? -1 : 1);
+      const econEl = document.getElementById("metricEconomic");
+      econEl.textContent = formatCurrency(economicValue);
+
+      // Color for covered (more coverage = green, coverage loss = red)
+      const coveredVal = parseFloat(String(data.covered).replace(/[^0-9.-]/g, '')) || 0;
+      coveredEl.className = coveredVal >= 0 ? "metric-value positive" : "metric-value negative";
+
+      // Color for lives (more lives saved = green, negative lives = red)
+      const livesVal = parseFloat(String(data.lives).replace(/[^0-9.-]/g, '')) || 0;
+      livesEl.className = livesVal >= 0 ? "metric-value positive" : "metric-value negative";
+
+      // Color for economic impact (positive = green, negative = red, ~0 = neutral)
+      if (economicValue > 0.1) {
+        econEl.className = "metric-value positive";
+      } else if (economicValue < -0.1) {
+        econEl.className = "metric-value negative";
+      } else {
+        econEl.className = "metric-value neutral";
+      }
+
+      // Premium impact (per household per year), scaled by slider
+      const premium = (data.premiumDelta || 0) * (currentSpendingLevel / 100);
+      const premiumEl = document.getElementById("metricPremium");
+      premiumEl.textContent = `${formatDollars(premium)}/yr`;
+      premiumEl.className =
+        premium > 0 ? "metric-value negative" : premium < 0 ? "metric-value positive" : "metric-value neutral";
+
+      const payersList = document.getElementById("payersList");
+      payersList.innerHTML = data.payers.map(p => `
+        <div class="payer-item">
+          <h4>${p.name}</h4>
+          <p class="payer-amount">${p.amount}</p>
+        </div>
+      `).join("");
+
+      const beneficiariesList = document.getElementById("beneficiariesList");
+      beneficiariesList.innerHTML = data.beneficiaries.map(b => `
+        <div class="beneficiary-item">
+          <h4>${b.group}</h4>
+          <p class="beneficiary-count">${b.count}</p>
+        </div>
+      `).join("");
+
+      const tradeoffsList = document.getElementById("tradeoffsList");
+      tradeoffsList.innerHTML = data.tradeoffs.map(t => `
+        <div class="tradeoff-item">
+          <h4>${t.title}</h4>
+          <p>${t.text}</p>
+        </div>
+      `).join("");
+
+      updateFiscalImpact();
+      document.getElementById("results").classList.add("active");
+      document.getElementById("results").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function updateFiscalImpact() {
+      if (!currentPolicy) return;
+      
+      const spendingLevel = parseInt(document.getElementById("spendingSlider").value);
+      currentSpendingLevel = spendingLevel;
+      const multiplier = spendingLevel / 100;
+      
+      document.getElementById("spendingValue").textContent = spendingLevel + "%";
+      
+      const data = policyData[currentPolicy];
+      const adjustedCost = data.baseCost * multiplier;
+      const annualCost = Math.abs(adjustedCost);
+      const isCutting = data.baseCost < 0;
+      
+      // Debt accumulation/reduction (10 years, with interest)
+      const debtTimeline = document.getElementById("debtTimeline");
+      let cumulativeDebt = 0;
+      const interestRate = 0.03; // 3% annual interest
+      const debtYears = [];
+      
+      if (isCutting) {
+        // For cuts: calculate cumulative debt reduction (savings reduce debt)
+        const annualSavings = Math.abs(adjustedCost) * data.debtMultiplier;
+        for (let year = 1; year <= 10; year++) {
+          cumulativeDebt += annualSavings;
+          debtYears.push({
+            year: year === 1 ? "Year 1" : year === 5 ? "Year 5" : year === 10 ? "Year 10" : null,
+            debt: cumulativeDebt
+          });
+        }
+        
+        debtTimeline.innerHTML = debtYears.filter(d => d.year).map(d => {
+          const savingsBillions = d.debt;
+          const formatted = savingsBillions >= 1000 ? `-$${(savingsBillions / 1000).toFixed(1)}T` : `-$${savingsBillions.toFixed(1)}B`;
+          return `
+            <div class="debt-year">
+              <h4>${d.year}</h4>
+              <p class="debt-amount" style="color: var(--sim-green);">${formatted}</p>
+            </div>
+          `;
+        }).join("");
+      } else {
+        // For spending: calculate debt accumulation
+        const annualDebtAdd = annualCost * data.debtMultiplier;
+        for (let year = 1; year <= 10; year++) {
+          cumulativeDebt = cumulativeDebt * (1 + interestRate) + annualDebtAdd;
+          debtYears.push({
+            year: year === 1 ? "Year 1" : year === 5 ? "Year 5" : year === 10 ? "Year 10" : null,
+            debt: cumulativeDebt
+          });
+        }
+        
+        debtTimeline.innerHTML = debtYears.filter(d => d.year).map(d => {
+          const debtBillions = d.debt;
+          const formatted = debtBillions >= 1000 ? `+$${(debtBillions / 1000).toFixed(1)}T` : `+$${debtBillions.toFixed(1)}B`;
+          return `
+            <div class="debt-year">
+              <h4>${d.year}</h4>
+              <p class="debt-amount">${formatted}</p>
+            </div>
+          `;
+        }).join("");
+      }
+      
+      // Tax impact
+      const taxBreakdown = document.getElementById("taxBreakdown");
+      const baseTax = data.taxBase * multiplier;
+      const taxData = [
+        { label: "Per household (median)", amount: baseTax },
+        { label: "Per person", amount: baseTax / 2.5 },
+        { label: "High earner ($200k+)", amount: baseTax * 3.5 },
+        { label: "Over 10 years (household)", amount: baseTax * 10 }
+      ];
+      
+      if (isCutting && baseTax < 0) {
+        // Show tax savings for cuts (negative = taxpayers net recipients)
+        taxBreakdown.innerHTML = taxData.map(t => `
+          <div class="tax-item">
+            <h4>${t.label}</h4>
+            <p class="tax-amount" style="color: var(--sim-green);">-$${Math.round(Math.abs(t.amount))}/year</p>
+          </div>
+        `).join("");
+      } else if (!isCutting && baseTax > 0) {
+        // Show tax increases for spending (positive = taxpayers pay more)
+        taxBreakdown.innerHTML = taxData.map(t => `
+          <div class="tax-item">
+            <h4>${t.label}</h4>
+            <p class="tax-amount">+$${Math.round(t.amount)}/year</p>
+          </div>
+        `).join("");
+      } else {
+        taxBreakdown.innerHTML = `
+          <div class="tax-item">
+            <h4>Tax Impact</h4>
+            <p class="tax-amount">$${baseTax >= 0 ? '+' : ''}${Math.round(baseTax)}/year</p>
+          </div>
+        `;
+      }
+      
+      // Subsidy analysis
+      const subsidyGrid = document.getElementById("subsidyGrid");
+      const subsidyGroups = [];
+      
+      Object.entries(data.subsidies).forEach(([group, values]) => {
+        // All amounts are modeled per member of that group
+        const net = (values.receive - values.pay) * multiplier;
+        subsidyGroups.push({
+          group,
+          pay: values.pay * multiplier,
+          receive: values.receive * multiplier,
+          net
+        });
+      });
+      
+      subsidyGroups.sort((a, b) => b.net - a.net);
+      
+      subsidyGrid.innerHTML = `
+        <div class="subsidy-group">
+          <h4>Net Recipients (Per-Capita)</h4>
+          ${subsidyGroups.filter(s => s.net > 0).map(s => `
+            <div class="subsidy-item">
+              <span class="subsidy-label">${s.group}</span>
+              <span class="subsidy-value" style="color: var(--sim-green);">
+                +$${Math.round(s.net).toLocaleString()} per member
+              </span>
+            </div>
+          `).join("")}
+          ${subsidyGroups.filter(s => s.net > 0).length === 0 ? '<p style="color: var(--sim-gray); font-size: 0.9rem;">No net recipients</p>' : ''}
+        </div>
+        <div class="subsidy-group">
+          <h4>Net Payers (Per-Capita)</h4>
+          ${subsidyGroups.filter(s => s.net < 0).map(s => `
+            <div class="subsidy-item">
+              <span class="subsidy-label">${s.group}</span>
+              <span class="subsidy-value">
+                $${Math.round(s.net).toLocaleString()} per member
+              </span>
+            </div>
+          `).join("")}
+          ${subsidyGroups.filter(s => s.net < 0).length === 0 ? '<p style="color: var(--sim-gray); font-size: 0.9rem;">No net payers</p>' : ''}
+        </div>
+      `;
+    }
+
+    function resetSimulator() {
+      currentPolicy = null;
+      currentSpendingLevel = 100;
+      document.querySelectorAll(".policy-card").forEach(c => c.classList.remove("selected"));
+      document.getElementById("results").classList.remove("active");
+      document.getElementById("spendingSlider").value = 100;
+      document.getElementById("spendingValue").textContent = "100%";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  </script>
+</body>
+</html>
