@@ -4,1521 +4,1696 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Health Policy Simulator | Adam Langshaw</title>
+  <meta name="description" content="An interactive health policy simulator exploring coverage, cost, and access tradeoffs.">
+  <meta property="og:title" content="Health Policy Simulator | Adam Langshaw">
+  <meta property="og:description" content="An interactive health policy simulator exploring coverage, cost, and access tradeoffs.">
   <link rel="icon" type="image/png" href="assets/favicon-ec29af6c-5854-4529-b155-a2d1de3ed322.png">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=3">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <style>
     :root {
-      --sim-red: #8C1515;
-      --sim-blue: #0066CC;
-      --sim-green: #2D8659;
-      --sim-orange: #D97706;
-      --sim-gray: #6B7280;
-      --sim-bg: #ffffff;
-      --sim-card: #f9fafb;
-      --sim-border: #e5e7eb;
+      --hps-bg: #f6f3ee;
+      --hps-panel: rgba(255, 255, 255, 0.84);
+      --hps-panel-strong: rgba(255, 255, 255, 0.95);
+      --hps-ink: #111111;
+      --hps-muted: #66625c;
+      --hps-soft: rgba(0, 0, 0, 0.08);
+      --hps-border: rgba(0, 0, 0, 0.09);
+      --hps-accent: #8C1515;
+      --hps-accent-soft: rgba(140, 21, 21, 0.10);
+      --hps-shadow: 0 24px 70px rgba(0, 0, 0, 0.08);
+      --hps-radius: 28px;
+      --hps-radius-sm: 18px;
     }
 
     body {
-      background: var(--sim-bg);
+      background:
+        radial-gradient(circle at top left, rgba(140, 21, 21, 0.05), transparent 28%),
+        radial-gradient(circle at top right, rgba(0, 0, 0, 0.05), transparent 24%),
+        linear-gradient(180deg, #f8f5f0 0%, #f4f1eb 55%, #f6f3ee 100%);
+      color: var(--hps-ink);
     }
 
-    .sim-header {
-      background: linear-gradient(135deg, var(--sim-red) 0%, #6B0F0F 100%);
-      color: white;
-      padding: 3rem 1.5rem;
-      text-align: center;
-      margin-bottom: 3rem;
+    .hps-page {
+      position: relative;
+      isolation: isolate;
+      padding: 7.5rem 0 2.5rem;
+      overflow: hidden;
     }
 
-    .sim-header h1 {
-      font-family: "DM Serif Display", serif;
-      font-size: 2.5rem;
-      margin: 0 0 0.5rem;
-      font-weight: 400;
+    .hps-page::before,
+    .hps-page::after {
+      content: "";
+      position: fixed;
+      inset: auto;
+      width: 38rem;
+      height: 38rem;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: -1;
+      filter: blur(28px);
+      opacity: 0.35;
     }
 
-    .sim-header p {
-      font-size: 1.1rem;
-      opacity: 0.95;
-      margin: 0;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
+    .hps-page::before {
+      top: -14rem;
+      right: -10rem;
+      background: radial-gradient(circle, rgba(140, 21, 21, 0.14), transparent 68%);
     }
 
-    .sim-container {
-      max-width: 1200px;
+    .hps-page::after {
+      bottom: -18rem;
+      left: -14rem;
+      background: radial-gradient(circle, rgba(0, 0, 0, 0.08), transparent 68%);
+    }
+
+    .hps-shell {
+      position: relative;
+      max-width: 1220px;
       margin: 0 auto;
-      padding: 0 1.5rem 4rem;
+      padding: 0 1.5rem 2rem;
     }
 
-    .sim-nav {
-      margin-bottom: 2rem;
+    .hps-intro {
+      max-width: 760px;
+      margin: 0 auto 1.5rem;
+      padding: 0 0.25rem;
       text-align: center;
     }
 
-    .sim-nav a {
-      color: var(--sim-red);
-      text-decoration: none;
+    .hps-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.95rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--hps-muted);
+    }
+
+    .hps-kicker::before {
+      content: "";
+      width: 2.75rem;
+      height: 1px;
+      background: rgba(140, 21, 21, 0.45);
+    }
+
+    .hps-intro h1 {
+      margin: 0 0 1rem;
+      font-family: var(--font-serif);
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      line-height: 0.96;
+      letter-spacing: -0.03em;
+      font-weight: 700;
+    }
+
+    .hps-intro p {
+      margin: 0 auto;
+      max-width: 52rem;
+      color: var(--hps-muted);
+      font-size: 1.02rem;
+      line-height: 1.8;
+    }
+
+    .hps-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.65rem;
+      margin: 1.5rem 0 0;
+    }
+
+    .hps-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 999px;
+      padding: 0.55rem 0.9rem;
+      font-size: 0.84rem;
+      color: var(--hps-muted);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .hps-chip strong {
+      color: var(--hps-ink);
       font-weight: 600;
     }
 
-    .sim-nav a:hover {
-      text-decoration: underline;
+    .hps-presets,
+    .hps-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
     }
 
-    .policy-selector {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 3rem;
+    .hps-presets {
+      justify-content: center;
+      margin: 1.5rem 0 1rem;
     }
 
-    .policy-card {
-      background: var(--sim-card);
-      border: 2px solid var(--sim-border);
-      border-radius: 12px;
-      padding: 1.5rem;
+    .hps-actions {
+      justify-content: space-between;
+      align-items: center;
+      margin: 0 0 1rem;
+      padding: 0 0.15rem;
+    }
+
+    .hps-button {
+      appearance: none;
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      background: rgba(255, 255, 255, 0.84);
+      color: var(--hps-ink);
+      border-radius: 999px;
+      padding: 0.78rem 1.1rem;
+      font-size: 0.88rem;
+      font-weight: 500;
+      line-height: 1;
       cursor: pointer;
-      transition: all 0.25s;
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, color 180ms ease, box-shadow 180ms ease;
     }
 
-    .policy-card:hover {
-      border-color: var(--sim-red);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(140, 21, 21, 0.1);
+    .hps-button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(140, 21, 21, 0.28);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.05);
     }
 
-    .policy-card.selected {
-      border-color: var(--sim-red);
-      background: rgba(140, 21, 21, 0.05);
-      box-shadow: 0 4px 16px rgba(140, 21, 21, 0.15);
+    .hps-button.is-active {
+      background: var(--hps-accent);
+      color: #fff;
+      border-color: var(--hps-accent);
+      box-shadow: 0 12px 28px rgba(140, 21, 21, 0.20);
     }
 
-    .policy-card h3 {
-      font-family: "DM Serif Display", serif;
-      font-size: 1.35rem;
-      margin: 0 0 0.5rem;
-      color: var(--sim-red);
+    .hps-button.ghost {
+      background: transparent;
     }
 
-    .policy-card p {
+    .hps-button.secondary {
+      background: rgba(255, 255, 255, 0.55);
+    }
+
+    .hps-actions-note {
+      color: var(--hps-muted);
+      font-size: 0.88rem;
+      line-height: 1.5;
+      max-width: 34rem;
+    }
+
+    .hps-layout {
+      display: grid;
+      grid-template-columns: minmax(320px, 386px) minmax(0, 1fr);
+      gap: 1.45rem;
+      align-items: start;
+    }
+
+    .hps-panel {
+      position: relative;
+      border: 1px solid var(--hps-border);
+      border-radius: var(--hps-radius);
+      background: var(--hps-panel);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: var(--hps-shadow);
+      overflow: hidden;
+    }
+
+    .hps-panel::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at var(--glow-x, 50%) var(--glow-y, 30%), rgba(140, 21, 21, 0.09), transparent 28%);
+      opacity: 0.9;
+      pointer-events: none;
+      mix-blend-mode: multiply;
+    }
+
+    .hps-controls {
+      padding: 1.35rem;
+    }
+
+    .hps-controls-head {
+      position: relative;
+      z-index: 1;
+      margin-bottom: 1rem;
+    }
+
+    .hps-controls-head h2,
+    .hps-section-head h2,
+    .hps-card h3,
+    .hps-methodology summary {
       margin: 0;
-      color: var(--sim-gray);
+      font-family: var(--font-serif);
+      letter-spacing: -0.02em;
+    }
+
+    .hps-controls-head h2 {
+      font-size: 1.75rem;
+      line-height: 1.05;
+    }
+
+    .hps-controls-head p {
+      margin: 0.55rem 0 0;
+      color: var(--hps-muted);
+      font-size: 0.94rem;
+      line-height: 1.65;
+    }
+
+    .hps-control-group {
+      position: relative;
+      z-index: 1;
+      padding: 1rem 0 1.05rem;
+      border-top: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    .hps-control-group:first-of-type {
+      border-top: 0;
+      padding-top: 0.25rem;
+    }
+
+    .hps-control-label {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .hps-control-label span:first-child {
+      font-size: 0.94rem;
+      font-weight: 600;
+    }
+
+    .hps-control-label span:last-child {
+      font-size: 0.82rem;
+      color: var(--hps-muted);
+    }
+
+    .hps-control-help {
+      margin: -0.1rem 0 0.8rem;
+      color: var(--hps-muted);
+      font-size: 0.84rem;
+      line-height: 1.55;
+    }
+
+    .hps-range {
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      appearance: none;
+      -webkit-appearance: none;
+      background: linear-gradient(90deg, var(--hps-accent) 0%, rgba(0, 0, 0, 0.10) 0%);
+      outline: none;
+      margin: 0.35rem 0 0;
+    }
+
+    .hps-range::-webkit-slider-thumb {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      background: var(--hps-accent);
+      box-shadow: 0 3px 14px rgba(140, 21, 21, 0.28);
+      cursor: pointer;
+    }
+
+    .hps-range::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      background: var(--hps-accent);
+      box-shadow: 0 3px 14px rgba(140, 21, 21, 0.28);
+      cursor: pointer;
+    }
+
+    .hps-segmented {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.45rem;
+      margin-top: 0.35rem;
+    }
+
+    .hps-segmented button {
+      appearance: none;
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      background: rgba(255, 255, 255, 0.72);
+      border-radius: 14px;
+      padding: 0.72rem 0.7rem;
+      color: var(--hps-ink);
+      font-size: 0.84rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 180ms ease, transform 180ms ease, border-color 180ms ease, color 180ms ease;
+    }
+
+    .hps-segmented button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(140, 21, 21, 0.26);
+    }
+
+    .hps-segmented button.is-active {
+      background: var(--hps-accent);
+      color: #fff;
+      border-color: var(--hps-accent);
+    }
+
+    .hps-select {
+      width: 100%;
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      background: rgba(255, 255, 255, 0.78);
+      border-radius: 14px;
+      padding: 0.82rem 0.9rem;
+      font: inherit;
+      color: var(--hps-ink);
+      appearance: none;
+    }
+
+    .hps-baseline-card {
+      margin-top: 1rem;
+      padding: 1rem;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.75);
+    }
+
+    .hps-baseline-card strong {
+      display: block;
+      margin-bottom: 0.35rem;
+      font-size: 0.96rem;
+    }
+
+    .hps-baseline-card p {
+      margin: 0;
+      color: var(--hps-muted);
+      font-size: 0.86rem;
+      line-height: 1.55;
+    }
+
+    .hps-output {
+      position: relative;
+      z-index: 1;
+      padding: 1.35rem;
+    }
+
+    .hps-section-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .hps-section-head h2 {
+      font-size: 1.5rem;
+      line-height: 1.1;
+    }
+
+    .hps-section-head p {
+      margin: 0;
+      color: var(--hps-muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+      max-width: 20rem;
+    }
+
+    .hps-metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.9rem;
+      margin-bottom: 0.95rem;
+    }
+
+    .hps-metric {
+      position: relative;
+      padding: 1rem;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 22px;
+      background: var(--hps-panel-strong);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.04);
+      overflow: hidden;
+    }
+
+    .hps-metric::before {
+      content: "";
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 3px;
+      background: linear-gradient(90deg, rgba(140, 21, 21, 0.9), rgba(140, 21, 21, 0.12));
+      opacity: 0.9;
+    }
+
+    .hps-metric span {
+      display: block;
+    }
+
+    .hps-metric-label {
+      font-size: 0.77rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--hps-muted);
+      margin-bottom: 0.45rem;
+    }
+
+    .hps-metric-value {
+      font-size: clamp(1.6rem, 3vw, 2.5rem);
+      line-height: 1;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.45rem;
+    }
+
+    .hps-metric-note {
+      font-size: 0.84rem;
+      color: var(--hps-muted);
+      line-height: 1.45;
+    }
+
+    .hps-insight {
+      position: relative;
+      z-index: 1;
+      margin-bottom: 1rem;
+      padding: 1rem 1.1rem;
+      border-radius: 20px;
+      border: 1px solid rgba(140, 21, 21, 0.16);
+      background: linear-gradient(180deg, rgba(140, 21, 21, 0.05), rgba(255, 255, 255, 0.7));
+    }
+
+    .hps-insight strong {
+      display: block;
+      margin-bottom: 0.35rem;
+      font-size: 0.82rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--hps-accent);
+    }
+
+    .hps-insight p {
+      margin: 0;
+      color: var(--hps-ink);
+      line-height: 1.7;
       font-size: 0.95rem;
+    }
+
+    .hps-chart-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 0.95rem;
+      margin-bottom: 0.95rem;
+    }
+
+    .hps-chart-card {
+      position: relative;
+      padding: 1.1rem;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 24px;
+      background: var(--hps-panel-strong);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.04);
+    }
+
+    .hps-chart-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      justify-content: space-between;
+      gap: 0.8rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .hps-chart-kicker {
+      display: inline-block;
+      margin-bottom: 0.35rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--hps-muted);
+    }
+
+    .hps-chart-head h3 {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-size: 1.25rem;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .hps-chart-head p {
+      margin: 0;
+      color: var(--hps-muted);
+      font-size: 0.84rem;
       line-height: 1.5;
     }
 
-    .sim-results {
-      display: none;
-      animation: fadeIn 0.4s;
+    .hps-chart-wrap {
+      position: relative;
+      min-height: 320px;
     }
 
-    .sim-results.active {
+    .hps-chart-wrap canvas {
+      width: 100% !important;
+      height: 100% !important;
       display: block;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    .hps-compare {
+      display: none;
+      gap: 0.95rem;
+      margin-bottom: 0.95rem;
     }
 
-    .results-header {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-
-    .results-header h2 {
-      font-family: "DM Serif Display", serif;
-      font-size: 2rem;
-      margin: 0 0 0.5rem;
-    }
-
-    .results-grid {
+    .hps-compare.is-visible {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 2rem;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .metric-card {
-      background: white;
-      border: 1px solid var(--sim-border);
-      border-radius: 12px;
-      padding: 1.5rem;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    .hps-compare-card {
+      padding: 1rem;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(247, 244, 239, 0.98));
     }
 
-    .metric-card h3 {
-      font-size: 0.875rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--sim-gray);
-      margin: 0 0 0.75rem;
-      font-weight: 600;
+    .hps-compare-card h3 {
+      font-size: 1.05rem;
+      margin-bottom: 0.5rem;
     }
 
-    .metric-value {
-      font-size: 2rem;
-      font-weight: 600;
-      margin: 0 0 0.25rem;
+    .hps-compare-card p {
+      margin: 0 0 0.8rem;
+      color: var(--hps-muted);
+      font-size: 0.88rem;
+      line-height: 1.55;
     }
 
-    .metric-value.positive {
-      color: var(--sim-green);
-    }
-
-    .metric-value.negative {
-      color: var(--sim-red);
-    }
-
-    .metric-value.neutral {
-      color: var(--sim-blue);
-    }
-
-    .metric-label {
-      font-size: 0.9rem;
-      color: var(--sim-gray);
-      margin: 0;
-    }
-
-    .who-pays {
-      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-      border: 2px solid #f59e0b;
-      border-radius: 12px;
-      padding: 2rem;
-      margin-bottom: 2rem;
-    }
-
-    .who-pays h3 {
-      font-family: "DM Serif Display", serif;
-      font-size: 1.5rem;
-      margin: 0 0 1rem;
-      color: #92400e;
-    }
-
-    .payers-list {
+    .hps-compare-list {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.55rem;
+    }
+
+    .hps-compare-row {
+      display: flex;
+      justify-content: space-between;
       gap: 1rem;
+      padding: 0.55rem 0;
+      border-top: 1px solid rgba(0, 0, 0, 0.06);
+      font-size: 0.88rem;
     }
 
-    .payer-item {
-      background: white;
-      padding: 1rem;
-      border-radius: 8px;
-      border-left: 4px solid var(--sim-orange);
+    .hps-compare-row:first-child {
+      border-top: 0;
+      padding-top: 0;
     }
 
-    .payer-item h4 {
-      margin: 0 0 0.5rem;
-      font-size: 1rem;
+    .hps-compare-row span:first-child {
+      color: var(--hps-muted);
+    }
+
+    .hps-compare-row span:last-child {
       font-weight: 600;
     }
 
-    .payer-amount {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: var(--sim-orange);
-      margin: 0;
+    .hps-methodology {
+      margin-top: 1rem;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.75);
+      overflow: hidden;
     }
 
-    .beneficiaries {
-      background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-      border: 2px solid var(--sim-blue);
-      border-radius: 12px;
-      padding: 2rem;
-      margin-bottom: 2rem;
+    .hps-methodology summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 1rem 1.2rem;
+      font-size: 1.05rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
-    .beneficiaries h3 {
-      font-family: "DM Serif Display", serif;
-      font-size: 1.5rem;
-      margin: 0 0 1rem;
-      color: #1e40af;
+    .hps-methodology summary::-webkit-details-marker {
+      display: none;
     }
 
-    .beneficiary-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
+    .hps-methodology summary::after {
+      content: "+";
+      color: var(--hps-accent);
+      font-family: var(--font-sans);
+      font-size: 1.2rem;
+      line-height: 1;
     }
 
-    .beneficiary-item {
-      background: white;
-      padding: 1rem;
-      border-radius: 8px;
-      border-left: 4px solid var(--sim-blue);
+    .hps-methodology[open] summary::after {
+      content: "–";
     }
 
-    .beneficiary-item h4 {
-      margin: 0 0 0.5rem;
-      font-size: 1rem;
-      font-weight: 600;
+    .hps-methodology-body {
+      padding: 0 1.2rem 1.2rem;
+      color: var(--hps-muted);
+      font-size: 0.94rem;
+      line-height: 1.8;
     }
 
-    .beneficiary-count {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: var(--sim-blue);
-      margin: 0;
+    .hps-methodology-body p {
+      margin: 0 0 0.9rem;
     }
 
-    .tradeoffs {
-      background: white;
-      border: 2px solid var(--sim-border);
-      border-radius: 12px;
-      padding: 2rem;
-      margin-bottom: 2rem;
-    }
-
-    .tradeoffs h3 {
-      font-family: "DM Serif Display", serif;
-      font-size: 1.5rem;
-      margin: 0 0 1rem;
-    }
-
-    .tradeoff-item {
-      padding: 1rem;
-      margin-bottom: 0.75rem;
-      border-left: 4px solid var(--sim-gray);
-      background: var(--sim-card);
-      border-radius: 4px;
-    }
-
-    .tradeoff-item:last-child {
+    .hps-methodology-body p:last-child {
       margin-bottom: 0;
     }
 
-    .tradeoff-item h4 {
-      margin: 0 0 0.25rem;
-      font-size: 1rem;
-      font-weight: 600;
+    .hps-methodology-body ul {
+      margin: 0.4rem 0 1rem 1.2rem;
+      padding: 0;
     }
 
-    .tradeoff-item p {
-      margin: 0;
-      font-size: 0.9rem;
-      color: var(--sim-gray);
+    .hps-methodology-body li {
+      margin-bottom: 0.35rem;
     }
 
-    .reset-btn {
-      display: block;
-      margin: 2rem auto 0;
-      padding: 0.75rem 2rem;
-      background: var(--sim-red);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
+    .hps-footer-note {
+      margin-top: 0.75rem;
+      color: var(--hps-muted);
+      font-size: 0.83rem;
+      line-height: 1.5;
     }
 
-    .reset-btn:hover {
-      background: #6B0F0F;
-    }
+    @media (max-width: 980px) {
+      .hps-layout,
+      .hps-chart-grid,
+      .hps-compare.is-visible {
+        grid-template-columns: 1fr;
+      }
 
-    .fiscal-controls {
-      background: white;
-      border: 2px solid var(--sim-border);
-      border-radius: 12px;
-      padding: 2rem;
-      margin-bottom: 2rem;
-    }
+      .hps-actions {
+        align-items: flex-start;
+        flex-direction: column;
+      }
 
-    .fiscal-controls h3 {
-      font-family: "DM Serif Display", serif;
-      font-size: 1.5rem;
-      margin: 0 0 1rem;
-    }
-
-    .slider-container {
-      margin-bottom: 1.5rem;
-    }
-
-    .slider-label {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-    }
-
-    .slider-label span {
-      color: var(--sim-gray);
-      font-weight: 400;
-    }
-
-    .slider {
-      width: 100%;
-      height: 8px;
-      border-radius: 4px;
-      background: var(--sim-border);
-      outline: none;
-      -webkit-appearance: none;
-    }
-
-    .slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: var(--sim-red);
-      cursor: pointer;
-    }
-
-    .slider::-moz-range-thumb {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: var(--sim-red);
-      cursor: pointer;
-      border: none;
-    }
-
-    .slider-value {
-      text-align: center;
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: var(--sim-red);
-      margin-top: 0.5rem;
-    }
-
-    .debt-section {
-      background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-      border: 2px solid #dc2626;
-      border-radius: 12px;
-      padding: 2rem;
-      margin-bottom: 2rem;
-    }
-
-    .debt-section h3 {
-      font-family: "DM Serif Display", serif;
-      font-size: 1.5rem;
-      margin: 0 0 1rem;
-      color: #991b1b;
-    }
-
-    .debt-timeline {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-
-    .debt-year {
-      background: white;
-      padding: 1rem;
-      border-radius: 8px;
-      text-align: center;
-      border-left: 4px solid #dc2626;
-    }
-
-    .debt-year h4 {
-      margin: 0 0 0.5rem;
-      font-size: 0.875rem;
-      color: var(--sim-gray);
-      font-weight: 600;
-    }
-
-    .debt-amount {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: #dc2626;
-      margin: 0;
-    }
-
-    .tax-impact {
-      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-      border: 2px solid #f59e0b;
-      border-radius: 12px;
-      padding: 2rem;
-      margin-bottom: 2rem;
-    }
-
-    .tax-impact h3 {
-      font-family: "DM Serif Display", serif;
-      font-size: 1.5rem;
-      margin: 0 0 1rem;
-      color: #92400e;
-    }
-
-    .tax-breakdown {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-
-    .tax-item {
-      background: white;
-      padding: 1rem;
-      border-radius: 8px;
-      border-left: 4px solid #f59e0b;
-    }
-
-    .tax-item h4 {
-      margin: 0 0 0.5rem;
-      font-size: 1rem;
-      font-weight: 600;
-    }
-
-    .tax-amount {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: #f59e0b;
-      margin: 0;
-    }
-
-    .subsidy-analysis {
-      background: white;
-      border: 2px solid var(--sim-border);
-      border-radius: 12px;
-      padding: 2rem;
-      margin-bottom: 2rem;
-    }
-
-    .subsidy-analysis h3 {
-      font-family: "DM Serif Display", serif;
-      font-size: 1.5rem;
-      margin: 0 0 1rem;
-    }
-
-    .subsidy-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 1.5rem;
-      margin-top: 1rem;
-    }
-
-    .subsidy-group {
-      background: var(--sim-card);
-      padding: 1.5rem;
-      border-radius: 8px;
-      border: 1px solid var(--sim-border);
-    }
-
-    .subsidy-group h4 {
-      margin: 0 0 1rem;
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: var(--sim-red);
-    }
-
-    .subsidy-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 0.75rem 0;
-      border-bottom: 1px solid var(--sim-border);
-    }
-
-    .subsidy-item:last-child {
-      border-bottom: none;
-    }
-
-    .subsidy-label {
-      font-size: 0.9rem;
-      color: var(--sim-gray);
-    }
-
-    .subsidy-value {
-      font-weight: 600;
-      color: var(--sim-red);
-    }
-
-    .subsidy-net {
-      margin-top: 1rem;
-      padding-top: 1rem;
-      border-top: 2px solid var(--sim-red);
-      display: flex;
-      justify-content: space-between;
-      font-weight: 600;
-      font-size: 1.1rem;
+      .hps-actions-note {
+        max-width: none;
+      }
     }
 
     @media (max-width: 640px) {
-      .sim-header h1 {
-        font-size: 2rem;
+      .hps-page {
+        padding-top: 7rem;
       }
 
-      .policy-selector {
+      .hps-shell {
+        padding-inline: 1rem;
+      }
+
+      .hps-intro h1 {
+        font-size: clamp(2.1rem, 10vw, 3.35rem);
+      }
+
+      .hps-metrics {
         grid-template-columns: 1fr;
       }
 
-      .results-grid {
+      .hps-segmented {
         grid-template-columns: 1fr;
+      }
+
+      .hps-controls,
+      .hps-output {
+        padding: 1rem;
+      }
+
+      .hps-chart-wrap {
+        min-height: 280px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="sim-header">
-    <h1>Health Policy Simulator</h1>
-    <p>Explore the trade-offs: Who pays for lunch? Someone always does. Adjust spending levels to see the real cost—debt, taxes, and who really subsidizes whom.</p>
-  </div>
-
-  <div class="sim-container">
-    <div class="sim-nav">
-      <a href="index.html">← Back to Home</a>
+  <header class="site-nav" id="site-nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">Adam Langshaw</a>
+      <button class="nav-menu-btn" id="nav-menu-btn" aria-expanded="false" aria-controls="nav-links">Menu</button>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="about.html">About</a></li>
+        <li><a href="writing.html">Writing</a></li>
+        <li><a href="research.html">Research</a></li>
+        <li><a href="projects.html" aria-current="page">Projects</a></li>
+        <li><a href="influences.html">Influences</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
     </div>
+  </header>
 
-    <div class="policy-selector" id="policySelector">
-      <div class="policy-card" data-policy="medicaid">
-        <h3>Medicaid Expansion</h3>
-        <p>Extend coverage to low-income adults in non-expansion states. Covers millions, shifts costs to federal/state budgets.</p>
-      </div>
-      <div class="policy-card" data-policy="drug-pricing">
-        <h3>Drug Price Negotiation</h3>
-        <p>Allow Medicare to negotiate prescription drug prices. Reduces costs for seniors, impacts pharma revenue.</p>
-      </div>
-      <div class="policy-card" data-policy="preventive">
-        <h3>Preventive Care Mandate</h3>
-        <p>Require insurers to cover preventive services at no cost. Improves outcomes long-term, increases premiums.</p>
-      </div>
-      <div class="policy-card" data-policy="single-payer">
-        <h3>Medicare for All</h3>
-        <p>Universal government-funded healthcare. Eliminates uninsured, requires major tax increases.</p>
-      </div>
-      <div class="policy-card" data-policy="telehealth">
-        <h3>Telehealth Expansion</h3>
-        <p>Permanent coverage for remote care. Improves access, reduces facility costs, shifts to tech infrastructure.</p>
-      </div>
-      <div class="policy-card" data-policy="mental-health">
-        <h3>Mental Health Parity</h3>
-        <p>Equal coverage for mental and physical health. Addresses care gaps, increases utilization and costs.</p>
-      </div>
-      <div class="policy-card" data-policy="long-term-care">
-        <h3>Long-Term Care Expansion</h3>
-        <p>Universal coverage for nursing home and home care. Addresses aging population, massive cost burden.</p>
-      </div>
-      <div class="policy-card" data-policy="price-transparency">
-        <h3>Price Transparency Mandate</h3>
-        <p>Require hospitals to publish all prices upfront. Empowers consumers, reduces surprise billing.</p>
-      </div>
-      <div class="policy-card" data-policy="value-based">
-        <h3>Value-Based Care Incentives</h3>
-        <p>Shift from fee-for-service to outcomes-based payments. Improves quality, disrupts provider revenue.</p>
-      </div>
-      <div class="policy-card" data-policy="aca-repeal">
-        <h3>ACA Repeal & Reduction</h3>
-        <p>Eliminate or significantly reduce Affordable Care Act subsidies and mandates. Saves billions, increases uninsured.</p>
-      </div>
-      <div class="policy-card" data-policy="medicare-cuts">
-        <h3>Medicare Benefit Cuts</h3>
-        <p>Reduce Medicare coverage, raise eligibility age, increase cost-sharing. Reduces federal spending, shifts costs to seniors.</p>
-      </div>
-      <div class="policy-card" data-policy="medicaid-restrictions">
-        <h3>Medicaid Restrictions</h3>
-        <p>Tighten eligibility, add work requirements, reduce benefits. Saves state/federal budgets, reduces coverage.</p>
-      </div>
-    </div>
-
-    <div class="sim-results" id="results">
-      <div class="results-header">
-        <h2 id="selectedPolicyTitle"></h2>
-        <p style="color: var(--sim-gray); margin: 0;">Simulated outcomes over 10 years</p>
-      </div>
-
-      <div class="results-grid">
-        <div class="metric-card">
-          <h3>People Covered</h3>
-          <div class="metric-value positive" id="metricCovered">0</div>
-          <p class="metric-label">Additional individuals with coverage</p>
-        </div>
-        <div class="metric-card">
-          <h3 id="costLabel">Annual Cost</h3>
-          <div class="metric-value negative" id="metricCost">$0B</div>
-          <p class="metric-label" id="costLabelDesc">Additional annual spending</p>
-        </div>
-        <div class="metric-card">
-          <h3>Lives Saved</h3>
-          <div class="metric-value positive" id="metricLives">0</div>
-          <p class="metric-label">Estimated preventable deaths/year</p>
-        </div>
-        <div class="metric-card">
-          <h3>Economic Impact</h3>
-          <div class="metric-value neutral" id="metricEconomic">$0B</div>
-          <p class="metric-label">GDP impact (positive or negative)</p>
-        </div>
-        <div class="metric-card">
-          <h3>Premium Impact</h3>
-          <div class="metric-value neutral" id="metricPremium">$0</div>
-          <p class="metric-label">Estimated annual change per household</p>
-        </div>
-      </div>
-
-      <div class="who-pays">
-        <h3>💰 Who Pays for Lunch?</h3>
-        <div class="payers-list" id="payersList"></div>
-      </div>
-
-      <div class="beneficiaries">
-        <h3>✅ Who Benefits?</h3>
-        <div class="beneficiary-list" id="beneficiariesList"></div>
-      </div>
-
-      <div class="tradeoffs">
-        <h3>⚖️ Trade-offs & Unintended Consequences</h3>
-        <div id="tradeoffsList"></div>
-      </div>
-
-      <div class="fiscal-controls">
-        <h3>💰 Adjust Policy Scope</h3>
-        <p style="color: var(--sim-gray); margin-bottom: 1.5rem;" id="sliderDescription">
-          Move from the status quo (0%) to the policy as proposed (100%) or an even more aggressive version (200%).
+  <main class="hps-page">
+    <section class="hps-shell">
+      <div class="hps-intro">
+        <div class="hps-kicker">Interactive policy lab</div>
+        <h1>Health Policy Simulator</h1>
+        <p>
+          Explore how coverage expansion, cost sharing, and provider payment interact in U.S. health policy.
+          The model is intentionally simplified, but it is structured to surface the same tradeoffs policy
+          analysts discuss: more coverage can mean higher public spending, lower premiums can widen access,
+          and reimbursement cuts can strain provider participation.
         </p>
-        <div class="slider-container">
-          <div class="slider-label">
-            <span id="sliderLeft">Status quo (0% change)</span>
-            <span>Proposal (100%)</span>
-            <span id="sliderRight">More aggressive proposal</span>
+        <div class="hps-meta-row" aria-label="Highlights">
+          <span class="hps-chip"><strong>Baseline systems</strong> ACA, public option, single-payer, market-based</span>
+          <span class="hps-chip"><strong>Updated live</strong> no reloads, no lag</span>
+          <span class="hps-chip"><strong>Framework</strong> vanilla HTML, CSS, and JS</span>
+        </div>
+      </div>
+
+      <div class="hps-presets" role="tablist" aria-label="Baseline systems">
+        <button class="hps-button is-active" type="button" data-preset="aca">Current ACA</button>
+        <button class="hps-button" type="button" data-preset="single">Medicare for All</button>
+        <button class="hps-button" type="button" data-preset="public">Public Option</button>
+        <button class="hps-button" type="button" data-preset="market">Market-Based</button>
+      </div>
+
+      <div class="hps-actions">
+        <div class="hps-actions-note" id="comparisonNote">
+          The live configuration is compared against the selected baseline. Lock the current state to compare
+          it side-by-side with future tweaks.
+        </div>
+        <div class="hps-actions">
+          <button class="hps-button secondary" type="button" id="lockComparisonBtn">Lock current view</button>
+          <button class="hps-button ghost" type="button" id="clearComparisonBtn" hidden>Clear comparison</button>
+        </div>
+      </div>
+
+      <div class="hps-layout">
+        <aside class="hps-panel hps-controls" aria-label="Policy controls">
+          <div class="hps-controls-head">
+            <h2>Policy settings</h2>
+            <p>Use the sliders to explore coverage, financing, and access. The preset buttons set a full policy package, and you can then fine-tune each parameter.</p>
           </div>
-          <input type="range" min="0" max="200" value="100" class="slider" id="spendingSlider" oninput="updateFiscalImpact()">
-          <div class="slider-value" id="spendingValue">100%</div>
+
+          <div class="hps-control-group">
+            <div class="hps-control-label">
+              <span>Government subsidy</span>
+              <span id="subsidyValueLabel">30% of premium</span>
+            </div>
+            <p class="hps-control-help">Higher subsidies lower the effective price of coverage and improve the risk pool.</p>
+            <input class="hps-range" type="range" min="0" max="100" step="1" id="subsidyInput">
+          </div>
+
+          <div class="hps-control-group">
+            <div class="hps-control-label">
+              <span>Mandate strength</span>
+              <span id="mandateValueLabel">Individual mandate</span>
+            </div>
+            <p class="hps-control-help">A stronger mandate improves enrollment and reduces adverse selection.</p>
+            <div class="hps-segmented" role="tablist" aria-label="Mandate strength">
+              <button type="button" data-mandate="none">None</button>
+              <button type="button" data-mandate="individual">Individual mandate</button>
+              <button type="button" data-mandate="auto">Auto-enrollment</button>
+            </div>
+          </div>
+
+          <div class="hps-control-group">
+            <div class="hps-control-label">
+              <span>Provider reimbursement</span>
+              <span id="reimbursementValueLabel">100% of Medicare</span>
+            </div>
+            <p class="hps-control-help">Provider participation tends to fall quickly once rates dip below roughly 80% of Medicare.</p>
+            <input class="hps-range" type="range" min="50" max="120" step="1" id="reimbursementInput">
+          </div>
+
+          <div class="hps-control-group">
+            <div class="hps-control-label">
+              <span>Out-of-pocket maximum</span>
+              <span id="oopValueLabel">$8,700</span>
+            </div>
+            <p class="hps-control-help">A lower cap improves protection against catastrophic spending, especially for lower-income households.</p>
+            <input class="hps-range" type="range" min="0" max="15000" step="100" id="oopInput">
+          </div>
+
+          <div class="hps-control-group">
+            <div class="hps-control-label">
+              <span>Medicaid expansion threshold</span>
+              <span id="medicaidValueLabel">138% FPL</span>
+            </div>
+            <p class="hps-control-help">Higher thresholds broaden eligibility and can reduce the uninsured rate quickly near the bottom of the income distribution.</p>
+            <input class="hps-range" type="range" min="0" max="400" step="1" id="medicaidInput">
+          </div>
+
+          <div class="hps-control-group">
+            <div class="hps-control-label">
+              <span>Employer mandate threshold</span>
+              <span id="employerValueLabel">50 employees</span>
+            </div>
+            <p class="hps-control-help">Lower thresholds make employer responsibility stronger and can stabilize coverage in the group market.</p>
+            <input class="hps-range" type="range" min="0" max="100" step="1" id="employerInput">
+          </div>
+
+          <div class="hps-baseline-card">
+            <strong id="baselineTitle">Current ACA baseline</strong>
+            <p id="baselineCopy">This preset approximates a mixed public-private system with exchange subsidies, a mandate, Medicaid expansion, and provider payment close to Medicare rates.</p>
+          </div>
+        </aside>
+
+        <section class="hps-panel hps-output" aria-live="polite">
+          <div class="hps-section-head">
+            <div>
+              <h2 id="resultsTitle">Live policy outputs</h2>
+              <p id="resultsSubtitle">Indexed against the selected baseline. Federal spending is shown as a relative index, with the current ACA baseline set to 100.</p>
+            </div>
+            <div class="hps-chip"><strong>Mode</strong> <span id="modeLabel">Baseline comparison</span></div>
+          </div>
+
+          <div class="hps-metrics" id="metricsGrid">
+            <article class="hps-metric">
+              <span class="hps-metric-label">Estimated uninsured rate</span>
+              <span class="hps-metric-value" id="uninsuredMetric">0.0%</span>
+              <span class="hps-metric-note" id="uninsuredNote">Compared with the chosen baseline</span>
+            </article>
+            <article class="hps-metric">
+              <span class="hps-metric-label">Benchmark premium</span>
+              <span class="hps-metric-value" id="premiumMetric">$0</span>
+              <span class="hps-metric-note" id="premiumNote">Annual sticker price for a benchmark plan</span>
+            </article>
+            <article class="hps-metric">
+              <span class="hps-metric-label">Federal spending index</span>
+              <span class="hps-metric-value" id="federalMetric">100</span>
+              <span class="hps-metric-note">100 = current ACA baseline</span>
+            </article>
+            <article class="hps-metric">
+              <span class="hps-metric-label">Provider participation</span>
+              <span class="hps-metric-value" id="providerMetric">0%</span>
+              <span class="hps-metric-note">Proxy for network breadth and access</span>
+            </article>
+            <article class="hps-metric">
+              <span class="hps-metric-label">Wait time index</span>
+              <span class="hps-metric-value" id="waitMetric">100</span>
+              <span class="hps-metric-note">Higher values imply more pressure on access</span>
+            </article>
+            <article class="hps-metric">
+              <span class="hps-metric-label">Average burden</span>
+              <span class="hps-metric-value" id="burdenMetric">0.0%</span>
+              <span class="hps-metric-note">Weighted out-of-pocket burden across quintiles</span>
+            </article>
+          </div>
+
+          <div class="hps-insight">
+            <strong>Interpretation</strong>
+            <p id="insightText">The current baseline keeps coverage relatively stable while preserving broad provider participation.</p>
+          </div>
+
+          <div class="hps-chart-grid">
+            <article class="hps-chart-card">
+              <div class="hps-chart-head">
+                <div>
+                  <span class="hps-chart-kicker">Comparative model</span>
+                  <h3>Coverage, access, and fiscal balance</h3>
+                </div>
+                <p id="radarCaption">Current configuration versus the chosen baseline.</p>
+              </div>
+              <div class="hps-chart-wrap">
+                <canvas id="radarChart" aria-label="Radar chart comparing policy configurations" role="img"></canvas>
+              </div>
+            </article>
+
+            <article class="hps-chart-card">
+              <div class="hps-chart-head">
+                <div>
+                  <span class="hps-chart-kicker">Distributional view</span>
+                  <h3>Out-of-pocket burden by income quintile</h3>
+                </div>
+                <p id="burdenCaption">Percent of annual income, including premium and cost-sharing.</p>
+              </div>
+              <div class="hps-chart-wrap">
+                <canvas id="burdenChart" aria-label="Bar chart showing burden by income quintile" role="img"></canvas>
+              </div>
+            </article>
+          </div>
+
+          <div class="hps-compare" id="comparePanel" aria-label="Comparison mode">
+            <article class="hps-compare-card">
+              <h3 id="lockedTitle">Locked configuration</h3>
+              <p id="lockedSubtitle">Snapshot of the configuration that was locked for comparison.</p>
+              <div class="hps-compare-list" id="lockedList"></div>
+            </article>
+            <article class="hps-compare-card">
+              <h3 id="liveTitle">Live configuration</h3>
+              <p id="liveSubtitle">The settings currently shown in the controls.</p>
+              <div class="hps-compare-list" id="liveList"></div>
+            </article>
+          </div>
+
+          <p class="hps-footer-note">The model is calibrated to illustrate policy relationships, not to forecast budgets or outcomes precisely.</p>
+        </section>
+      </div>
+
+      <details class="hps-methodology">
+        <summary>Methodology</summary>
+        <div class="hps-methodology-body">
+          <p>
+            This simulator uses stylized relationships drawn from standard health economics intuitions. It is not a
+            microsimulation and does not claim predictive accuracy. The goal is to make policy tradeoffs legible.
+          </p>
+          <ul>
+            <li>Uninsured rate is modeled with an elasticity-style response to subsidies, mandate strength, Medicaid generosity, and employer responsibility. More generous coverage reduces the uninsured rate nonlinearly, with the biggest response at low subsidy and mandate levels.</li>
+            <li>Benchmark premium responds to the risk pool. When coverage improves and adverse selection falls, premiums ease. If the mandate weakens or the uninsured rate rises, premiums climb.</li>
+            <li>Provider participation falls sharply once reimbursement drops below roughly 80% of Medicare rates. Lower reimbursement reduces access even if it may temper spending growth.</li>
+            <li>Wait time is a simplified pressure index. It rises when more people are brought into the system without a matching increase in provider participation.</li>
+            <li>The federal spending index is normalized to the current ACA-like baseline. It is intended to compare directions and magnitudes, not to estimate dollar totals.</li>
+            <li>Out-of-pocket burden by income quintile is a stylized expected burden that combines premium exposure, cost-sharing, and uninsured risk. It does not include taxes or wage effects, which are critical in real policy analysis.</li>
+          </ul>
+          <p>
+            Presets are approximate archetypes:
+            Current ACA, Medicare for All, Public Option, and Market-Based. Each can be fine-tuned with the sliders
+            to see how small changes affect the same core tensions between coverage, cost, and access.
+          </p>
         </div>
-      </div>
+      </details>
+    </section>
+  </main>
 
-      <div class="debt-section">
-        <h3 id="debtTitle">📈 Debt Accumulation: The Burden on Future Taxpayers</h3>
-        <p style="color: #991b1b; margin-bottom: 1rem; font-weight: 600;">Current U.S. National Debt: ~$34 Trillion</p>
-        <p style="color: var(--sim-gray); margin-bottom: 1rem;" id="debtDescription">Additional debt from this policy over 10 years (assuming no spending cuts elsewhere):</p>
-        <div class="debt-timeline" id="debtTimeline"></div>
-        <p style="color: var(--sim-gray); margin-top: 1rem; font-size: 0.9rem;">Interest payments alone add billions annually. Future generations inherit this burden.</p>
-      </div>
-
-      <div class="tax-impact">
-        <h3 id="taxTitle">💸 Your Tax Change</h3>
-        <p style="color: var(--sim-gray); margin-bottom: 1rem;" id="taxDescription">
-          How much your total tax bill changes annually (federal + state), based on a median household income of $70,000.
-        </p>
-        <div class="tax-breakdown" id="taxBreakdown"></div>
-        <p style="color: var(--sim-gray); margin-top: 1rem; font-size: 0.9rem;" id="taxDisclaimer">
-          These are annual changes — negative values mean lower taxes (taxpayers net recipients), positive values mean
-          higher taxes. Over time they compound.
-        </p>
-      </div>
-
-      <div class="subsidy-analysis">
-        <h3>🔍 Who Really Subsidizes Whom?</h3>
-        <p style="color: var(--sim-gray); margin-bottom: 1rem;">
-          Net transfer analysis: Who pays more than they receive? All values below are <strong>per member of each group</strong>
-          (per household, per enrollee, per hospital, etc.), not per the whole population.
-        </p>
-        <div class="subsidy-grid" id="subsidyGrid"></div>
-      </div>
-
-      <button class="reset-btn" onclick="resetSimulator()">Try Another Policy</button>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p class="footer-copy">© <span class="year"></span> Adam Langshaw</p>
+      <ul class="footer-links">
+        <li><a href="about.html">About</a></li>
+        <li><a href="writing.html">Writing</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="projects.html">Projects</a></li>
+      </ul>
     </div>
-  </div>
+  </footer>
 
+  <script src="script.js"></script>
   <script>
-    let currentPolicy = null;
-    let currentSpendingLevel = 100;
+    (() => {
+      const MANDATE_LEVEL = { none: 0, individual: 0.55, auto: 1 };
+      const MANDATE_LABEL = { none: "None", individual: "Individual mandate", auto: "Auto-enrollment" };
 
-    function formatCurrency(value) {
-      const absValue = Math.abs(value);
-      if (absValue >= 1000) {
-        return (value >= 0 ? '+' : '-') + '$' + (absValue / 1000).toFixed(1) + 'T';
-      }
-      return (value >= 0 ? '+' : '-') + '$' + absValue.toFixed(1) + 'B';
-    }
-
-    function formatDollars(value) {
-      const sign = value > 0 ? "+" : value < 0 ? "-" : "";
-      const abs = Math.round(Math.abs(value));
-      return `${sign}$${abs.toLocaleString()}`;
-    }
-
-    const policyData = {
-      medicaid: {
-        title: "Medicaid Expansion",
-        covered: "4.2M",
-        cost: "$12.5B",
-        baseCost: 12.5,
-        premiumDelta: 65,
-        lives: "18,500",
-        economic: "+$8.2B",
-        debtMultiplier: 1.15,
-        taxBase: 350,
-        subsidies: {
-          "High-income earners (>$200k)": { pay: 4200, receive: 0 },
-          "Middle-income families ($50-100k)": { pay: 850, receive: 1200 },
-          "Low-income families (<$50k)": { pay: 180, receive: 4800 },
-          "Medicaid recipients": { pay: 0, receive: 12000 }
+      const PRESETS = {
+        aca: {
+          label: "Current ACA",
+          copy: "Exchange subsidies, an individual mandate, Medicaid expansion, and provider payment near Medicare rates.",
+          subsidy: 30,
+          mandate: "individual",
+          reimbursement: 100,
+          oopMax: 8700,
+          medicaid: 138,
+          employer: 50,
+          uninsured: 8.6,
+          premium: 6900,
+          federalIndex: 100,
+          provider: 92,
+          wait: 100
         },
-        payers: [
-          { name: "Federal Government", amount: "$8.1B/year" },
-          { name: "State Governments", amount: "$4.4B/year" },
-          { name: "Hospitals (uncompensated)", amount: "-$2.3B saved" }
-        ],
-        beneficiaries: [
-          { group: "Low-income adults (18-64)", count: "4.2M people" },
-          { group: "Rural communities", count: "1.8M people" },
-          { group: "Minority populations", count: "2.1M people" }
-        ],
-        tradeoffs: [
-          {
-            title: "Provider capacity strain",
-            text: "Increased demand may overwhelm primary care networks, leading to longer wait times for all patients."
-          },
-          {
-            title: "State budget pressure",
-            text: "States face 10% cost share, potentially crowding out education or infrastructure spending."
-          },
-          {
-            title: "Employer coverage shifts",
-            text: "Some employers may drop coverage, pushing employees to Medicaid—costs shift from private to public."
-          }
-        ]
-      },
-      "drug-pricing": {
-        title: "Drug Price Negotiation",
-        covered: "52M",
-        cost: "-$98B",
-        baseCost: -98,
-        premiumDelta: -120,
-        lives: "12,000",
-        economic: "+$45B",
-        debtMultiplier: 0.95,
-        taxBase: -450,
-        subsidies: {
-          "Pharmaceutical companies": { pay: 9800, receive: 0 },           // bear lost revenue
-          "Medicare beneficiaries": { pay: 0, receive: 1200 },             // lower drug costs
-          "Taxpayers (savings)": { pay: 0, receive: 450 },                // lower program cost
-          "Future patients (less R&D)": { pay: 800, receive: 0 }          // fewer new treatments
+        single: {
+          label: "Medicare for All",
+          copy: "Universal coverage, very low premiums, lower provider reimbursement, and much more public financing.",
+          subsidy: 100,
+          mandate: "auto",
+          reimbursement: 72,
+          oopMax: 0,
+          medicaid: 400,
+          employer: 0,
+          uninsured: 1.5,
+          premium: 0,
+          federalIndex: 265,
+          provider: 74,
+          wait: 134
         },
-        payers: [
-          { name: "Pharmaceutical Companies", amount: "-$98B revenue/year" },
-          { name: "Medicare Trust Fund", amount: "-$45B saved" },
-          { name: "Seniors (out-of-pocket)", amount: "-$12B saved" }
-        ],
-        beneficiaries: [
-          { group: "Medicare beneficiaries", count: "52M people" },
-          { group: "Chronic disease patients", count: "18M people" },
-          { group: "Low-income seniors", count: "8.5M people" }
-        ],
-        tradeoffs: [
-          {
-            title: "R&D investment decline",
-            text: "Reduced pharma revenue may decrease new drug development by 15-20% over a decade."
-          },
-          {
-            title: "Innovation pipeline risk",
-            text: "Fewer breakthrough treatments for rare diseases, as ROI becomes less attractive."
-          },
-          {
-            title: "International price effects",
-            text: "U.S. price cuts may lead pharma to raise prices in other countries to maintain margins."
-          }
-        ]
-      },
-      preventive: {
-        title: "Preventive Care Mandate",
-        covered: "180M",
-        cost: "$8.7B",
-        baseCost: 8.7,
-        premiumDelta: 240,
-        lives: "45,000",
-        economic: "+$22B",
-        debtMultiplier: 1.08,
-        taxBase: 280,
-        subsidies: {
-          "Healthy individuals": { pay: 480, receive: 200 },
-          "Chronic disease patients": { pay: 480, receive: 2400 },
-          "Insurance companies": { pay: 0, receive: 0 },
-          "Employers": { pay: 520, receive: 0 }
+        public: {
+          label: "Public Option",
+          copy: "A stronger public plan layered onto the current market with expanded subsidies and moderate regulation.",
+          subsidy: 45,
+          mandate: "individual",
+          reimbursement: 88,
+          oopMax: 6500,
+          medicaid: 190,
+          employer: 50,
+          uninsured: 5.1,
+          premium: 5600,
+          federalIndex: 150,
+          provider: 87,
+          wait: 108
         },
-        payers: [
-          { name: "Insurance Premiums", amount: "+$48/year average" },
-          { name: "Employers (group plans)", amount: "$5.2B/year" },
-          { name: "Federal Government (ACA)", amount: "$3.5B/year" }
-        ],
-        beneficiaries: [
-          { group: "All insured Americans", count: "180M people" },
-          { group: "Early detection cases", count: "2.3M/year" },
-          { group: "Chronic disease prevention", count: "1.1M/year" }
-        ],
-        tradeoffs: [
-          {
-            title: "Premium increases",
-            text: "Average family premiums rise $200-300/year, disproportionately affecting healthy individuals."
-          },
-          {
-            title: "Overutilization risk",
-            text: "Free preventive care may lead to unnecessary screenings, increasing costs without clear benefit."
-          },
-          {
-            title: "Provider reimbursement",
-            text: "Preventive visits pay less than treatment, potentially reducing provider participation."
-          }
-        ]
-      },
-      "single-payer": {
-        title: "Medicare for All",
-        covered: "28M",
-        cost: "$3.2T",
-        baseCost: 3200,
-        premiumDelta: -5200,
-        lives: "68,000",
-        economic: "-$180B",
-        debtMultiplier: 1.25,
-        taxBase: 8500,
-        subsidies: {
-          "Top 1% earners (>$500k)": { pay: 45000, receive: 12000 },
-          "High earners ($200-500k)": { pay: 12000, receive: 12000 },
-          "Middle class ($50-200k)": { pay: 4500, receive: 12000 },
-          "Low-income (<$50k)": { pay: 800, receive: 12000 },
-          "Uninsured (new coverage)": { pay: 0, receive: 12000 }
-        },
-        payers: [
-          { name: "Federal Taxpayers", amount: "+$2.8T/year" },
-          { name: "Employers (payroll tax)", amount: "$1.2T/year" },
-          { name: "High Earners (surtax)", amount: "$450B/year" },
-          { name: "Insurance Industry", amount: "-$850B revenue" }
-        ],
-        beneficiaries: [
-          { group: "Uninsured Americans", count: "28M people" },
-          { group: "Underinsured families", count: "31M people" },
-          { group: "All Americans (universal)", count: "330M people" }
-        ],
-        tradeoffs: [
-          {
-            title: "Massive tax increases",
-            text: "Middle-class families see $3,000-5,000/year tax increase, despite eliminating premiums."
-          },
-          {
-            title: "Provider payment cuts",
-            text: "Medicare-for-all rates 40% below private insurance, risking provider shortages."
-          },
-          {
-            title: "Wait times and rationing",
-            text: "Universal coverage increases demand; without capacity expansion, wait times may double."
-          },
-          {
-            title: "Economic disruption",
-            text: "2.3M insurance industry jobs at risk; transition costs estimated at $200B over 5 years."
-          }
-        ]
-      },
-      telehealth: {
-        title: "Telehealth Expansion",
-        covered: "45M",
-        cost: "$2.1B",
-        baseCost: 2.1,
-        premiumDelta: 35,
-        lives: "3,200",
-        economic: "+$15B",
-        debtMultiplier: 1.05,
-        taxBase: 95,
-        subsidies: {
-          "Rural residents": { pay: 95, receive: 450 },
-          "Urban taxpayers": { pay: 95, receive: 120 },
-          "Tech companies": { pay: 0, receive: 1800 },
-          "Rural hospitals": { pay: 180, receive: 0 }                     // revenue loss
-        },
-        payers: [
-          { name: "Medicare/Medicaid", amount: "$1.4B/year" },
-          { name: "Private Insurers", amount: "$700M/year" },
-          { name: "Rural Hospitals", amount: "-$180M revenue" }
-        ],
-        beneficiaries: [
-          { group: "Rural residents", count: "18M people" },
-          { group: "Mobility-limited seniors", count: "12M people" },
-          { group: "Mental health patients", count: "15M people" }
-        ],
-        tradeoffs: [
-          {
-            title: "Rural hospital closures",
-            text: "Telehealth reduces in-person visits, accelerating closure of already-struggling rural facilities."
-          },
-          {
-            title: "Digital divide",
-            text: "Low-income and elderly populations lack broadband access, creating new health disparities."
-          },
-          {
-            title: "Quality concerns",
-            text: "Remote care may miss physical exam findings, leading to delayed diagnoses in some cases."
-          }
-        ]
-      },
-      "mental-health": {
-        title: "Mental Health Parity",
-        covered: "65M",
-        cost: "$18.5B",
-        baseCost: 18.5,
-        premiumDelta: 190,
-        lives: "22,000",
-        economic: "+$32B",
-        debtMultiplier: 1.12,
-        taxBase: 680,
-        payers: [
-          { name: "Insurance Premiums", amount: "+$85/year average" },
-          { name: "Employers", amount: "$11.2B/year" },
-          { name: "State Mental Health", amount: "$7.3B/year" }
-        ],
-        beneficiaries: [
-          { group: "Mental health patients", count: "65M people" },
-          { group: "Substance use disorders", count: "21M people" },
-          { group: "Youth & adolescents", count: "8.5M people" }
-        ],
-        tradeoffs: [
-          {
-            title: "Provider shortage",
-            text: "Demand for mental health services exceeds supply; wait times increase despite coverage."
-          },
-          {
-            title: "Premium increases",
-            text: "Mental health utilization rises 40%, driving up costs for all policyholders."
-          },
-          {
-            title: "Stigma reduction vs. costs",
-            text: "Increased access reduces stigma but also increases overall healthcare spending."
-          }
-        ],
-        subsidies: {
-          "Mental health patients": { pay: 85, receive: 2400 },
-          "General population": { pay: 85, receive: 180 },
-          "Employers": { pay: 1120, receive: 0 },
-          "State governments": { pay: 730, receive: 0 }
+        market: {
+          label: "Market-Based",
+          copy: "High-deductible coverage, light regulation, limited subsidies, and stronger private price discipline.",
+          subsidy: 10,
+          mandate: "none",
+          reimbursement: 108,
+          oopMax: 12500,
+          medicaid: 0,
+          employer: 100,
+          uninsured: 13.4,
+          premium: 8300,
+          federalIndex: 72,
+          provider: 96,
+          wait: 92
         }
-      },
-      "long-term-care": {
-        title: "Long-Term Care Expansion",
-        covered: "12M",
-        cost: "$450B",
-        baseCost: 450,
-        premiumDelta: -850,
-        lives: "85,000",
-        economic: "-$120B",
-        debtMultiplier: 1.35,
-        taxBase: 11200,
-        payers: [
-          { name: "Federal Government", amount: "$320B/year" },
-          { name: "State Governments", amount: "$130B/year" },
-          { name: "Working-age taxpayers", amount: "$11,200/year avg" }
-        ],
-        beneficiaries: [
-          { group: "Seniors (65+)", count: "12M people" },
-          { group: "Disabled adults", count: "3.5M people" },
-          { group: "Family caregivers", count: "8M people" }
-        ],
-        tradeoffs: [
-          {
-            title: "Massive tax burden",
-            text: "Average household tax increase of $11,200/year—more than many families' annual savings."
-          },
-          {
-            title: "Intergenerational transfer",
-            text: "Working-age taxpayers fund care for retirees; younger generations pay for older generations."
-          },
-          {
-            title: "Provider capacity",
-            text: "Nursing home and home care workforce insufficient; quality may decline with increased demand."
-          }
-        ],
-        subsidies: {
-          "Seniors (65+)": { pay: 0, receive: 37500 },
-          "Working families ($50-100k)": { pay: 11200, receive: 0 },
-          "High earners ($200k+)": { pay: 35000, receive: 0 },
-          "Medicaid (current recipients)": { pay: 0, receive: 0 }
-        }
-      },
-      "price-transparency": {
-        title: "Price Transparency Mandate",
-        covered: "330M",
-        cost: "-$45B",
-        baseCost: -45,
-        premiumDelta: -300,
-        lives: "8,500",
-        economic: "+$28B",
-        debtMultiplier: 0.98,
-        taxBase: -180,
-        payers: [
-          { name: "Hospitals (revenue loss)", amount: "-$32B/year" },
-          { name: "Insurers (negotiating power)", amount: "-$13B/year" },
-          { name: "Consumers (savings)", amount: "-$45B saved" }
-        ],
-        beneficiaries: [
-          { group: "All healthcare consumers", count: "330M people" },
-          { group: "Self-pay patients", count: "12M people" },
-          { group: "High-deductible plans", count: "45M people" }
-        ],
-        tradeoffs: [
-          {
-            title: "Hospital financial stress",
-            text: "Revenue losses may force closures, especially in rural areas already struggling."
-          },
-          {
-            title: "Complexity for consumers",
-            text: "Price lists may be overwhelming; many consumers still won't shop around effectively."
-          },
-          {
-            title: "Quality vs. price",
-            text: "Cheapest option may not be best; consumers may sacrifice quality for lower costs."
-          }
-        ],
-        subsidies: {
-          "Hospitals": { pay: 3200, receive: 0 },                          // revenue loss
-          "Insurers": { pay: 1300, receive: 0 },                           // lower margins
-          "Consumers": { pay: 0, receive: 450 },                           // savings
-          "Price comparison services": { pay: 0, receive: 280 }
-        }
-      },
-      "value-based": {
-        title: "Value-Based Care Incentives",
-        covered: "180M",
-        cost: "$22B",
-        baseCost: 22,
-        premiumDelta: -110,
-        lives: "35,000",
-        economic: "+$48B",
-        debtMultiplier: 1.10,
-        taxBase: 420,
-        payers: [
-          { name: "Medicare/Medicaid", amount: "$15B/year" },
-          { name: "Private Insurers", amount: "$7B/year" },
-          { name: "Providers (transition costs)", amount: "$8B one-time" }
-        ],
-        beneficiaries: [
-          { group: "Medicare beneficiaries", count: "65M people" },
-          { group: "Chronic disease patients", count: "45M people" },
-          { group: "High-quality providers", count: "2.1M providers" }
-        ],
-        tradeoffs: [
-          {
-            title: "Provider revenue disruption",
-            text: "Fee-for-service providers see 20-30% revenue decline; some may exit Medicare."
-          },
-          {
-            title: "Risk adjustment gaming",
-            text: "Providers may manipulate coding to maximize risk-adjusted payments, undermining savings."
-          },
-          {
-            title: "Rural provider challenges",
-            text: "Small practices lack resources for quality metrics; may consolidate or close."
-          }
-        ],
-        subsidies: {
-          "High-performing providers": { pay: 0, receive: 12000 },
-          "Low-performing providers": { pay: 4500, receive: 0 },          // revenue loss
-          "Medicare beneficiaries": { pay: 0, receive: 800 },
-          "Taxpayers": { pay: 420, receive: 0 }
-        }
-      },
-      "aca-repeal": {
-        title: "ACA Repeal & Reduction",
-        covered: "-15M",
-        cost: "-$180B",
-        baseCost: -180,
-        premiumDelta: 1400,
-        lives: "-24,000",
-        economic: "-$95B",
-        debtMultiplier: 0.85,
-        taxBase: -720,
-        payers: [
-          { name: "Federal Government", amount: "-$180B/year saved" },
-          { name: "Previously Insured", amount: "+$4,200/year premiums" },
-          { name: "Hospitals (uncompensated)", amount: "+$12B costs" }
-        ],
-        beneficiaries: [
-          { group: "Taxpayers (savings)", count: "All taxpayers" },
-          { group: "High-income earners", count: "No subsidy loss" },
-          { group: "Young & healthy", count: "Lower premiums" }
-        ],
-        tradeoffs: [
-          {
-            title: "Massive coverage loss",
-            text: "15 million lose insurance; pre-existing condition protections eliminated; millions more underinsured."
-          },
-          {
-            title: "Increased mortality",
-            text: "Studies show 24,000+ additional preventable deaths annually without ACA coverage."
-          },
-          {
-            title: "Cost shift to hospitals",
-            text: "Uncompensated care costs rise $12B/year; hospitals raise prices for insured patients."
-          },
-          {
-            title: "Economic drag",
-            text: "Reduced healthcare spending decreases GDP by $95B; fewer jobs in healthcare sector."
-          }
-        ],
-        subsidies: {
-          "Taxpayers": { pay: 0, receive: 720 },                          // lower taxes
-          "Previously insured (lost coverage)": { pay: 4200, receive: 0 },
-          "Hospitals": { pay: 1200, receive: 0 },                         // more uncompensated care
-          "High-income earners": { pay: 0, receive: 180 }                 // larger tax cut
-        }
-      },
-      "medicare-cuts": {
-        title: "Medicare Benefit Cuts",
-        covered: "-8M",
-        cost: "-$320B",
-        baseCost: -320,
-        premiumDelta: 950,
-        lives: "-42,000",
-        economic: "-$180B",
-        debtMultiplier: 0.75,
-        taxBase: -1280,
-        payers: [
-          { name: "Federal Government", amount: "-$320B/year saved" },
-          { name: "Medicare Beneficiaries", amount: "+$8,400/year out-of-pocket" },
-          { name: "Families (supporting parents)", amount: "+$12,000/year" }
-        ],
-        beneficiaries: [
-          { group: "Taxpayers (savings)", count: "All taxpayers" },
-          { group: "Future generations", count: "Reduced debt burden" },
-          { group: "Young workers", count: "Lower payroll taxes" }
-        ],
-        tradeoffs: [
-          {
-            title: "Seniors bear the burden",
-            text: "Average senior pays $8,400 more annually; many skip necessary care due to costs."
-          },
-          {
-            title: "Intergenerational transfer",
-            text: "Costs shift from government to families; adult children pay $12,000/year supporting parents."
-          },
-          {
-            title: "Increased mortality",
-            text: "42,000+ additional deaths annually as seniors delay or skip critical care."
-          },
-          {
-            title: "Provider exits",
-            text: "Lower Medicare rates cause providers to stop accepting Medicare patients."
-          }
-        ],
-        subsidies: {
-          "Taxpayers": { pay: 0, receive: 1280 },                          // lower taxes
-          "Medicare beneficiaries": { pay: 8400, receive: 0 },
-          "Adult children (supporting parents)": { pay: 12000, receive: 0 },
-          "Future generations": { pay: 0, receive: 320 }                   // lower long-run debt
-        }
-      },
-      "medicaid-restrictions": {
-        title: "Medicaid Restrictions",
-        covered: "-12M",
-        cost: "-$95B",
-        baseCost: -95,
-        premiumDelta: 620,
-        lives: "-18,500",
-        economic: "-$52B",
-        debtMultiplier: 0.88,
-        taxBase: -380,
-        payers: [
-          { name: "Federal/State Governments", amount: "-$95B/year saved" },
-          { name: "Former Medicaid Recipients", amount: "+$3,200/year premiums" },
-          { name: "Hospitals", amount: "+$8.5B uncompensated care" }
-        ],
-        beneficiaries: [
-          { group: "Taxpayers (savings)", count: "All taxpayers" },
-          { group: "States (budget relief)", count: "State governments" },
-          { group: "Fiscal conservatives", count: "Reduced spending" }
-        ],
-        tradeoffs: [
-          {
-            title: "Coverage loss",
-            text: "12 million lose Medicaid; work requirements exclude many who can't find jobs or have disabilities."
-          },
-          {
-            title: "Health outcomes worsen",
-            text: "18,500+ preventable deaths annually; increased emergency room use for preventable conditions."
-          },
-          {
-            title: "Rural hospital closures",
-            text: "Loss of Medicaid revenue accelerates closure of rural hospitals; communities lose access."
-          },
-          {
-            title: "Cost shift",
-            text: "Uncompensated care costs rise $8.5B; hospitals raise prices, increasing premiums for all."
-          }
-        ],
-        subsidies: {
-          "Taxpayers": { pay: 0, receive: 380 },                           // lower taxes
-          "Former Medicaid recipients": { pay: 3200, receive: 0 },
-          "Hospitals": { pay: 850, receive: 0 },                           // more uncompensated care
-          "States": { pay: 0, receive: 950 }                               // budget relief
-        }
-      }
-    };
+      };
 
-    document.querySelectorAll(".policy-card").forEach(card => {
-      card.addEventListener("click", function() {
-        document.querySelectorAll(".policy-card").forEach(c => c.classList.remove("selected"));
-        this.classList.add("selected");
-        
-        const policy = this.dataset.policy;
-        showResults(policy);
-      });
-    });
-
-    function showResults(policy) {
-      currentPolicy = policy;
-      const data = policyData[policy];
-      if (!data) return;
-
-      const isCutting = data.baseCost < 0;
-
-      document.getElementById("selectedPolicyTitle").textContent = data.title;
-      const coveredEl = document.getElementById("metricCovered");
-      coveredEl.textContent = data.covered;
-      
-      // Format cost - use billions unless >1T
-      const costValue = data.baseCost;
-      const costEl = document.getElementById("metricCost");
-      costEl.textContent = formatCurrency(costValue);
-      costEl.className = isCutting ? "metric-value positive" : "metric-value negative";
-      
-      // Update labels for cutting measures
-      if (isCutting) {
-        document.getElementById("costLabel").textContent = "Annual Savings";
-        document.getElementById("costLabelDesc").textContent = "Reduction in annual spending";
-        document.getElementById("sliderLeft").textContent = "Status quo (no cuts)";
-        document.getElementById("sliderRight").textContent = "More aggressive cuts";
-        document.getElementById("sliderDescription").textContent =
-          "0% = status quo (no cuts), 100% = cuts as proposed, 200% = more aggressive version of the same cuts.";
-        document.getElementById("debtTitle").textContent = "💰 Debt Reduction: Savings for Future Taxpayers";
-        document.getElementById("debtDescription").textContent = "Debt reduction from this policy over 10 years (assuming savings aren't spent elsewhere):";
-        document.getElementById("taxTitle").textContent = "💸 Your Tax Change (Likely Lower)";
-        document.getElementById("taxDescription").textContent =
-          "Estimated change in annual taxes per household — here, negative values mean tax cuts/savings.";
-        document.getElementById("taxDisclaimer").textContent =
-          "These are annual changes — negative values mean lower taxes (taxpayers net recipients of money), positive values mean higher taxes.";
-      } else {
-        document.getElementById("costLabel").textContent = "Annual Cost";
-        document.getElementById("costLabelDesc").textContent = "Additional annual spending";
-        document.getElementById("sliderLeft").textContent = "Status quo (no expansion)";
-        document.getElementById("sliderRight").textContent = "More generous proposal";
-        document.getElementById("sliderDescription").textContent =
-          "0% = status quo, 100% = proposal as described, 200% = more generous version of the proposal.";
-        document.getElementById("debtTitle").textContent = "📈 Debt Accumulation: The Burden on Future Taxpayers";
-        document.getElementById("debtDescription").textContent = "Additional debt from this policy over 10 years (assuming no spending cuts elsewhere):";
-        document.getElementById("taxTitle").textContent = "💸 Your Tax Change (Likely Higher)";
-        document.getElementById("taxDescription").textContent =
-          "Estimated change in annual taxes per household — here, values are generally positive (tax increases).";
-        document.getElementById("taxDisclaimer").textContent =
-          "These are annual changes — positive values mean higher taxes, negative values (if present) mean lower taxes.";
-      }
-      
-      const livesEl = document.getElementById("metricLives");
-      livesEl.textContent = data.lives;
-      
-      // Format economic impact - use billions unless >1T
-      const economicValue = parseFloat(data.economic.replace(/[^0-9.-]/g, '')) * (data.economic.includes('-') ? -1 : 1);
-      const econEl = document.getElementById("metricEconomic");
-      econEl.textContent = formatCurrency(economicValue);
-
-      // Color for covered (more coverage = green, coverage loss = red)
-      const coveredVal = parseFloat(String(data.covered).replace(/[^0-9.-]/g, '')) || 0;
-      coveredEl.className = coveredVal >= 0 ? "metric-value positive" : "metric-value negative";
-
-      // Color for lives (more lives saved = green, negative lives = red)
-      const livesVal = parseFloat(String(data.lives).replace(/[^0-9.-]/g, '')) || 0;
-      livesEl.className = livesVal >= 0 ? "metric-value positive" : "metric-value negative";
-
-      // Color for economic impact (positive = green, negative = red, ~0 = neutral)
-      if (economicValue > 0.1) {
-        econEl.className = "metric-value positive";
-      } else if (economicValue < -0.1) {
-        econEl.className = "metric-value negative";
-      } else {
-        econEl.className = "metric-value neutral";
-      }
-
-      // Premium impact (per household per year), scaled by slider
-      const premium = (data.premiumDelta || 0) * (currentSpendingLevel / 100);
-      const premiumEl = document.getElementById("metricPremium");
-      premiumEl.textContent = `${formatDollars(premium)}/yr`;
-      premiumEl.className =
-        premium > 0 ? "metric-value negative" : premium < 0 ? "metric-value positive" : "metric-value neutral";
-
-      const payersList = document.getElementById("payersList");
-      payersList.innerHTML = data.payers.map(p => `
-        <div class="payer-item">
-          <h4>${p.name}</h4>
-          <p class="payer-amount">${p.amount}</p>
-        </div>
-      `).join("");
-
-      const beneficiariesList = document.getElementById("beneficiariesList");
-      beneficiariesList.innerHTML = data.beneficiaries.map(b => `
-        <div class="beneficiary-item">
-          <h4>${b.group}</h4>
-          <p class="beneficiary-count">${b.count}</p>
-        </div>
-      `).join("");
-
-      const tradeoffsList = document.getElementById("tradeoffsList");
-      tradeoffsList.innerHTML = data.tradeoffs.map(t => `
-        <div class="tradeoff-item">
-          <h4>${t.title}</h4>
-          <p>${t.text}</p>
-        </div>
-      `).join("");
-
-      updateFiscalImpact();
-      document.getElementById("results").classList.add("active");
-      document.getElementById("results").scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-
-    function updateFiscalImpact() {
-      if (!currentPolicy) return;
-      
-      const spendingLevel = parseInt(document.getElementById("spendingSlider").value);
-      currentSpendingLevel = spendingLevel;
-      const multiplier = spendingLevel / 100;
-      
-      document.getElementById("spendingValue").textContent = spendingLevel + "%";
-      
-      const data = policyData[currentPolicy];
-      const adjustedCost = data.baseCost * multiplier;
-      const annualCost = Math.abs(adjustedCost);
-      const isCutting = data.baseCost < 0;
-      
-      // Debt accumulation/reduction (10 years, with interest)
-      const debtTimeline = document.getElementById("debtTimeline");
-      let cumulativeDebt = 0;
-      const interestRate = 0.03; // 3% annual interest
-      const debtYears = [];
-      
-      if (isCutting) {
-        // For cuts: calculate cumulative debt reduction (savings reduce debt)
-        const annualSavings = Math.abs(adjustedCost) * data.debtMultiplier;
-        for (let year = 1; year <= 10; year++) {
-          cumulativeDebt += annualSavings;
-          debtYears.push({
-            year: year === 1 ? "Year 1" : year === 5 ? "Year 5" : year === 10 ? "Year 10" : null,
-            debt: cumulativeDebt
-          });
-        }
-        
-        debtTimeline.innerHTML = debtYears.filter(d => d.year).map(d => {
-          const savingsBillions = d.debt;
-          const formatted = savingsBillions >= 1000 ? `-$${(savingsBillions / 1000).toFixed(1)}T` : `-$${savingsBillions.toFixed(1)}B`;
-          return `
-            <div class="debt-year">
-              <h4>${d.year}</h4>
-              <p class="debt-amount" style="color: var(--sim-green);">${formatted}</p>
-            </div>
-          `;
-        }).join("");
-      } else {
-        // For spending: calculate debt accumulation
-        const annualDebtAdd = annualCost * data.debtMultiplier;
-        for (let year = 1; year <= 10; year++) {
-          cumulativeDebt = cumulativeDebt * (1 + interestRate) + annualDebtAdd;
-          debtYears.push({
-            year: year === 1 ? "Year 1" : year === 5 ? "Year 5" : year === 10 ? "Year 10" : null,
-            debt: cumulativeDebt
-          });
-        }
-        
-        debtTimeline.innerHTML = debtYears.filter(d => d.year).map(d => {
-          const debtBillions = d.debt;
-          const formatted = debtBillions >= 1000 ? `+$${(debtBillions / 1000).toFixed(1)}T` : `+$${debtBillions.toFixed(1)}B`;
-          return `
-            <div class="debt-year">
-              <h4>${d.year}</h4>
-              <p class="debt-amount">${formatted}</p>
-            </div>
-          `;
-        }).join("");
-      }
-      
-      // Tax impact
-      const taxBreakdown = document.getElementById("taxBreakdown");
-      const baseTax = data.taxBase * multiplier;
-      const taxData = [
-        { label: "Per household (median)", amount: baseTax },
-        { label: "Per person", amount: baseTax / 2.5 },
-        { label: "High earner ($200k+)", amount: baseTax * 3.5 },
-        { label: "Over 10 years (household)", amount: baseTax * 10 }
+      const QUINTILES = [
+        { label: "Lowest 20%", income: 24000, relief: 2.45, oopLoad: 0.30, uninsuredShock: 0.18 },
+        { label: "Second 20%", income: 39000, relief: 1.95, oopLoad: 0.24, uninsuredShock: 0.13 },
+        { label: "Middle 20%", income: 61000, relief: 1.40, oopLoad: 0.19, uninsuredShock: 0.10 },
+        { label: "Fourth 20%", income: 95000, relief: 0.95, oopLoad: 0.14, uninsuredShock: 0.07 },
+        { label: "Highest 20%", income: 170000, relief: 0.55, oopLoad: 0.10, uninsuredShock: 0.04 }
       ];
-      
-      if (isCutting && baseTax < 0) {
-        // Show tax savings for cuts (negative = taxpayers net recipients)
-        taxBreakdown.innerHTML = taxData.map(t => `
-          <div class="tax-item">
-            <h4>${t.label}</h4>
-            <p class="tax-amount" style="color: var(--sim-green);">-$${Math.round(Math.abs(t.amount))}/year</p>
-          </div>
-        `).join("");
-      } else if (!isCutting && baseTax > 0) {
-        // Show tax increases for spending (positive = taxpayers pay more)
-        taxBreakdown.innerHTML = taxData.map(t => `
-          <div class="tax-item">
-            <h4>${t.label}</h4>
-            <p class="tax-amount">+$${Math.round(t.amount)}/year</p>
-          </div>
-        `).join("");
-      } else {
-        taxBreakdown.innerHTML = `
-          <div class="tax-item">
-            <h4>Tax Impact</h4>
-            <p class="tax-amount">$${baseTax >= 0 ? '+' : ''}${Math.round(baseTax)}/year</p>
-          </div>
-        `;
+
+      const els = {
+        presetButtons: Array.from(document.querySelectorAll("[data-preset]")),
+        mandateButtons: Array.from(document.querySelectorAll("[data-mandate]")),
+        subsidyInput: document.getElementById("subsidyInput"),
+        reimbursementInput: document.getElementById("reimbursementInput"),
+        oopInput: document.getElementById("oopInput"),
+        medicaidInput: document.getElementById("medicaidInput"),
+        employerInput: document.getElementById("employerInput"),
+        subsidyValueLabel: document.getElementById("subsidyValueLabel"),
+        mandateValueLabel: document.getElementById("mandateValueLabel"),
+        reimbursementValueLabel: document.getElementById("reimbursementValueLabel"),
+        oopValueLabel: document.getElementById("oopValueLabel"),
+        medicaidValueLabel: document.getElementById("medicaidValueLabel"),
+        employerValueLabel: document.getElementById("employerValueLabel"),
+        baselineTitle: document.getElementById("baselineTitle"),
+        baselineCopy: document.getElementById("baselineCopy"),
+        resultsTitle: document.getElementById("resultsTitle"),
+        resultsSubtitle: document.getElementById("resultsSubtitle"),
+        modeLabel: document.getElementById("modeLabel"),
+        comparisonNote: document.getElementById("comparisonNote"),
+        lockComparisonBtn: document.getElementById("lockComparisonBtn"),
+        clearComparisonBtn: document.getElementById("clearComparisonBtn"),
+        uninsuredMetric: document.getElementById("uninsuredMetric"),
+        premiumMetric: document.getElementById("premiumMetric"),
+        federalMetric: document.getElementById("federalMetric"),
+        providerMetric: document.getElementById("providerMetric"),
+        waitMetric: document.getElementById("waitMetric"),
+        burdenMetric: document.getElementById("burdenMetric"),
+        uninsuredNote: document.getElementById("uninsuredNote"),
+        premiumNote: document.getElementById("premiumNote"),
+        insightText: document.getElementById("insightText"),
+        radarCaption: document.getElementById("radarCaption"),
+        burdenCaption: document.getElementById("burdenCaption"),
+        comparePanel: document.getElementById("comparePanel"),
+        lockedTitle: document.getElementById("lockedTitle"),
+        lockedSubtitle: document.getElementById("lockedSubtitle"),
+        liveTitle: document.getElementById("liveTitle"),
+        liveSubtitle: document.getElementById("liveSubtitle"),
+        lockedList: document.getElementById("lockedList"),
+        liveList: document.getElementById("liveList"),
+        radarCanvas: document.getElementById("radarChart"),
+        burdenCanvas: document.getElementById("burdenChart"),
+        shell: document.querySelector(".hps-shell")
+      };
+
+      const state = {
+        system: "aca",
+        subsidy: PRESETS.aca.subsidy,
+        mandate: PRESETS.aca.mandate,
+        reimbursement: PRESETS.aca.reimbursement,
+        oopMax: PRESETS.aca.oopMax,
+        medicaid: PRESETS.aca.medicaid,
+        employer: PRESETS.aca.employer,
+        locked: null
+      };
+
+      const fmt = {
+        currency(value) {
+          return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(value);
+        },
+        oneDecimal(value) {
+          return `${value.toFixed(1)}`;
+        },
+        pct(value) {
+          return `${value.toFixed(1)}%`;
+        },
+        int(value) {
+          return `${Math.round(value).toLocaleString("en-US")}`;
+        },
+        signed(value, suffix = "") {
+          const sign = value > 0 ? "+" : value < 0 ? "−" : "";
+          const magnitude = Math.abs(value);
+          return `${sign}${magnitude.toFixed(magnitude >= 10 ? 0 : 1)}${suffix}`;
+        }
+      };
+
+      function clamp(value, min, max) {
+        return Math.min(max, Math.max(min, value));
       }
-      
-      // Subsidy analysis
-      const subsidyGrid = document.getElementById("subsidyGrid");
-      const subsidyGroups = [];
-      
-      Object.entries(data.subsidies).forEach(([group, values]) => {
-        // All amounts are modeled per member of that group
-        const net = (values.receive - values.pay) * multiplier;
-        subsidyGroups.push({
-          group,
-          pay: values.pay * multiplier,
-          receive: values.receive * multiplier,
-          net
+
+      function rangeFill(el) {
+        const min = Number(el.min);
+        const max = Number(el.max);
+        const pct = ((Number(el.value) - min) / (max - min)) * 100;
+        el.style.background = `linear-gradient(90deg, var(--hps-accent) ${pct}%, rgba(0, 0, 0, 0.10) ${pct}%)`;
+      }
+
+      function activePresetButton() {
+        els.presetButtons.forEach((button) => {
+          button.classList.toggle("is-active", button.dataset.preset === state.system);
+        });
+      }
+
+      function activeMandateButton() {
+        els.mandateButtons.forEach((button) => {
+          button.classList.toggle("is-active", button.dataset.mandate === state.mandate);
+        });
+      }
+
+      function syncInputs() {
+        els.subsidyInput.value = state.subsidy;
+        els.reimbursementInput.value = state.reimbursement;
+        els.oopInput.value = state.oopMax;
+        els.medicaidInput.value = state.medicaid;
+        els.employerInput.value = state.employer;
+
+        [
+          els.subsidyInput,
+          els.reimbursementInput,
+          els.oopInput,
+          els.medicaidInput,
+          els.employerInput
+        ].forEach(rangeFill);
+
+        els.subsidyValueLabel.textContent = `${state.subsidy}% of premium`;
+        els.mandateValueLabel.textContent = MANDATE_LABEL[state.mandate];
+        els.reimbursementValueLabel.textContent = `${state.reimbursement}% of Medicare`;
+        els.oopValueLabel.textContent = fmt.currency(state.oopMax);
+        els.medicaidValueLabel.textContent = `${state.medicaid}% FPL`;
+        els.employerValueLabel.textContent = `${state.employer} employees`;
+
+        const preset = PRESETS[state.system];
+        els.baselineTitle.textContent = `${preset.label} baseline`;
+        els.baselineCopy.textContent = preset.copy;
+        els.resultsTitle.textContent = `${preset.label} policy outputs`;
+        els.resultsSubtitle.textContent = `Live configuration compared against ${preset.label}. Federal spending is indexed to the current ACA baseline.`;
+        els.radarCaption.textContent = state.locked ? "Current configuration versus the locked snapshot." : "Current configuration versus the chosen baseline.";
+        els.modeLabel.textContent = state.locked ? "Comparison locked" : "Baseline comparison";
+      }
+
+      function computeMetrics(config) {
+        const preset = PRESETS[config.system];
+        const baseMandate = MANDATE_LEVEL[preset.mandate];
+        const currentMandate = MANDATE_LEVEL[config.mandate];
+
+        const coverageResponse =
+          0.025 * (config.subsidy - preset.subsidy) +
+          0.42 * (currentMandate - baseMandate) +
+          0.0016 * (config.medicaid - preset.medicaid) +
+          0.018 * ((preset.employer - config.employer) / 10) +
+          0.00004 * (preset.oopMax - config.oopMax);
+
+        const uninsured = clamp(preset.uninsured * Math.exp(-coverageResponse), 1.0, 20.0);
+
+        const premiumRisk =
+          0.032 * (uninsured - preset.uninsured) * 10 +
+          0.17 * (1 - currentMandate) +
+          0.055 * ((80 - config.reimbursement) / 10) -
+          0.04 * ((config.subsidy - preset.subsidy) / 25);
+        const premium = Math.max(0, preset.premium * (1 + premiumRisk));
+
+        const reimburseGap = Math.max(0, 80 - config.reimbursement);
+        const provider = clamp(
+          preset.provider -
+            0.88 * reimburseGap -
+            0.095 * Math.pow(reimburseGap, 1.18) +
+            0.12 * (config.reimbursement - preset.reimbursement) +
+            0.9 * (currentMandate - baseMandate) +
+            0.04 * (config.subsidy - preset.subsidy) -
+            0.16 * (uninsured - preset.uninsured),
+          35,
+          100
+        );
+
+        const coverageGain = (100 - uninsured) - (100 - preset.uninsured);
+        const wait = clamp(
+          preset.wait +
+            0.85 * coverageGain +
+            1.12 * (preset.provider - provider) -
+            0.018 * ((config.oopMax - preset.oopMax) / 100) +
+            0.10 * (80 - config.reimbursement),
+          70,
+          180
+        );
+
+        const federal = clamp(
+          preset.federalIndex +
+            2.15 * (config.subsidy - preset.subsidy) +
+            0.46 * (config.medicaid - preset.medicaid) +
+            16.5 * (currentMandate - baseMandate) +
+            0.18 * (preset.employer - config.employer) +
+            0.10 * (80 - config.reimbursement) -
+            0.55 * (uninsured - preset.uninsured) * 10,
+          35,
+          360
+        );
+
+        const burdenByQuintile = QUINTILES.map((q) => {
+          const premiumAfterSubsidy = premium * Math.max(0.05, 1 - (config.subsidy / 100) * q.relief);
+          const outOfPocket = config.oopMax * q.oopLoad * (1 + (100 - provider) / 260);
+          const uninsuredShock = uninsured / 100 * q.income * q.uninsuredShock;
+          const total = premiumAfterSubsidy + outOfPocket + uninsuredShock;
+          return {
+            label: q.label,
+            income: q.income,
+            burdenPct: (total / q.income) * 100
+          };
+        });
+
+        const weightedBurden = burdenByQuintile.reduce((sum, item) => sum + item.burdenPct, 0) / burdenByQuintile.length;
+        const affordability = clamp(100 - weightedBurden * 2.6, 0, 100);
+        const coverageScore = clamp(100 - uninsured * 4, 0, 100);
+        const accessScore = clamp(provider, 0, 100);
+        const fiscalScore = clamp(180 - federal * 0.45, 0, 100);
+        const waitScore = clamp(150 - wait, 0, 100);
+
+        return {
+          label: preset.label,
+          uninsured,
+          premium,
+          provider,
+          wait,
+          federal,
+          burdenByQuintile,
+          weightedBurden,
+          scores: {
+            coverage: coverageScore,
+            affordability,
+            access: accessScore,
+            fiscal: fiscalScore,
+            wait: waitScore
+          }
+        };
+      }
+
+      function setMetrics(metrics, compareTarget) {
+        const deltaUninsured = metrics.uninsured - compareTarget.uninsured;
+        const deltaPremium = metrics.premium - compareTarget.premium;
+        const deltaFederal = metrics.federal - compareTarget.federal;
+        const deltaProvider = metrics.provider - compareTarget.provider;
+        const deltaWait = metrics.wait - compareTarget.wait;
+        const deltaBurden = metrics.weightedBurden - compareTarget.weightedBurden;
+
+        els.uninsuredMetric.textContent = fmt.pct(metrics.uninsured);
+        els.premiumMetric.textContent = fmt.currency(metrics.premium);
+        els.federalMetric.textContent = fmt.int(metrics.federal);
+        els.providerMetric.textContent = fmt.pct(metrics.provider);
+        els.waitMetric.textContent = fmt.int(metrics.wait);
+        els.burdenMetric.textContent = fmt.pct(metrics.weightedBurden);
+
+        els.uninsuredNote.textContent = `${fmt.signed(deltaUninsured, " pts")} versus ${compareTarget.label}`;
+        els.premiumNote.textContent = metrics.premium === 0 ? "Premium-equivalent not meaningful in a pure single-payer system" : `${fmt.signed(deltaPremium)} versus ${compareTarget.label}`;
+
+        els.insightText.textContent = buildInsight(metrics);
+        els.comparisonNote.textContent = state.locked
+          ? `Locked snapshot is being compared with the live controls. Clear the comparison to return to baseline mode.`
+          : `Live configuration compared against ${PRESETS[state.system].label}.`;
+
+        if (state.locked) {
+          els.modeLabel.textContent = "Comparison locked";
+        }
+
+        if (deltaFederal > 18 && deltaProvider < -4) {
+          els.insightText.textContent = "Coverage is expanding, but the model is trading that gain for a thinner provider network and a higher access burden.";
+        } else if (deltaUninsured < -1.5 && deltaPremium < 0) {
+          els.insightText.textContent = "This configuration improves coverage while easing premium pressure, which is the ideal but rare policy combination.";
+        } else if (metrics.provider < 80) {
+          els.insightText.textContent = "Provider participation is falling below the 80% Medicare heuristic, so access constraints are beginning to dominate the policy story.";
+        } else if (metrics.wait > compareTarget.wait + 8) {
+          els.insightText.textContent = "The wait-time index is rising faster than the uninsured rate is falling, which means more demand is arriving than the delivery system can comfortably absorb.";
+        } else if (deltaBurden < -1.5) {
+          els.insightText.textContent = "Lower income households are seeing a meaningful drop in expected out-of-pocket burden, especially in the bottom two quintiles.";
+        }
+
+        if (state.locked) {
+          els.comparePanel.classList.add("is-visible");
+          els.lockedTitle.textContent = `${state.locked.label} (locked)`;
+          els.lockedSubtitle.textContent = "This is the snapshot you locked before adjusting the controls.";
+          els.liveTitle.textContent = `${PRESETS[state.system].label} (live)`;
+          els.liveSubtitle.textContent = "These metrics move as you change the sliders.";
+          renderCompareLists(metrics, compareTarget);
+          els.lockComparisonBtn.textContent = "Locked";
+          els.clearComparisonBtn.hidden = false;
+        } else {
+          els.comparePanel.classList.remove("is-visible");
+          els.lockComparisonBtn.textContent = "Lock current view";
+          els.clearComparisonBtn.hidden = true;
+        }
+      }
+
+      function buildInsight(metrics) {
+        if (metrics.provider < 80) {
+          return "Provider participation is under pressure. In the real world, that tends to show up as narrower networks, longer waits, and harder-to-reach specialty care.";
+        }
+        if (metrics.uninsured < 5) {
+          return "Coverage is robust enough that the uninsured rate is no longer the dominant issue. The remaining tradeoff is how much public money and provider capacity it takes to get there.";
+        }
+        if (metrics.weightedBurden > 18) {
+          return "Out-of-pocket burden is still concentrated in lower-income households, so the policy is not yet fully insulating people from financial exposure.";
+        }
+        if (metrics.federal > 180) {
+          return "This configuration moves a lot of financing onto the public side. That can buy coverage, but it also makes the fiscal footprint much larger.";
+        }
+        return "The configuration is balancing coverage and access fairly evenly, which makes it useful for showing how small policy changes can move the system in different directions.";
+      }
+
+      function renderCompareLists(live, compareTarget) {
+        const rows = [
+          ["Uninsured", fmt.signed(live.uninsured - compareTarget.uninsured, " pts"), fmt.pct(live.uninsured)],
+          ["Premium", fmt.signed(live.premium - compareTarget.premium), fmt.currency(live.premium)],
+          ["Federal spending", fmt.signed(live.federal - compareTarget.federal), fmt.int(live.federal)],
+          ["Provider participation", fmt.signed(live.provider - compareTarget.provider, " pts"), fmt.pct(live.provider)],
+          ["Wait time index", fmt.signed(live.wait - compareTarget.wait), fmt.int(live.wait)],
+          ["Avg. burden", fmt.signed(live.weightedBurden - compareTarget.weightedBurden, " pts"), fmt.pct(live.weightedBurden)]
+        ];
+
+        const targetRows = rows.map(([label, delta, value]) => `
+          <div class="hps-compare-row">
+            <span>${label}</span>
+            <span>${value} <span style="color: var(--hps-muted); font-weight: 500;">(${delta})</span></span>
+          </div>
+        `).join("");
+
+        const lockedMetrics = state.locked.metrics;
+        const lockedRows = [
+          ["Uninsured", fmt.pct(lockedMetrics.uninsured), fmt.signed(lockedMetrics.uninsured - compareTarget.uninsured, " pts")],
+          ["Premium", fmt.currency(lockedMetrics.premium), fmt.signed(lockedMetrics.premium - compareTarget.premium)],
+          ["Federal spending", fmt.int(lockedMetrics.federal), fmt.signed(lockedMetrics.federal - compareTarget.federal)],
+          ["Provider participation", fmt.pct(lockedMetrics.provider), fmt.signed(lockedMetrics.provider - compareTarget.provider, " pts")],
+          ["Wait time index", fmt.int(lockedMetrics.wait), fmt.signed(lockedMetrics.wait - compareTarget.wait)],
+          ["Avg. burden", fmt.pct(lockedMetrics.weightedBurden), fmt.signed(lockedMetrics.weightedBurden - compareTarget.weightedBurden, " pts")]
+        ].map(([label, value, delta]) => `
+          <div class="hps-compare-row">
+            <span>${label}</span>
+            <span>${value} <span style="color: var(--hps-muted); font-weight: 500;">(${delta})</span></span>
+          </div>
+        `).join("");
+
+        els.lockedList.innerHTML = lockedRows;
+        els.liveList.innerHTML = targetRows;
+      }
+
+      function normalizedRadar(metrics) {
+        return [
+          metrics.scores.coverage,
+          metrics.scores.affordability,
+          metrics.scores.access,
+          metrics.scores.fiscal,
+          metrics.scores.wait
+        ];
+      }
+
+      function burdenSeries(metrics) {
+        return metrics.burdenByQuintile.map((item) => Number(item.burdenPct.toFixed(1)));
+      }
+
+      const chartDefaults = {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: "nearest", intersect: false },
+        animation: { duration: 550, easing: "easeOutQuart" },
+        plugins: {
+          legend: {
+            position: "bottom",
+            labels: {
+              boxWidth: 10,
+              boxHeight: 10,
+              usePointStyle: true,
+              pointStyle: "circle",
+              color: "#4b4641",
+              font: { family: "Inter, system-ui, sans-serif", size: 12 }
+            }
+          },
+          tooltip: {
+            backgroundColor: "rgba(17,17,17,0.95)",
+            titleColor: "#fff",
+            bodyColor: "#fff",
+            padding: 12,
+            cornerRadius: 12,
+            displayColors: true
+          }
+        },
+        scales: {
+          r: {
+            beginAtZero: true,
+            suggestedMax: 100,
+            ticks: { display: false, backdropColor: "transparent" },
+            grid: { color: "rgba(0,0,0,0.08)" },
+            angleLines: { color: "rgba(0,0,0,0.08)" },
+            pointLabels: {
+              color: "#29231d",
+              font: { family: "Inter, system-ui, sans-serif", size: 12, weight: "500" }
+            }
+          },
+          x: {
+            grid: { color: "rgba(0,0,0,0.06)" },
+            ticks: { color: "#5d5852", font: { family: "Inter, system-ui, sans-serif" } }
+          },
+          y: {
+            grid: { color: "rgba(0,0,0,0.06)" },
+            ticks: {
+              color: "#5d5852",
+              font: { family: "Inter, system-ui, sans-serif" },
+              callback: (value) => `${value}%`
+            }
+          }
+        }
+      };
+
+      let radarChart = null;
+      let burdenChart = null;
+
+      if (window.Chart) {
+        Chart.defaults.font.family = "Inter, system-ui, sans-serif";
+        Chart.defaults.color = "#3f3b37";
+
+        radarChart = new Chart(els.radarCanvas, {
+          type: "radar",
+          data: {
+            labels: ["Coverage", "Affordability", "Access", "Fiscal balance", "Wait time"],
+            datasets: [
+              {
+                label: "Live configuration",
+                data: [0, 0, 0, 0, 0],
+                borderColor: "#8C1515",
+                backgroundColor: "rgba(140, 21, 21, 0.12)",
+                pointBackgroundColor: "#8C1515",
+                pointBorderColor: "#fff",
+                pointRadius: 3.5,
+                borderWidth: 2,
+                fill: true
+              },
+              {
+                label: "Comparison target",
+                data: [0, 0, 0, 0, 0],
+                borderColor: "rgba(17, 17, 17, 0.65)",
+                backgroundColor: "rgba(17, 17, 17, 0.06)",
+                pointBackgroundColor: "rgba(17, 17, 17, 0.72)",
+                pointBorderColor: "#fff",
+                pointRadius: 3.5,
+                borderWidth: 2,
+                fill: true
+              }
+            ]
+          },
+          options: {
+            ...chartDefaults,
+            plugins: {
+              ...chartDefaults.plugins,
+              legend: {
+                ...chartDefaults.plugins.legend,
+                labels: {
+                  ...chartDefaults.plugins.legend.labels
+                }
+              }
+            }
+          }
+        });
+
+        burdenChart = new Chart(els.burdenCanvas, {
+          type: "bar",
+          data: {
+            labels: QUINTILES.map((q) => q.label),
+            datasets: [
+              {
+                label: "Live configuration",
+                data: [0, 0, 0, 0, 0],
+                borderRadius: 12,
+                backgroundColor: "rgba(140, 21, 21, 0.82)",
+                borderColor: "#8C1515",
+                borderWidth: 1
+              },
+              {
+                label: "Comparison target",
+                data: [0, 0, 0, 0, 0],
+                borderRadius: 12,
+                backgroundColor: "rgba(17, 17, 17, 0.18)",
+                borderColor: "rgba(17, 17, 17, 0.4)",
+                borderWidth: 1
+              }
+            ]
+          },
+          options: {
+            ...chartDefaults,
+            scales: {
+              x: chartDefaults.scales.x,
+              y: {
+                ...chartDefaults.scales.y,
+                suggestedMax: 40,
+                ticks: {
+                  ...chartDefaults.scales.y.ticks,
+                  callback: (value) => `${value}%`
+                }
+              }
+            }
+          }
+        });
+      }
+
+      function updateCharts(metrics, compareTarget) {
+        if (!radarChart || !burdenChart) return;
+
+        radarChart.data.datasets[0].data = normalizedRadar(metrics);
+        radarChart.data.datasets[1].data = normalizedRadar(compareTarget);
+        radarChart.update();
+
+        burdenChart.data.datasets[0].data = burdenSeries(metrics);
+        burdenChart.data.datasets[1].data = burdenSeries(compareTarget);
+        burdenChart.update();
+      }
+
+      function render() {
+        const current = computeMetrics(state);
+        const compareTarget = state.locked ? state.locked.metrics : computeMetrics({
+          system: state.system,
+          subsidy: PRESETS[state.system].subsidy,
+          mandate: PRESETS[state.system].mandate,
+          reimbursement: PRESETS[state.system].reimbursement,
+          oopMax: PRESETS[state.system].oopMax,
+          medicaid: PRESETS[state.system].medicaid,
+          employer: PRESETS[state.system].employer
+        });
+        setMetrics(current, compareTarget);
+        updateCharts(current, compareTarget);
+      }
+
+      function applyPreset(key) {
+        const preset = PRESETS[key];
+        state.system = key;
+        state.subsidy = preset.subsidy;
+        state.mandate = preset.mandate;
+        state.reimbursement = preset.reimbursement;
+        state.oopMax = preset.oopMax;
+        state.medicaid = preset.medicaid;
+        state.employer = preset.employer;
+        syncInputs();
+        activePresetButton();
+        activeMandateButton();
+        render();
+      }
+
+      function updateStateFromInputs() {
+        state.subsidy = Number(els.subsidyInput.value);
+        state.reimbursement = Number(els.reimbursementInput.value);
+        state.oopMax = Number(els.oopInput.value);
+        state.medicaid = Number(els.medicaidInput.value);
+        state.employer = Number(els.employerInput.value);
+
+        [
+          els.subsidyInput,
+          els.reimbursementInput,
+          els.oopInput,
+          els.medicaidInput,
+          els.employerInput
+        ].forEach(rangeFill);
+
+        syncInputs();
+        render();
+      }
+
+      function lockComparison() {
+        const snapshot = computeMetrics({
+          system: state.system,
+          subsidy: state.subsidy,
+          mandate: state.mandate,
+          reimbursement: state.reimbursement,
+          oopMax: state.oopMax,
+          medicaid: state.medicaid,
+          employer: state.employer
+        });
+
+        state.locked = {
+          label: `${PRESETS[state.system].label} snapshot`,
+          metrics: snapshot
+        };
+        render();
+      }
+
+      function clearComparison() {
+        state.locked = null;
+        render();
+      }
+
+      function bindGlow() {
+        if (!els.shell) return;
+        let raf = 0;
+        let targetX = 50;
+        let targetY = 30;
+
+        const update = () => {
+          raf = 0;
+          els.shell.style.setProperty("--glow-x", `${targetX}%`);
+          els.shell.style.setProperty("--glow-y", `${targetY}%`);
+        };
+
+        els.shell.addEventListener("pointermove", (event) => {
+          const rect = els.shell.getBoundingClientRect();
+          targetX = ((event.clientX - rect.left) / rect.width) * 100;
+          targetY = ((event.clientY - rect.top) / rect.height) * 100;
+          if (!raf) raf = requestAnimationFrame(update);
+        });
+
+        els.shell.addEventListener("pointerleave", () => {
+          targetX = 50;
+          targetY = 30;
+          if (!raf) raf = requestAnimationFrame(update);
+        });
+      }
+
+      els.presetButtons.forEach((button) => {
+        button.addEventListener("click", () => applyPreset(button.dataset.preset));
+      });
+
+      els.mandateButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          state.mandate = button.dataset.mandate;
+          activeMandateButton();
+          render();
         });
       });
-      
-      subsidyGroups.sort((a, b) => b.net - a.net);
-      
-      subsidyGrid.innerHTML = `
-        <div class="subsidy-group">
-          <h4>Net Recipients (Per-Capita)</h4>
-          ${subsidyGroups.filter(s => s.net > 0).map(s => `
-            <div class="subsidy-item">
-              <span class="subsidy-label">${s.group}</span>
-              <span class="subsidy-value" style="color: var(--sim-green);">
-                +$${Math.round(s.net).toLocaleString()} per member
-              </span>
-            </div>
-          `).join("")}
-          ${subsidyGroups.filter(s => s.net > 0).length === 0 ? '<p style="color: var(--sim-gray); font-size: 0.9rem;">No net recipients</p>' : ''}
-        </div>
-        <div class="subsidy-group">
-          <h4>Net Payers (Per-Capita)</h4>
-          ${subsidyGroups.filter(s => s.net < 0).map(s => `
-            <div class="subsidy-item">
-              <span class="subsidy-label">${s.group}</span>
-              <span class="subsidy-value">
-                $${Math.round(s.net).toLocaleString()} per member
-              </span>
-            </div>
-          `).join("")}
-          ${subsidyGroups.filter(s => s.net < 0).length === 0 ? '<p style="color: var(--sim-gray); font-size: 0.9rem;">No net payers</p>' : ''}
-        </div>
-      `;
-    }
 
-    function resetSimulator() {
-      currentPolicy = null;
-      currentSpendingLevel = 100;
-      document.querySelectorAll(".policy-card").forEach(c => c.classList.remove("selected"));
-      document.getElementById("results").classList.remove("active");
-      document.getElementById("spendingSlider").value = 100;
-      document.getElementById("spendingValue").textContent = "100%";
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
+      [els.subsidyInput, els.reimbursementInput, els.oopInput, els.medicaidInput, els.employerInput].forEach((input) => {
+        input.addEventListener("input", updateStateFromInputs);
+      });
+
+      els.lockComparisonBtn.addEventListener("click", lockComparison);
+      els.clearComparisonBtn.addEventListener("click", clearComparison);
+
+      syncInputs();
+      activePresetButton();
+      activeMandateButton();
+      bindGlow();
+      render();
+
+      if (!window.Chart) {
+        els.radarCaption.textContent = "Chart.js failed to load, but the underlying simulation still works.";
+        els.burdenCaption.textContent = "Chart.js failed to load, but the underlying simulation still works.";
+      }
+    })();
   </script>
 </body>
 </html>

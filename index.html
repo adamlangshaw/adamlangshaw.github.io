@@ -4,24 +4,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Adam Langshaw</title>
-  <meta name="description" content="Stanford '29. Medicine, health policy, and technology.">
+  <meta name="description" content="Adam Langshaw is a Stanford student working at the intersection of medicine, health policy, research, and technology.">
   <meta property="og:title" content="Adam Langshaw">
-  <meta property="og:description" content="Stanford '29. Medicine, health policy, and technology.">
+  <meta property="og:description" content="Stanford student working at the intersection of medicine, health policy, research, and technology.">
   <meta property="og:image" content="assets/adam.png">
   <link rel="icon" type="image/png" href="assets/favicon-ec29af6c-5854-4529-b155-a2d1de3ed322.png">
-  <link rel="stylesheet" href="style.css?v=2">
+  <link rel="stylesheet" href="style.css?v=3">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-
   <header class="site-nav" id="site-nav">
     <div class="nav-inner">
-      <a href="index.html" class="nav-brand">Adam Langshaw</a>
+      <a href="index.html" class="nav-brand" aria-label="Adam Langshaw home">
+        <span class="nav-brand-name">Adam Langshaw</span>
+        <span class="nav-brand-meta">Stanford '29</span>
+      </a>
       <button class="nav-menu-btn" id="nav-menu-btn" aria-expanded="false" aria-controls="nav-links">Menu</button>
       <ul class="nav-links" id="nav-links">
         <li><a href="about.html">About</a></li>
+        <li><a href="projects.html">Projects</a></li>
         <li><a href="writing.html">Writing</a></li>
         <li><a href="research.html">Research</a></li>
         <li><a href="influences.html">Influences</a></li>
@@ -31,32 +34,103 @@
   </header>
 
   <main>
-    <section class="hero">
-      <h1 class="hero-name">Adam Langshaw</h1>
-      <p class="hero-tagline">Stanford '29 &thinsp;·&thinsp; Medicine, Health Policy &amp; Technology</p>
-      <p class="hero-status">Currently: writing for The Stanford Daily, studying health policy and mathematics at Stanford.</p>
+    <section class="hero-shell">
+      <div class="hero-panel">
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <div>
+              <span class="eyebrow">Medicine, Policy, Technology</span>
+              <h1 class="hero-title"><span>Adam</span><span>Langshaw</span></h1>
+              <p class="hero-lead">I study how institutions, incentives, and data shape care. My work spans health policy, quantitative reasoning, clinical equity research, and public writing.</p>
+              <p class="hero-lead">I’m currently at Stanford, writing for <em>The Stanford Daily</em>, building policy explainers, and thinking about how rigorous analysis can make systems more humane.</p>
+              <div class="hero-actions">
+                <a href="projects.html" class="button">Explore projects</a>
+                <a href="about.html" class="button-secondary">About me</a>
+                <a href="contact.html" class="text-link">Get in touch</a>
+              </div>
+            </div>
+
+            <div class="hero-meta">
+              <article class="hero-meta-card">
+                <span class="hero-meta-label">Current focus</span>
+                <p class="hero-meta-value">Health policy, medicine, and the design of more equitable systems.</p>
+              </article>
+              <article class="hero-meta-card">
+                <span class="hero-meta-label">At Stanford</span>
+                <p class="hero-meta-value">Public Policy, Mathematics, and computational approaches to healthcare.</p>
+              </article>
+              <article class="hero-meta-card">
+                <span class="hero-meta-label">Publishing</span>
+                <p class="hero-meta-value">Opinion and sports writing for <em>The Stanford Daily</em>.</p>
+              </article>
+            </div>
+          </div>
+
+          <div class="hero-visual" aria-hidden="true">
+            <img src="assets/stanford.jpg" alt="" class="hero-stanford" width="1600" height="1000">
+            <div class="portrait-frame">
+              <img src="assets/adam.png" alt="Portrait of Adam Langshaw" class="portrait-image" width="731" height="1024">
+              <p class="portrait-caption">Stanford’s architecture stays in the frame, but the site now opens on the person behind the work.</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <div class="campus-wrap">
-      <!-- Photo: Stanford University Main Quad, May 2011. King of Hearts / Wikimedia Commons / CC BY-SA 3.0 -->
-      <img
-        src="assets/stanford.jpg"
-        alt="Stanford University Main Quad"
-        class="campus-img"
-        width="1600"
-        height="1000"
-        loading="eager">
-      <p class="campus-credit">Stanford University Main Quad &nbsp;·&nbsp; King of Hearts / Wikimedia Commons / CC BY-SA 3.0</p>
-    </div>
+    <section class="section">
+      <div class="section-shell">
+        <header class="section-header">
+          <span class="eyebrow">What I’m Building</span>
+          <h2 class="section-title">A more serious digital front door.</h2>
+          <p class="section-intro">This site now treats your writing, research, and technical work as part of the same profile: analytical, design-conscious, and professionally presented. The interactive projects are meant to feel like miniature products, not class exercises.</p>
+        </header>
+        <div class="feature-grid">
+          <article class="feature-card">
+            <h3>Policy Simulation</h3>
+            <p>An interactive health policy model that lets visitors see tradeoffs between coverage expansion, premiums, federal spending, and access.</p>
+          </article>
+          <article class="feature-card">
+            <h3>Bias Explainer</h3>
+            <p>A clinical algorithm fairness explorer that makes hidden proxy bias and fairness tradeoffs legible through live visuals.</p>
+          </article>
+          <article class="feature-card">
+            <h3>Public Work</h3>
+            <p>Writing, research, and contact paths are framed with more clarity so visitors can quickly understand who you are and how you think.</p>
+          </article>
+        </div>
+      </div>
+    </section>
 
-    <div class="home-body">
-      <p>I'm a Stanford student working at the intersection of medicine, health policy, and technology. I write for The Stanford Daily, conduct research on health inequities, and think about how data and institutional design shape the way we care for people.</p>
-      <nav class="home-nav-links" aria-label="Site sections">
-        <a href="writing.html" class="home-nav-link">Read my writing →</a>
-        <a href="about.html" class="home-nav-link">About me →</a>
-        <a href="contact.html" class="home-nav-link">Get in touch →</a>
-      </nav>
-    </div>
+    <section class="section">
+      <div class="section-shell">
+        <div class="spotlight-grid">
+          <article class="page-card">
+            <span class="card-kicker">Projects</span>
+            <h3>Interactive policy and ethics tools</h3>
+            <p>Two rebuilt applications translate complicated debates into usable, persuasive interfaces.</p>
+            <p><a href="projects.html" class="card-link">View the projects</a></p>
+          </article>
+          <article class="page-card">
+            <span class="card-kicker">Writing</span>
+            <h3>Argument, analysis, and public voice</h3>
+            <p>Opinion essays and reporting that connect ideas to institutions and real people.</p>
+            <p><a href="writing.html" class="card-link">Read the writing</a></p>
+          </article>
+          <article class="page-card">
+            <span class="card-kicker">Research</span>
+            <h3>Health equity and clinical outcomes</h3>
+            <p>Academic work grounded in healthcare delivery, access, and disparities.</p>
+            <p><a href="research.html" class="card-link">See research</a></p>
+          </article>
+          <article class="page-card">
+            <span class="card-kicker">Contact</span>
+            <h3>Open to thoughtful conversations</h3>
+            <p>If you’re building in medicine, policy, or technology, I’d be glad to connect.</p>
+            <p><a href="contact.html" class="card-link">Get in touch</a></p>
+          </article>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer">
@@ -64,9 +138,11 @@
       <p class="footer-copy">© <span class="year"></span> Adam Langshaw</p>
       <ul class="footer-links">
         <li><a href="about.html">About</a></li>
+        <li><a href="projects.html">Projects</a></li>
         <li><a href="writing.html">Writing</a></li>
         <li><a href="contact.html">Contact</a></li>
       </ul>
+      <p class="footer-note">Designed to feel quiet, rigorous, and unmistakably personal.</p>
     </div>
   </footer>
 

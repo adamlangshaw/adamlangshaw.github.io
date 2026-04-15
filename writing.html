@@ -4,23 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Writing — Adam Langshaw</title>
-  <meta name="description" content="Opinion and sports writing for The Stanford Daily.">
+  <meta name="description" content="Opinion and sports writing by Adam Langshaw for The Stanford Daily.">
   <meta property="og:title" content="Writing — Adam Langshaw">
-  <meta property="og:description" content="Opinion and sports writing for The Stanford Daily.">
+  <meta property="og:description" content="Selected writing from The Stanford Daily.">
   <link rel="icon" type="image/png" href="assets/favicon-ec29af6c-5854-4529-b155-a2d1de3ed322.png">
-  <link rel="stylesheet" href="style.css?v=2">
+  <link rel="stylesheet" href="style.css?v=3">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-
   <header class="site-nav" id="site-nav">
     <div class="nav-inner">
-      <a href="index.html" class="nav-brand">Adam Langshaw</a>
+      <a href="index.html" class="nav-brand" aria-label="Adam Langshaw home">
+        <span class="nav-brand-name">Adam Langshaw</span>
+        <span class="nav-brand-meta">Stanford '29</span>
+      </a>
       <button class="nav-menu-btn" id="nav-menu-btn" aria-expanded="false" aria-controls="nav-links">Menu</button>
       <ul class="nav-links" id="nav-links">
         <li><a href="about.html">About</a></li>
+        <li><a href="projects.html">Projects</a></li>
         <li><a href="writing.html" aria-current="page">Writing</a></li>
         <li><a href="research.html">Research</a></li>
         <li><a href="influences.html">Influences</a></li>
@@ -29,54 +32,105 @@
     </div>
   </header>
 
-  <main>
-    <div class="page-wrap">
-      <header class="page-header">
-        <span class="page-label">The Stanford Daily</span>
-        <h1 class="page-heading">Writing</h1>
-      </header>
+  <main class="page-shell">
+    <section class="page-panel">
+      <span class="eyebrow">The Stanford Daily</span>
+      <h1 class="page-title">Writing that argues clearly and lands with force.</h1>
+      <p class="page-intro">I’m interested in public argument as a craft: building a claim carefully, making it readable, and respecting the intelligence of the audience. The pieces below range from policy commentary to sports coverage, and the reading that shapes them lives just beneath the surface.</p>
 
-      <section class="writing-section">
-        <span class="writing-section-label">Opinion</span>
-        <ul class="article-list">
-          <li class="article-item">
-            <a href="https://stanforddaily.com/2026/04/07/america-needs-birthright-citizenship/" target="_blank" rel="noopener noreferrer" class="article-title">Why America needs birthright citizenship</a>
-            <p class="article-meta">The Stanford Daily &nbsp;·&nbsp; Apr. 7, 2026</p>
-          </li>
-          <li class="article-item">
-            <a href="https://stanforddaily.com/2026/02/02/langshaw-in-defense-of-legacy-admissions/" target="_blank" rel="noopener noreferrer" class="article-title">In defense of legacy admissions</a>
-            <p class="article-meta">The Stanford Daily &nbsp;·&nbsp; Feb. 2, 2026</p>
-          </li>
-          <li class="article-item">
-            <a href="https://stanforddaily.com/2026/01/20/langshaw-californias-proposed-wealth-tax-is-short-sighted/" target="_blank" rel="noopener noreferrer" class="article-title">California's proposed wealth tax is short-sighted</a>
-            <p class="article-meta">The Stanford Daily &nbsp;·&nbsp; Jan. 20, 2026</p>
-          </li>
-          <li class="article-item">
-            <a href="https://stanforddaily.com/2026/01/06/on-the-capture-of-nicolas-maduro/" target="_blank" rel="noopener noreferrer" class="article-title">On the capture of Nicolás Maduro</a>
-            <p class="article-meta">The Stanford Daily &nbsp;·&nbsp; Jan. 6, 2026</p>
-          </li>
-        </ul>
-      </section>
+      <div class="media-grid" style="margin-bottom: 1rem;">
+        <article class="writing-card card-media">
+          <img src="assets/birthright.jpeg" alt="Statue of Liberty image used with the Stanford Daily birthright citizenship essay">
+          <div class="card-media-body">
+            <span class="card-kicker">Opinion</span>
+            <h3 class="card-title"><a href="https://stanforddaily.com/2026/04/07/america-needs-birthright-citizenship/" target="_blank" rel="noopener noreferrer">Why America needs birthright citizenship</a></h3>
+            <p>On constitutional principle, national identity, and why legal belonging should not become contingent.</p>
+            <p class="writing-meta">The Stanford Daily · Apr. 7, 2026</p>
+          </div>
+        </article>
+        <article class="writing-card card-media">
+          <img src="assets/legacy-admissions.png" alt="Image used with the Stanford Daily legacy admissions essay">
+          <div class="card-media-body">
+            <span class="card-kicker">Opinion</span>
+            <h3 class="card-title"><a href="https://stanforddaily.com/2026/02/02/langshaw-in-defense-of-legacy-admissions/" target="_blank" rel="noopener noreferrer">In defense of legacy admissions</a></h3>
+            <p>A deliberately provocative argument about merit, institutional memory, and what universities owe their communities.</p>
+            <p class="writing-meta">The Stanford Daily · Feb. 2, 2026</p>
+          </div>
+        </article>
+        <article class="writing-card card-media">
+          <img src="assets/capitol.png" alt="Capitol image used with the Stanford Daily California wealth tax essay">
+          <div class="card-media-body">
+            <span class="card-kicker">Opinion</span>
+            <h3 class="card-title"><a href="https://stanforddaily.com/2026/01/20/langshaw-californias-proposed-wealth-tax-is-short-sighted/" target="_blank" rel="noopener noreferrer">California's proposed wealth tax is short-sighted</a></h3>
+            <p>Thinking through policy design, incentives, and the difference between symbolic and durable reform.</p>
+            <p class="writing-meta">The Stanford Daily · Jan. 20, 2026</p>
+          </div>
+        </article>
+        <article class="writing-card card-media">
+          <img src="assets/maduro.png" alt="Nicolás Maduro image used with the Stanford Daily opinion essay">
+          <div class="card-media-body">
+            <span class="card-kicker">Opinion</span>
+            <h3 class="card-title"><a href="https://stanforddaily.com/2026/01/06/on-the-capture-of-nicolas-maduro/" target="_blank" rel="noopener noreferrer">On the capture of Nicolás Maduro</a></h3>
+            <p>A piece about power, international legitimacy, and how democratic language can be used or abused.</p>
+            <p class="writing-meta">The Stanford Daily · Jan. 6, 2026</p>
+          </div>
+        </article>
+      </div>
 
-      <section class="writing-section">
-        <span class="writing-section-label">Sports Writing</span>
-        <ul class="article-list">
-          <li class="article-item">
-            <a href="https://stanforddaily.com/2026/02/18/stanford-wrestling-upsets-no-12-pitt/" target="_blank" rel="noopener noreferrer" class="article-title">Stanford wrestling upsets No. 12 Pitt</a>
-            <p class="article-meta">The Stanford Daily &nbsp;·&nbsp; Feb. 18, 2026</p>
-          </li>
-          <li class="article-item">
-            <a href="https://stanforddaily.com/2026/02/01/stanford-dominates-cal-poly-in-win/" target="_blank" rel="noopener noreferrer" class="article-title">Stanford wrestling dominates Cal Poly in lopsided win</a>
-            <p class="article-meta">The Stanford Daily &nbsp;·&nbsp; Feb. 1, 2026</p>
-          </li>
-          <li class="article-item">
-            <a href="https://stanforddaily.com/2026/01/19/stanford-suffers-loss-to-nc-state/" target="_blank" rel="noopener noreferrer" class="article-title">Stanford wrestling's comeback falls short in loss to No. 6 NC State</a>
-            <p class="article-meta">The Stanford Daily &nbsp;·&nbsp; Jan. 19, 2026</p>
-          </li>
-        </ul>
-        <a href="https://stanforddaily.com/author/adamlangshaw/" target="_blank" rel="noopener noreferrer" class="writing-all">View all articles at The Stanford Daily →</a>
-      </section>
-    </div>
+      <div class="writing-list">
+        <article class="writing-card">
+          <span class="card-kicker">Sports</span>
+          <h3 class="card-title"><a href="https://stanforddaily.com/2026/02/18/stanford-wrestling-upsets-no-12-pitt/" target="_blank" rel="noopener noreferrer">Stanford wrestling upsets No. 12 Pitt</a></h3>
+          <p>Game coverage that tries to preserve energy and specificity rather than flattening events into formula.</p>
+          <p class="writing-meta">The Stanford Daily · Feb. 18, 2026</p>
+        </article>
+        <article class="writing-card">
+          <span class="card-kicker">Sports</span>
+          <h3 class="card-title"><a href="https://stanforddaily.com/author/adamlangshaw/" target="_blank" rel="noopener noreferrer">View the full archive</a></h3>
+          <p>More columns, reporting, and sports writing published at The Stanford Daily.</p>
+          <p><a href="https://stanforddaily.com/author/adamlangshaw/" target="_blank" rel="noopener noreferrer" class="card-link">Open author page</a></p>
+        </article>
+      </div>
+
+      <div class="page-card-list" style="margin-top: 2.5rem;">
+        <article class="influence-card">
+          <div>
+            <em>Reading with purpose</em>
+            <p class="contact-meta">Influences that sharpen the argument</p>
+          </div>
+          <p class="projects-note">These are the books and thinkers that keep the writing from becoming too neat. They push on tradeoffs, incentives, dignity, and power, which is usually where the best arguments begin.</p>
+        </article>
+        <article class="influence-card">
+          <div>
+            <em>Being Mortal</em>
+            <p class="contact-meta">Atul Gawande</p>
+          </div>
+          <p class="projects-note">A reminder that institutions are judged by how they treat people at their most vulnerable moments.</p>
+        </article>
+        <article class="influence-card">
+          <div>
+            <em>A Theory of Justice</em>
+            <p class="contact-meta">John Rawls</p>
+          </div>
+          <p class="projects-note">Still one of the cleanest ways to think about fairness before outcomes get messy.</p>
+        </article>
+        <article class="influence-card">
+          <div>
+            <em>The Power Broker</em>
+            <p class="contact-meta">Robert Caro</p>
+          </div>
+          <p class="projects-note">A model for how power, infrastructure, and institutions shape one another over time.</p>
+        </article>
+        <article class="influence-card">
+          <div>
+            <em>See the full companion page</em>
+            <p class="contact-meta">A lighter standalone reading list</p>
+          </div>
+          <p class="projects-note">The separate influences page now works as a companion to this one rather than a disconnected section of the site.</p>
+          <p><a href="influences.html" class="card-link">Open Influences</a></p>
+        </article>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer">
@@ -84,9 +138,11 @@
       <p class="footer-copy">© <span class="year"></span> Adam Langshaw</p>
       <ul class="footer-links">
         <li><a href="about.html">About</a></li>
+        <li><a href="projects.html">Projects</a></li>
         <li><a href="writing.html">Writing</a></li>
         <li><a href="contact.html">Contact</a></li>
       </ul>
+      <p class="footer-note">Opinion, reporting, and argument with a policy lens.</p>
     </div>
   </footer>
 

@@ -4,23 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contact — Adam Langshaw</title>
-  <meta name="description" content="Get in touch with Adam Langshaw.">
+  <meta name="description" content="Contact Adam Langshaw.">
   <meta property="og:title" content="Contact — Adam Langshaw">
-  <meta property="og:description" content="Get in touch with Adam Langshaw.">
+  <meta property="og:description" content="Get in touch with Adam Langshaw about medicine, health policy, research, and technology.">
   <link rel="icon" type="image/png" href="assets/favicon-ec29af6c-5854-4529-b155-a2d1de3ed322.png">
-  <link rel="stylesheet" href="style.css?v=2">
+  <link rel="stylesheet" href="style.css?v=3">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-
   <header class="site-nav" id="site-nav">
     <div class="nav-inner">
-      <a href="index.html" class="nav-brand">Adam Langshaw</a>
+      <a href="index.html" class="nav-brand" aria-label="Adam Langshaw home">
+        <span class="nav-brand-name">Adam Langshaw</span>
+        <span class="nav-brand-meta">Stanford '29</span>
+      </a>
       <button class="nav-menu-btn" id="nav-menu-btn" aria-expanded="false" aria-controls="nav-links">Menu</button>
       <ul class="nav-links" id="nav-links">
         <li><a href="about.html">About</a></li>
+        <li><a href="projects.html">Projects</a></li>
         <li><a href="writing.html">Writing</a></li>
         <li><a href="research.html">Research</a></li>
         <li><a href="influences.html">Influences</a></li>
@@ -29,34 +32,39 @@
     </div>
   </header>
 
-  <main>
-    <div class="page-wrap">
-      <header class="page-header">
-        <span class="page-label">Get in touch</span>
-        <h1 class="page-heading">Contact</h1>
-      </header>
+  <main class="page-shell">
+    <section class="page-panel">
+      <span class="eyebrow">Contact</span>
+      <h1 class="page-title">Happy to connect about policy, medicine, writing, or technical work.</h1>
+      <p class="page-intro">If you’re working on healthcare, public policy, research, or thoughtful applications of technology, I’d be glad to hear from you.</p>
 
-      <p class="contact-intro">I'm always happy to hear from people working on health policy, medicine, or technology.</p>
-
-      <ul class="contact-list">
-        <li>
-          <span class="contact-kind">Email</span>
-          <a href="mailto:langshaw@stanford.edu">langshaw@stanford.edu</a>
-        </li>
-        <li>
-          <span class="contact-kind">Email</span>
-          <a href="mailto:me@adamlangshaw.com">me@adamlangshaw.com</a>
-        </li>
-        <li>
-          <span class="contact-kind">LinkedIn</span>
-          <a href="https://www.linkedin.com/in/adamlangshaw/" target="_blank" rel="noopener noreferrer">linkedin.com/in/adamlangshaw</a>
-        </li>
-        <li>
-          <span class="contact-kind">The Stanford Daily</span>
-          <a href="https://stanforddaily.com/author/adamlangshaw/" target="_blank" rel="noopener noreferrer">stanforddaily.com/author/adamlangshaw</a>
-        </li>
-      </ul>
-    </div>
+      <div class="contact-grid">
+        <article class="contact-card">
+          <span class="card-kicker">Primary</span>
+          <h3>Email</h3>
+          <p><a href="mailto:langshaw@stanford.edu">langshaw@stanford.edu</a></p>
+          <p class="contact-meta">Stanford</p>
+        </article>
+        <article class="contact-card">
+          <span class="card-kicker">Direct</span>
+          <h3>Email</h3>
+          <p><a href="mailto:me@adamlangshaw.com">me@adamlangshaw.com</a></p>
+          <p class="contact-meta">Personal</p>
+        </article>
+        <article class="contact-card">
+          <span class="card-kicker">Professional</span>
+          <h3>LinkedIn</h3>
+          <p><a href="https://www.linkedin.com/in/adamlangshaw/" target="_blank" rel="noopener noreferrer">linkedin.com/in/adamlangshaw</a></p>
+          <p class="contact-meta">Profile and network</p>
+        </article>
+        <article class="contact-card">
+          <span class="card-kicker">Writing</span>
+          <h3>The Stanford Daily</h3>
+          <p><a href="https://stanforddaily.com/author/adamlangshaw/" target="_blank" rel="noopener noreferrer">stanforddaily.com/author/adamlangshaw</a></p>
+          <p class="contact-meta">Recent articles and archive</p>
+        </article>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer">
@@ -64,9 +72,11 @@
       <p class="footer-copy">© <span class="year"></span> Adam Langshaw</p>
       <ul class="footer-links">
         <li><a href="about.html">About</a></li>
+        <li><a href="projects.html">Projects</a></li>
         <li><a href="writing.html">Writing</a></li>
         <li><a href="contact.html">Contact</a></li>
       </ul>
+      <p class="footer-note">Open to thoughtful introductions and serious conversations.</p>
     </div>
   </footer>
 

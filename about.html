@@ -4,24 +4,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>About — Adam Langshaw</title>
-  <meta name="description" content="Stanford '29. Medicine, health policy, and technology.">
+  <meta name="description" content="About Adam Langshaw, a Stanford student focused on medicine, health policy, and technology.">
   <meta property="og:title" content="About — Adam Langshaw">
-  <meta property="og:description" content="Stanford '29. Medicine, health policy, and technology.">
+  <meta property="og:description" content="Stanford student working across medicine, health policy, research, and technology.">
   <meta property="og:image" content="assets/adam.png">
   <link rel="icon" type="image/png" href="assets/favicon-ec29af6c-5854-4529-b155-a2d1de3ed322.png">
-  <link rel="stylesheet" href="style.css?v=2">
+  <link rel="stylesheet" href="style.css?v=3">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-
   <header class="site-nav" id="site-nav">
     <div class="nav-inner">
-      <a href="index.html" class="nav-brand">Adam Langshaw</a>
+      <a href="index.html" class="nav-brand" aria-label="Adam Langshaw home">
+        <span class="nav-brand-name">Adam Langshaw</span>
+        <span class="nav-brand-meta">Stanford '29</span>
+      </a>
       <button class="nav-menu-btn" id="nav-menu-btn" aria-expanded="false" aria-controls="nav-links">Menu</button>
       <ul class="nav-links" id="nav-links">
         <li><a href="about.html" aria-current="page">About</a></li>
+        <li><a href="projects.html">Projects</a></li>
         <li><a href="writing.html">Writing</a></li>
         <li><a href="research.html">Research</a></li>
         <li><a href="influences.html">Influences</a></li>
@@ -30,28 +33,51 @@
     </div>
   </header>
 
-  <main>
-    <div class="page-wrap">
-      <header class="page-header">
-        <span class="page-label">About</span>
-        <h1 class="page-heading">Adam Langshaw</h1>
-      </header>
-
-      <div class="about-grid">
-        <img
-          src="assets/adam.png"
-          alt="Adam Langshaw"
-          class="about-photo"
-          width="340"
-          height="340"
-          loading="eager">
-        <div class="about-bio">
-          <p>Adam Langshaw is a Stanford student working at the intersection of medicine, health policy, and technology. He studies Public Policy with a concentration in health policy and Mathematics, with a minor in Computer Science. His work focuses on how data, institutional design, and incentive structures shape healthcare delivery and outcomes.</p>
-          <p>He has co-authored research on health inequities in cystic fibrosis through the University of Miami Miller School of Medicine, published in the Journal of Cystic Fibrosis and presented at the North American Cystic Fibrosis Conference. He writes opinion and sports coverage for The Stanford Daily.</p>
-          <p>He grew up in Weston, Florida, in a multicultural family with roots in Jamaica and England. Outside of academics, he plays football, DJs, and skis.</p>
+  <main class="page-shell">
+    <section class="page-panel">
+      <div class="page-grid--sidebar">
+        <div>
+          <span class="eyebrow">About</span>
+          <h1 class="page-title">Interested in how systems decide who gets care, opportunity, and attention.</h1>
+          <div class="body-copy">
+            <p>I'm a Stanford student working at the intersection of medicine, health policy, and technology. I’m especially drawn to questions where quantitative analysis meets institutional design: how incentives shape access, how data can obscure or illuminate inequity, and how policy choices cascade through real lives.</p>
+            <p>My work includes research on health inequities in cystic fibrosis through the University of Miami Miller School of Medicine, writing for <em>The Stanford Daily</em>, and building analytical tools that make complicated public problems easier to reason about.</p>
+            <p>I grew up in Weston, Florida, in a multicultural family with roots in Jamaica and England. Outside the classroom, I care a lot about sports, music, and the craft of making ideas persuasive.</p>
+          </div>
+        </div>
+        <div class="page-card page-art page-art--portrait">
+          <img src="assets/adam.png" alt="Adam Langshaw portrait" width="731" height="1024">
         </div>
       </div>
-    </div>
+    </section>
+
+    <section class="section">
+      <div class="section-shell">
+        <div class="timeline">
+          <article class="timeline-item">
+            <div class="timeline-year">Research</div>
+            <div>
+              <h3>Clinical equity and health outcomes</h3>
+              <p class="projects-note">Co-authored work on immigrant patients with cystic fibrosis, contributing to a growing evidence base around access and health inequities.</p>
+            </div>
+          </article>
+          <article class="timeline-item">
+            <div class="timeline-year">Writing</div>
+            <div>
+              <h3>Public argument as a serious discipline</h3>
+              <p class="projects-note">Opinion and sports writing that treats clarity, structure, and judgment as part of the work itself.</p>
+            </div>
+          </article>
+          <article class="timeline-item">
+            <div class="timeline-year">Tools</div>
+            <div>
+              <h3>Interactive models that teach</h3>
+              <p class="projects-note">Building browser-based explainers that translate technical ideas in healthcare policy and algorithmic fairness into something people can actually explore.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer">
@@ -59,9 +85,11 @@
       <p class="footer-copy">© <span class="year"></span> Adam Langshaw</p>
       <ul class="footer-links">
         <li><a href="about.html">About</a></li>
+        <li><a href="projects.html">Projects</a></li>
         <li><a href="writing.html">Writing</a></li>
         <li><a href="contact.html">Contact</a></li>
       </ul>
+      <p class="footer-note">Research, writing, and product-minded technical work.</p>
     </div>
   </footer>
 

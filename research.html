@@ -4,23 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Research — Adam Langshaw</title>
-  <meta name="description" content="Academic research and publications by Adam Langshaw.">
+  <meta name="description" content="Research and publications by Adam Langshaw.">
   <meta property="og:title" content="Research — Adam Langshaw">
-  <meta property="og:description" content="Academic research and publications by Adam Langshaw.">
+  <meta property="og:description" content="Academic work in health equity and healthcare access.">
   <link rel="icon" type="image/png" href="assets/favicon-ec29af6c-5854-4529-b155-a2d1de3ed322.png">
-  <link rel="stylesheet" href="style.css?v=2">
+  <link rel="stylesheet" href="style.css?v=3">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-
   <header class="site-nav" id="site-nav">
     <div class="nav-inner">
-      <a href="index.html" class="nav-brand">Adam Langshaw</a>
+      <a href="index.html" class="nav-brand" aria-label="Adam Langshaw home">
+        <span class="nav-brand-name">Adam Langshaw</span>
+        <span class="nav-brand-meta">Stanford '29</span>
+      </a>
       <button class="nav-menu-btn" id="nav-menu-btn" aria-expanded="false" aria-controls="nav-links">Menu</button>
       <ul class="nav-links" id="nav-links">
         <li><a href="about.html">About</a></li>
+        <li><a href="projects.html">Projects</a></li>
         <li><a href="writing.html">Writing</a></li>
         <li><a href="research.html" aria-current="page">Research</a></li>
         <li><a href="influences.html">Influences</a></li>
@@ -29,25 +32,31 @@
     </div>
   </header>
 
-  <main>
-    <div class="page-wrap">
-      <header class="page-header">
-        <span class="page-label">Academic Work</span>
-        <h1 class="page-heading">Research</h1>
-      </header>
+  <main class="page-shell">
+    <section class="page-panel">
+      <span class="eyebrow">Research</span>
+      <h1 class="page-title">Healthcare inequity is not abstract to me.</h1>
+      <p class="page-intro">My research interests sit close to the concerns that drive the rest of my work: who gets seen, who gets served, and how institutions can overlook vulnerable patients even when they appear neutral on paper.</p>
 
-      <div class="research-entry">
-        <span class="research-kicker">Journal of Cystic Fibrosis</span>
-        <h2 class="research-title">The prevalence and clinical characteristics of immigrant people with cystic fibrosis at a single center in Miami, Florida</h2>
-        <ul class="research-facts">
-          <li><strong>Published</strong> Journal of Cystic Fibrosis, supplement (2024)</li>
-          <li><strong>Presented</strong> North American Cystic Fibrosis Conference, Boston — September 27, 2024</li>
-          <li><strong>Institution</strong> University of Miami Miller School of Medicine</li>
-        </ul>
-        <p class="research-context">The study examined how immigrant status intersects with clinical outcomes and care access in cystic fibrosis patients at a major academic medical center in Miami, contributing to a growing body of work on health equity in rare disease populations. It is among the first to characterize the demographic and clinical profile of immigrant CF patients at a high-volume U.S. center.</p>
-        <a href="https://www.cysticfibrosisjournal.com/article/S1569-1993(24)01568-6/abstract" target="_blank" rel="noopener noreferrer" class="research-link">Read the abstract →</a>
+      <div class="media-grid">
+        <article class="research-card card-media">
+          <img src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Miami%20Skyline%202020.jpg" alt="Miami skyline">
+          <div class="card-media-body">
+            <span class="card-kicker">Miami, Florida</span>
+            <h3 class="card-title">The city context behind the study</h3>
+            <p>The paper came out of work at a major Miami academic center, where immigration, access, and clinical heterogeneity make equity questions especially concrete.</p>
+            <p class="writing-meta">Image via Wikimedia Commons</p>
+          </div>
+        </article>
+        <article class="research-card">
+          <span class="card-kicker">Journal of Cystic Fibrosis · 2024</span>
+          <h3 class="card-title">The prevalence and clinical characteristics of immigrant people with cystic fibrosis at a single center in Miami, Florida</h3>
+          <p>Co-authored through the University of Miami Miller School of Medicine. The study examined how immigrant status intersects with clinical presentation, care patterns, and equity in a major academic center.</p>
+          <p class="research-meta">Presented at the North American Cystic Fibrosis Conference in Boston on September 27, 2024.</p>
+          <p><a href="https://www.cysticfibrosisjournal.com/article/S1569-1993(24)01568-6/abstract" target="_blank" rel="noopener noreferrer" class="card-link">Read the abstract</a></p>
+        </article>
       </div>
-    </div>
+    </section>
   </main>
 
   <footer class="site-footer">
@@ -55,9 +64,11 @@
       <p class="footer-copy">© <span class="year"></span> Adam Langshaw</p>
       <ul class="footer-links">
         <li><a href="about.html">About</a></li>
+        <li><a href="projects.html">Projects</a></li>
         <li><a href="writing.html">Writing</a></li>
         <li><a href="contact.html">Contact</a></li>
       </ul>
+      <p class="footer-note">Academic work grounded in health equity and clinical care.</p>
     </div>
   </footer>
 

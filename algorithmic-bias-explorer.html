@@ -4,557 +4,2387 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Algorithmic Bias Explorer | Adam Langshaw</title>
+  <meta
+    name="description"
+    content="An interactive explainer showing how cost-based clinical risk algorithms can undershoot patient need and how fairness constraints change the tradeoffs."
+  />
+  <meta property="og:title" content="Algorithmic Bias Explorer | Adam Langshaw" />
+  <meta
+    property="og:description"
+    content="An interactive explainer showing how clinical risk algorithms can miss patients when cost is used as a proxy for need."
+  />
   <link rel="icon" type="image/png" href="assets/favicon-ec29af6c-5854-4529-b155-a2d1de3ed322.png" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=3" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Source+Sans+3:wght@400;600&display=swap"
-    rel="stylesheet"
-  />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
   <style>
     :root {
-      --bias-red: #8c1515;
-      --bias-blue: #1d4ed8;
-      --bias-gray: #6b7280;
-      --bias-border: #e5e7eb;
-      --bias-card: #f9fafb;
+      --bg: #f6f4ef;
+      --surface: rgba(255, 255, 255, 0.74);
+      --surface-strong: rgba(255, 255, 255, 0.88);
+      --surface-dim: rgba(255, 255, 255, 0.56);
+      --text: #161616;
+      --text-soft: rgba(22, 22, 22, 0.68);
+      --text-faint: rgba(22, 22, 22, 0.48);
+      --border: rgba(22, 22, 22, 0.08);
+      --border-strong: rgba(22, 22, 22, 0.13);
+      --accent: #8c1515;
+      --accent-soft: rgba(140, 21, 21, 0.12);
+      --accent-strong: rgba(140, 21, 21, 0.2);
+      --shadow: 0 24px 80px rgba(24, 18, 14, 0.08);
+      --shadow-soft: 0 14px 34px rgba(24, 18, 14, 0.06);
+      --radius-lg: 30px;
+      --radius-md: 20px;
+      --radius-sm: 14px;
+      --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+      --nav-height: 4.5rem;
+      --pointer-x: 50%;
+      --pointer-y: 25%;
+    }
+
+    html {
+      scroll-behavior: smooth;
     }
 
     body {
-      background: #ffffff;
+      margin: 0;
+      font-family: var(--font-sans);
+      color: var(--text);
+      background:
+        radial-gradient(1200px circle at 15% 0%, rgba(140, 21, 21, 0.08), transparent 42%),
+        radial-gradient(900px circle at 100% 12%, rgba(255, 255, 255, 0.9), transparent 28%),
+        linear-gradient(180deg, #faf8f5 0%, var(--bg) 100%);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
     }
 
-    .bias-header {
-      background: linear-gradient(135deg, #111827 0%, #312e81 40%, #8c1515 100%);
-      color: white;
-      padding: 3rem 1.5rem;
-      text-align: center;
-      margin-bottom: 3rem;
-    }
-
-    .bias-header h1 {
-      font-family: "DM Serif Display", serif;
-      font-size: 2.5rem;
-      margin: 0 0 0.5rem;
-      font-weight: 400;
-    }
-
-    .bias-header p {
-      max-width: 720px;
-      margin: 0 auto;
-      font-size: 1.05rem;
-      opacity: 0.95;
-    }
-
-    .bias-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 1.5rem 4rem;
-    }
-
-    .bias-nav {
-      margin-bottom: 2rem;
-      text-align: center;
-    }
-
-    .bias-nav a {
-      color: var(--bias-red);
-      font-weight: 600;
+    a {
+      color: inherit;
       text-decoration: none;
     }
 
-    .bias-nav a:hover {
-      text-decoration: underline;
+    .site-nav {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 1000;
+      background: rgba(246, 244, 239, 0.78);
+      border-bottom: 1px solid transparent;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
     }
 
-    .scenario-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 2.5rem;
+    .site-nav.scrolled {
+      border-bottom-color: rgba(22, 22, 22, 0.08);
+      box-shadow: 0 1px 18px rgba(24, 18, 14, 0.05);
     }
 
-    .scenario-card {
-      background: var(--bias-card);
-      border-radius: 12px;
-      border: 1px solid var(--bias-border);
-      padding: 1.25rem 1.5rem;
+    .nav-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      min-height: var(--nav-height);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .nav-brand {
+      font-family: var(--font-serif);
+      font-size: 1.02rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 1.8rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-links a {
+      position: relative;
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--text-soft);
+      transition: color 140ms ease;
+    }
+
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -0.35rem;
+      width: 100%;
+      height: 1px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 160ms ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a[aria-current="page"] {
+      color: var(--text);
+    }
+
+    .nav-links a:hover::after,
+    .nav-links a[aria-current="page"]::after {
+      transform: scaleX(1);
+    }
+
+    .nav-menu-btn {
+      display: none;
+      border: 0;
+      background: transparent;
+      font: inherit;
+      color: var(--text-soft);
       cursor: pointer;
-      transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
+      padding: 0;
     }
 
-    .scenario-card:hover {
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-      border-color: var(--bias-blue);
+    main {
+      position: relative;
+      isolation: isolate;
+      padding-top: var(--nav-height);
+    }
+
+    .bias-shell {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bias-shell::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(700px circle at var(--pointer-x) var(--pointer-y), rgba(140, 21, 21, 0.12), transparent 48%),
+        radial-gradient(900px circle at 100% 0%, rgba(255, 255, 255, 0.45), transparent 34%);
+      mix-blend-mode: multiply;
+      opacity: 0.88;
+    }
+
+    .bias-wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 3rem 2rem 5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .bias-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+      gap: 1.5rem;
+      align-items: stretch;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-panel,
+    .bias-panel,
+    .bias-details {
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.64)),
+        var(--surface);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: var(--radius-lg);
+    }
+
+    .hero-panel {
+      position: relative;
+      overflow: clip;
+      padding: clamp(1.8rem, 4vw, 3rem);
+    }
+
+    .hero-panel::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(100deg, rgba(252, 249, 246, 0.98) 0%, rgba(252, 249, 246, 0.72) 48%, rgba(252, 249, 246, 0.22) 100%),
+        linear-gradient(180deg, rgba(140, 21, 21, 0.1), transparent 35%, rgba(22, 22, 22, 0.04));
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 1;
+      max-width: 46rem;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(22, 22, 22, 0.5);
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 2.25rem;
+      height: 1px;
+      background: rgba(140, 21, 21, 0.45);
+    }
+
+    .hero-copy h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(3rem, 7vw, 5.8rem);
+      line-height: 0.94;
+      letter-spacing: -0.045em;
+      margin: 0.85rem 0 1rem;
+      max-width: 9ch;
+    }
+
+    .hero-copy p {
+      margin: 0 0 1rem;
+      max-width: 42rem;
+      font-size: clamp(1.02rem, 1.45vw, 1.15rem);
+      line-height: 1.8;
+      color: var(--text-soft);
+    }
+
+    .hero-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      margin-top: 1.5rem;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      min-height: 2.2rem;
+      padding: 0 0.9rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.76);
+      border: 1px solid rgba(22, 22, 22, 0.08);
+      color: var(--text-soft);
+      font-size: 0.85rem;
+      font-weight: 500;
+      box-shadow: 0 8px 24px rgba(24, 18, 14, 0.04);
+    }
+
+    .hero-card {
+      position: relative;
+      overflow: clip;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1rem;
+      min-height: 100%;
+    }
+
+    .hero-card h2,
+    .panel-title,
+    .section-title,
+    .bias-details summary {
+      font-family: var(--font-serif);
+      letter-spacing: -0.03em;
+    }
+
+    .hero-card h2 {
+      margin: 0;
+      font-size: 1.65rem;
+      line-height: 1.05;
+    }
+
+    .hero-card p {
+      margin: 0;
+      color: var(--text-soft);
+      line-height: 1.75;
+      font-size: 0.98rem;
+    }
+
+    .story-steps {
+      display: grid;
+      gap: 0.7rem;
+      margin-top: 0.75rem;
+    }
+
+    .story-step {
+      display: flex;
+      gap: 0.8rem;
+      align-items: flex-start;
+      padding: 0.85rem 0.95rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(22, 22, 22, 0.08);
+      background: rgba(255, 255, 255, 0.66);
+      color: var(--text-soft);
+      line-height: 1.55;
+      font-size: 0.88rem;
+    }
+
+    .story-step strong {
+      color: var(--text);
+      min-width: 1.6rem;
+    }
+
+    .hero-band {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.9rem;
+      margin: 1.25rem 0 1.75rem;
+    }
+
+    .band-card {
+      padding: 1rem 1.1rem;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(22, 22, 22, 0.08);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .band-label {
+      display: block;
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: 0.4rem;
+    }
+
+    .band-value {
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.45;
+    }
+
+    .bias-stage {
+      display: grid;
+      grid-template-columns: minmax(0, 1.28fr) minmax(320px, 0.92fr);
+      gap: 1.4rem;
+      align-items: start;
+      margin-bottom: 1.4rem;
+    }
+
+    .bias-panel {
+      padding: 1.35rem;
+    }
+
+    .panel-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 1.55rem;
+      line-height: 1.1;
+    }
+
+    .panel-subtitle {
+      margin: 0.35rem 0 0;
+      color: var(--text-soft);
+      line-height: 1.65;
+      font-size: 0.95rem;
+      max-width: 42rem;
+    }
+
+    .story-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.65rem 0.9rem;
+      border-radius: 999px;
+      border: 1px solid rgba(22, 22, 22, 0.08);
+      background: rgba(255, 255, 255, 0.72);
+      color: var(--text-soft);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 160ms ease, border-color 160ms ease, color 160ms ease, background 160ms ease;
+    }
+
+    .story-toggle:hover {
+      border-color: rgba(140, 21, 21, 0.22);
+      color: var(--text);
       transform: translateY(-1px);
     }
 
-    .scenario-card.selected {
-      border-color: var(--bias-red);
-      box-shadow: 0 4px 18px rgba(140, 21, 21, 0.15);
-    }
-
-    .scenario-card h3 {
-      font-family: "DM Serif Display", serif;
-      margin: 0 0 0.5rem;
-      font-size: 1.25rem;
-    }
-
-    .scenario-card p {
+    .story-toggle input {
+      width: 1rem;
+      height: 1rem;
+      accent-color: var(--accent);
       margin: 0;
-      font-size: 0.95rem;
-      color: var(--bias-gray);
     }
 
-    .bias-layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1.35fr) minmax(0, 1.1fr);
-      gap: 2rem;
-      align-items: stretch;
+    .story-panel {
+      margin-bottom: 1rem;
+      padding: 1rem 1.05rem;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(140, 21, 21, 0.13);
+      background:
+        linear-gradient(180deg, rgba(140, 21, 21, 0.08), rgba(255, 255, 255, 0.68)),
+        rgba(255, 255, 255, 0.6);
+      transition: opacity 180ms ease, transform 180ms ease, max-height 220ms ease;
     }
 
-    .controls-card,
-    .metrics-card {
-      background: #ffffff;
-      border-radius: 12px;
-      border: 1px solid var(--bias-border);
-      padding: 1.75rem 1.5rem;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
-      height: 100%;
+    .story-panel.hidden {
+      opacity: 0;
+      transform: translateY(-4px);
+      max-height: 0;
+      overflow: hidden;
+      padding-top: 0;
+      padding-bottom: 0;
+      margin-bottom: 0;
+      border-color: transparent;
+    }
+
+    .story-panel-top {
       display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-    }
-
-    .controls-card h2,
-    .metrics-card h2 {
-      font-family: "DM Serif Display", serif;
-      margin: 0 0 0.75rem;
-      font-size: 1.5rem;
-    }
-
-    .controls-card p,
-    .metrics-card p {
-      margin: 0 0 0.75rem;
-      font-size: 0.95rem;
-      color: var(--bias-gray);
-    }
-
-    .group-controls {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: 1.25rem;
-      margin-top: 1rem;
-    }
-
-    .group-card {
-      border-radius: 10px;
-      border: 1px solid var(--bias-border);
-      padding: 1rem 1.1rem;
-      background: var(--bias-card);
-    }
-
-    .group-card h3 {
-      margin: 0 0 0.35rem;
-      font-size: 1rem;
-      font-weight: 600;
-    }
-
-    .group-card small {
-      display: block;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
       margin-bottom: 0.5rem;
-      font-size: 0.8rem;
-      color: var(--bias-gray);
     }
 
-    .slider-row {
-      margin-bottom: 0.75rem;
+    .story-kicker {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: rgba(140, 21, 21, 0.92);
+      font-weight: 700;
     }
 
-    .slider-row label {
+    .story-step-title {
+      margin: 0;
+      font-size: 1.05rem;
+      line-height: 1.4;
+    }
+
+    .story-step-copy {
+      margin: 0.45rem 0 0;
+      color: var(--text-soft);
+      line-height: 1.65;
+      font-size: 0.94rem;
+    }
+
+    .story-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-top: 0.85rem;
+    }
+
+    .story-nav {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .story-btn {
+      border: 1px solid rgba(22, 22, 22, 0.08);
+      background: rgba(255, 255, 255, 0.76);
+      color: var(--text);
+      min-width: 2.6rem;
+      min-height: 2.4rem;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: transform 140ms ease, border-color 140ms ease, color 140ms ease, background 140ms ease;
+    }
+
+    .story-btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(140, 21, 21, 0.2);
+      color: var(--accent);
+    }
+
+    .story-dots {
+      display: flex;
+      gap: 0.35rem;
+      align-items: center;
+      margin-left: auto;
+    }
+
+    .story-dot {
+      width: 0.6rem;
+      height: 0.6rem;
+      border-radius: 999px;
+      background: rgba(22, 22, 22, 0.18);
+      transition: transform 160ms ease, background 160ms ease, width 160ms ease;
+    }
+
+    .story-dot.active {
+      width: 1.2rem;
+      background: var(--accent);
+      transform: none;
+    }
+
+    .plot-wrap {
+      border-radius: calc(var(--radius-lg) - 6px);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.52));
+      border: 1px solid rgba(22, 22, 22, 0.08);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .plot-wrap::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(22, 22, 22, 0.04) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(22, 22, 22, 0.04) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.14), transparent 60%);
+      pointer-events: none;
+      opacity: 0.6;
+    }
+
+    .plot-container {
+      position: relative;
+      padding: 0.8rem 0.75rem 0.4rem;
+    }
+
+    .plot-svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .plot-note {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.75rem 0.95rem 0.95rem;
+      color: var(--text-soft);
+      font-size: 0.84rem;
+      line-height: 1.55;
+      border-top: 1px solid rgba(22, 22, 22, 0.08);
+    }
+
+    .plot-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin-top: 0.85rem;
+    }
+
+    .legend-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      min-height: 2rem;
+      padding: 0 0.8rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.68);
+      border: 1px solid rgba(22, 22, 22, 0.08);
+      font-size: 0.82rem;
+      color: var(--text-soft);
+    }
+
+    .legend-swatch {
+      width: 0.7rem;
+      height: 0.7rem;
+      border-radius: 999px;
+      background: var(--text);
+    }
+
+    .legend-swatch.cardinal {
+      background: var(--accent);
+    }
+
+    .legend-swatch.muted {
+      background: rgba(22, 22, 22, 0.42);
+    }
+
+    .tooltip {
+      position: absolute;
+      pointer-events: none;
+      opacity: 0;
+      transform: translate(-50%, calc(-100% - 12px));
+      min-width: 14rem;
+      max-width: 16.5rem;
+      padding: 0.85rem 0.95rem;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid rgba(22, 22, 22, 0.1);
+      box-shadow: 0 18px 50px rgba(24, 18, 14, 0.12);
+      color: var(--text);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      transition: opacity 120ms ease;
+      z-index: 5;
+    }
+
+    .tooltip strong {
+      display: block;
+      margin-bottom: 0.3rem;
+      font-size: 0.93rem;
+    }
+
+    .tooltip p {
+      margin: 0.2rem 0 0;
+      color: var(--text-soft);
+      font-size: 0.82rem;
+      line-height: 1.55;
+    }
+
+    .controls-grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .control-card {
+      padding: 1rem 1rem 0.95rem;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.68);
+      border: 1px solid rgba(22, 22, 22, 0.08);
+    }
+
+    .control-card label {
       display: flex;
       justify-content: space-between;
-      font-size: 0.85rem;
-      margin-bottom: 0.25rem;
+      align-items: baseline;
+      gap: 0.75rem;
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.6rem;
     }
 
-    .slider-row input[type="range"] {
+    .control-card small {
+      display: block;
+      color: var(--text-soft);
+      line-height: 1.55;
+      margin-top: 0.45rem;
+      font-size: 0.82rem;
+    }
+
+    .control-value {
+      font-variant-numeric: tabular-nums;
+      color: var(--accent);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .control-row {
+      margin-top: 0.75rem;
+    }
+
+    .control-row select,
+    .control-row input[type="range"] {
       width: 100%;
+    }
+
+    .control-row select {
+      min-height: 2.7rem;
+      padding: 0.65rem 0.85rem;
+      border-radius: 12px;
+      border: 1px solid rgba(22, 22, 22, 0.1);
+      background: rgba(255, 255, 255, 0.92);
+      font: inherit;
+      color: var(--text);
+      outline: none;
+    }
+
+    .control-row select:focus,
+    .control-row input[type="range"]:focus {
+      outline: 2px solid rgba(140, 21, 21, 0.18);
+      outline-offset: 2px;
+    }
+
+    input[type="range"] {
+      appearance: none;
+      background: transparent;
+      margin: 0.2rem 0 0;
+      height: 2rem;
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 0.42rem;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(140, 21, 21, 0.92), rgba(140, 21, 21, 0.28));
+      border: 1px solid rgba(22, 22, 22, 0.06);
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 1.1rem;
+      height: 1.1rem;
+      margin-top: -0.37rem;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid rgba(22, 22, 22, 0.14);
+      box-shadow: 0 7px 16px rgba(24, 18, 14, 0.16);
+    }
+
+    input[type="range"]::-moz-range-track {
+      height: 0.42rem;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(140, 21, 21, 0.92), rgba(140, 21, 21, 0.28));
+      border: 1px solid rgba(22, 22, 22, 0.06);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 1.1rem;
+      height: 1.1rem;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid rgba(22, 22, 22, 0.14);
+      box-shadow: 0 7px 16px rgba(24, 18, 14, 0.16);
+    }
+
+    .control-inline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .control-inline .tiny {
+      font-size: 0.78rem;
+      color: var(--text-faint);
+      line-height: 1.45;
+    }
+
+    .bias-dashboard {
+      display: grid;
+      grid-template-columns: minmax(0, 1.18fr) minmax(300px, 0.82fr);
+      gap: 1.4rem;
+      margin-bottom: 1.4rem;
+    }
+
+    .dashboard-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .dashboard-header h2 {
+      margin: 0;
+      font-size: 1.45rem;
+      line-height: 1.1;
+    }
+
+    .dashboard-header p {
+      margin: 0.35rem 0 0;
+      color: var(--text-soft);
+      font-size: 0.94rem;
+      line-height: 1.6;
+      max-width: 48rem;
+    }
+
+    .callout {
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(140, 21, 21, 0.16);
+      background: linear-gradient(180deg, rgba(140, 21, 21, 0.08), rgba(255, 255, 255, 0.76));
+      padding: 1rem 1rem 1.05rem;
+      margin-bottom: 1rem;
+    }
+
+    .callout strong {
+      display: block;
+      margin-bottom: 0.35rem;
+      font-size: 0.9rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(140, 21, 21, 0.92);
+    }
+
+    .callout p {
+      margin: 0;
+      color: var(--text);
+      line-height: 1.65;
+      font-size: 0.96rem;
     }
 
     .metric-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 1rem;
-      margin-top: 1rem;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.9rem;
     }
 
-    .metric-box {
-      border-radius: 10px;
-      border: 1px solid var(--bias-border);
-      padding: 0.9rem 1rem;
-      background: var(--bias-card);
+    .metric-card {
+      padding: 1rem;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(22, 22, 22, 0.08);
     }
 
-    .metric-box h4 {
-      margin: 0 0 0.35rem;
-      font-size: 0.85rem;
+    .metric-card span {
+      display: block;
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--bias-gray);
+      color: var(--text-faint);
+      margin-bottom: 0.35rem;
     }
 
-    .metric-main {
-      font-size: 1.3rem;
-      font-weight: 600;
-      margin: 0 0 0.15rem;
+    .metric-card strong {
+      display: block;
+      font-size: 1.35rem;
+      line-height: 1.15;
+      margin-bottom: 0.25rem;
     }
 
-    .metric-main.bad {
-      color: var(--bias-red);
-    }
-
-    .metric-main.good {
-      color: var(--bias-green, #15803d);
-    }
-
-    .metric-sub {
+    .metric-card p {
       margin: 0;
-      font-size: 0.85rem;
-      color: var(--bias-gray);
+      color: var(--text-soft);
+      font-size: 0.83rem;
+      line-height: 1.55;
     }
 
-    .legend {
-      margin-top: 1.25rem;
-      font-size: 0.82rem;
-      color: var(--bias-gray);
+    .confusion-card {
+      padding: 1rem;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(22, 22, 22, 0.08);
     }
 
-    .legend span {
-      display: inline-block;
-      margin-right: 0.75rem;
+    .confusion-card + .confusion-card {
+      margin-top: 0.95rem;
     }
 
-    .dot-a,
-    .dot-b {
-      display: inline-block;
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      margin-right: 0.25rem;
+    .confusion-card h3 {
+      margin: 0 0 0.75rem;
+      font-size: 1rem;
+      line-height: 1.3;
     }
 
-    .dot-a {
-      background: var(--bias-blue);
+    .confusion-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.5rem;
     }
 
-    .dot-b {
-      background: var(--bias-red);
+    .confusion-cell {
+      padding: 0.75rem 0.8rem;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid rgba(22, 22, 22, 0.08);
     }
 
-    @media (max-width: 840px) {
-      .bias-layout {
+    .confusion-cell span {
+      display: block;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: 0.25rem;
+    }
+
+    .confusion-cell strong {
+      display: block;
+      font-size: 1.15rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .confusion-cell p {
+      margin: 0.25rem 0 0;
+      color: var(--text-soft);
+      font-size: 0.8rem;
+      line-height: 1.4;
+    }
+
+    .bias-projects {
+      margin-bottom: 1.4rem;
+      padding: 1.2rem 1.3rem;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(255, 255, 255, 0.66));
+      border: 1px solid rgba(22, 22, 22, 0.08);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .bias-projects h2 {
+      margin: 0 0 0.8rem;
+      font-family: var(--font-serif);
+      font-size: 1.55rem;
+      line-height: 1.15;
+    }
+
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.9rem;
+    }
+
+    .project-link {
+      display: block;
+      padding: 1rem 1.05rem;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.76);
+      border: 1px solid rgba(22, 22, 22, 0.08);
+      transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+    }
+
+    .project-link:hover {
+      transform: translateY(-2px);
+      border-color: rgba(140, 21, 21, 0.2);
+      box-shadow: 0 18px 38px rgba(24, 18, 14, 0.08);
+    }
+
+    .project-link strong {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-size: 1rem;
+    }
+
+    .project-link p {
+      margin: 0;
+      color: var(--text-soft);
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    .bias-details {
+      padding: 0;
+      overflow: clip;
+    }
+
+    .bias-details summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 1.15rem 1.3rem;
+      font-size: 1.08rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .bias-details summary::after {
+      content: "+";
+      font-family: var(--font-sans);
+      font-size: 1.2rem;
+      color: var(--accent);
+    }
+
+    .bias-details[open] summary::after {
+      content: "–";
+    }
+
+    .bias-details-body {
+      padding: 0 1.3rem 1.25rem;
+      color: var(--text-soft);
+      line-height: 1.75;
+      font-size: 0.95rem;
+    }
+
+    .bias-details-body ul {
+      margin: 0.85rem 0 0;
+      padding-left: 1.1rem;
+    }
+
+    .bias-details-body li + li {
+      margin-top: 0.45rem;
+    }
+
+    .site-footer {
+      border-top: 1px solid rgba(22, 22, 22, 0.08);
+      padding: 2rem;
+      margin-top: 0;
+      background: rgba(246, 244, 239, 0.55);
+    }
+
+    .footer-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .footer-copy {
+      margin: 0;
+      color: var(--text-faint);
+      font-size: 0.8rem;
+    }
+
+    .footer-links {
+      list-style: none;
+      display: flex;
+      gap: 1.4rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    .footer-links a {
+      color: var(--text-faint);
+      font-size: 0.8rem;
+      transition: color 140ms ease;
+    }
+
+    .footer-links a:hover {
+      color: var(--text);
+    }
+
+    .svg-axis path,
+    .svg-axis line {
+      stroke: rgba(22, 22, 22, 0.14);
+    }
+
+    .svg-axis text {
+      fill: rgba(22, 22, 22, 0.58);
+      font-size: 11px;
+      font-family: var(--font-sans);
+    }
+
+    .grid-line {
+      stroke: rgba(22, 22, 22, 0.08);
+    }
+
+    .ref-line {
+      stroke: rgba(22, 22, 22, 0.22);
+      stroke-dasharray: 6 6;
+    }
+
+    .threshold-line {
+      stroke: var(--accent);
+      stroke-width: 2;
+      stroke-dasharray: 4 4;
+    }
+
+    .threshold-label,
+    .line-label {
+      fill: var(--accent);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .point {
+      cursor: pointer;
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+
+    .point.dimmed {
+      opacity: 0.18;
+    }
+
+    .point.enrolled {
+      filter: saturate(1.05);
+    }
+
+    .point.hovered {
+      stroke: #ffffff;
+      stroke-width: 1.6;
+      opacity: 1;
+    }
+
+    .point.group-a {
+      fill: #2b313b;
+    }
+
+    .point.group-b {
+      fill: var(--accent);
+    }
+
+    .axis-title {
+      fill: rgba(22, 22, 22, 0.72);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 1080px) {
+      .bias-hero,
+      .bias-stage,
+      .bias-dashboard {
         grid-template-columns: minmax(0, 1fr);
+      }
+
+      .hero-band,
+      .metric-grid,
+      .project-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    @media (max-width: 760px) {
+      .nav-inner {
+        padding: 1rem 1.2rem;
+      }
+
+      .nav-menu-btn {
+        display: inline-flex;
+      }
+
+      .nav-links {
+        position: absolute;
+        top: calc(100% + 1px);
+        left: 0;
+        right: 0;
+        display: grid;
+        gap: 0;
+        padding: 0.75rem 1.2rem 1rem;
+        background: rgba(246, 244, 239, 0.96);
+        border-bottom: 1px solid rgba(22, 22, 22, 0.08);
+        box-shadow: 0 18px 32px rgba(24, 18, 14, 0.05);
+        transform: translateY(-12px);
+        opacity: 0;
+        pointer-events: none;
+        transition: transform 160ms ease, opacity 160ms ease;
+      }
+
+      .nav-links.open {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+      }
+
+      .nav-links a {
+        display: block;
+        padding: 0.8rem 0;
+      }
+
+      .bias-wrap {
+        padding: 2rem 1.05rem 4rem;
+      }
+
+      .hero-panel,
+      .bias-panel,
+      .bias-details,
+      .bias-projects {
+        border-radius: 24px;
+      }
+
+      .panel-top,
+      .dashboard-header,
+      .story-controls {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .story-dots {
+        margin-left: 0;
+      }
+
+      .nav-brand {
+        font-size: 0.98rem;
+      }
+
+      .plot-container {
+        padding: 0.55rem 0.45rem 0.25rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        scroll-behavior: auto !important;
+      }
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
       }
     }
   </style>
 </head>
 <body>
-  <div class="bias-header">
-    <h1>Algorithmic Bias Explorer</h1>
-    <p>
-      A toy model of how algorithms can treat groups differently even when the math “looks neutral.”
-      Adjust thresholds and base rates for two groups and watch common fairness metrics shift.
-    </p>
-  </div>
-
-  <div class="bias-container">
-    <div class="bias-nav">
-      <a href="index.html">← Back to Home</a>
+  <header class="site-nav" id="site-nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">Adam Langshaw</a>
+      <button class="nav-menu-btn" id="nav-menu-btn" aria-expanded="false" aria-controls="nav-links">Menu</button>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="about.html">About</a></li>
+        <li><a href="writing.html">Writing</a></li>
+        <li><a href="research.html">Research</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
     </div>
+  </header>
 
-    <div class="scenario-grid" id="scenarioGrid">
-      <div class="scenario-card selected" data-scenario="loans">
-        <h3>Loan Approvals</h3>
-        <p>Predict who will repay a loan. Explore how different approval thresholds change denial rates by group.</p>
-      </div>
-      <div class="scenario-card" data-scenario="hiring">
-        <h3>Hiring Filter</h3>
-        <p>Rank job applicants and decide who gets interviews. See how small shifts change who gets screened out.</p>
-      </div>
-      <div class="scenario-card" data-scenario="health">
-        <h3>Health Risk Score</h3>
-        <p>Flag “high-risk” patients for extra care. Examine who is over- or under-flagged across groups.</p>
-      </div>
-    </div>
-
-    <div class="bias-layout">
-      <section class="controls-card">
-        <h2>Model &amp; Group Controls</h2>
-        <p>
-          Each group has a different <strong>base rate</strong> (how often the true outcome is present in that population)
-          and a <strong>decision threshold</strong> (how strict the algorithm is about saying “yes”). In real systems,
-          these differences can come from data quality, historical bias, or explicit policy choices.
-        </p>
-
-        <div class="group-controls">
-          <div class="group-card">
-            <h3><span class="dot-a"></span>Group A</h3>
-            <small>
-              Often the majority group in training data. Higher base rate = more people in this group truly have the
-              positive outcome. Higher threshold = the model demands stronger evidence before saying “yes.”
-            </small>
-            <div class="slider-row">
-              <label>
-                Base Rate (true positives in population)
-                <span id="baseRateALabel">40%</span>
-              </label>
-              <input
-                type="range"
-                id="baseRateA"
-                min="5"
-                max="80"
-                value="40"
-                oninput="updateBiasModel()"
-              />
-            </div>
-            <div class="slider-row">
-              <label>
-                Decision Threshold
-                <span id="thresholdALabel">0.50</span>
-              </label>
-              <input
-                type="range"
-                id="thresholdA"
-                min="20"
-                max="80"
-                value="50"
-                oninput="updateBiasModel()"
-              />
+  <main class="bias-shell">
+    <div class="bias-wrap">
+      <section class="bias-hero">
+        <article class="hero-panel">
+          <div class="hero-copy">
+            <span class="eyebrow">Interactive explainer</span>
+            <h1>Algorithmic Bias Explorer</h1>
+            <p>
+              A polished, fully client-side simulation of a clinical risk prediction system inspired by the
+              cost-as-proxy problem in the Obermeyer et al. Science paper. It shows how a model can look neutral
+              while still underserving patients whose healthcare spending is artificially suppressed.
+            </p>
+            <p>
+              Both groups in this simulation have similar underlying health need. The distortion comes from the
+              measurement process, not from biology, which is exactly why the tool is useful in class or in a policy
+              discussion.
+            </p>
+            <div class="hero-chips">
+              <span class="chip">500 simulated patients</span>
+              <span class="chip">Client-side only</span>
+              <span class="chip">D3-powered scatter plot</span>
+              <span class="chip">Fairness tradeoffs made visible</span>
             </div>
           </div>
+        </article>
 
-          <div class="group-card">
-            <h3><span class="dot-b"></span>Group B</h3>
-            <small>
-              Often underrepresented or historically marginalized. Different base rates and thresholds here simulate
-              under‑measurement, noisier data, or stricter rules for this group.
-            </small>
-            <div class="slider-row">
-              <label>
-                Base Rate
-                <span id="baseRateBLabel">40%</span>
-              </label>
-              <input
-                type="range"
-                id="baseRateB"
-                min="5"
-                max="80"
-                value="40"
-                oninput="updateBiasModel()"
-              />
-            </div>
-            <div class="slider-row">
-              <label>
-                Decision Threshold
-                <span id="thresholdBLabel">0.60</span>
-              </label>
-              <input
-                type="range"
-                id="thresholdB"
-                min="20"
-                max="80"
-                value="60"
-                oninput="updateBiasModel()"
-              />
-            </div>
-          </div>
-        </div>
-
-        <p class="legend">
-          <span><span class="dot-a"></span>Group A</span>
-          <span><span class="dot-b"></span>Group B</span>
-          <span>We simulate 10,000 people per group and approximate fairness metrics from that toy data.</span>
-        </p>
-      </section>
-
-      <section class="metrics-card">
-        <h2>Fairness Metrics</h2>
-        <p id="scenarioDescription">
-          In this scenario, a positive prediction means “approved for a loan.” Ideally, we want equal true positive rates
-          and false positive rates across groups, but that rarely happens automatically.
-        </p>
-
-        <div class="metric-grid">
-          <div class="metric-box">
-            <h4>Selection Rate</h4>
-            <p class="metric-main" id="selectionRateMain">—</p>
-            <p class="metric-sub" id="selectionRateSub">Share of each group getting a positive prediction.</p>
-          </div>
-          <div class="metric-box">
-            <h4>Equal Opportunity Gap</h4>
-            <p class="metric-main bad" id="eoGapMain">—</p>
-            <p class="metric-sub" id="eoGapSub">Difference in true positive rates (TPR) between groups.</p>
-          </div>
-          <div class="metric-box">
-            <h4>False Positive Gap</h4>
-            <p class="metric-main bad" id="fpGapMain">—</p>
-            <p class="metric-sub" id="fpGapSub">Difference in false positive rates (FPR) between groups.</p>
-          </div>
-          <div class="metric-box">
-            <h4>Who Pays the Error Cost?</h4>
-            <p class="metric-main" id="errorBurdenMain">—</p>
-            <p class="metric-sub" id="errorBurdenSub">
-              Which group shoulders more “unfair” errors (false negatives or false positives), given this scenario.
+        <aside class="hero-panel hero-card">
+          <div>
+            <span class="eyebrow">Key idea</span>
+            <h2>When cost is the target, access barriers leak into the prediction.</h2>
+            <p>
+              The plot and metrics below let users toggle the prediction target, enrollment threshold, access
+              disparity, and fairness constraint so they can see how different rules change who gets flagged for a
+              care management program.
             </p>
           </div>
+          <div class="story-steps">
+            <div class="story-step"><strong>1.</strong> Similar need distributions, different spending patterns.</div>
+            <div class="story-step"><strong>2.</strong> Cost-based scoring systematically undershoots Group B.</div>
+            <div class="story-step"><strong>3.</strong> Switching to need changes who gets enrolled.</div>
+            <div class="story-step"><strong>4.</strong> Fairness constraints trade off accuracy, parity, and calibration.</div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="hero-band" aria-label="Project summary">
+        <article class="band-card">
+          <span class="band-label">Scenario</span>
+          <p class="band-value">Hospital care management flagging patients who would benefit from additional support.</p>
+        </article>
+        <article class="band-card">
+          <span class="band-label">Model target</span>
+          <p class="band-value">Switch between cost prediction and direct need prediction.</p>
+        </article>
+        <article class="band-card">
+          <span class="band-label">Fairness lens</span>
+          <p class="band-value">Compare none, demographic parity, equalized odds, and calibration.</p>
+        </article>
+      </section>
+
+      <section class="bias-stage" aria-label="Interactive model">
+        <article class="bias-panel">
+          <div class="panel-top">
+            <div>
+              <h2 class="panel-title">Population map</h2>
+              <p class="panel-subtitle">
+                Each dot is a patient. X is the model's effective score, Y is actual health need. Dark dots are
+                Group A, cardinal dots are Group B. Enrolled patients are shown at full strength; non-enrolled
+                patients are muted.
+              </p>
+            </div>
+            <label class="story-toggle" for="storyMode">
+              <input type="checkbox" id="storyMode" checked />
+              Story mode
+            </label>
+          </div>
+
+          <div id="storyPanel" class="story-panel" aria-live="polite">
+            <div class="story-panel-top">
+              <span class="story-kicker">Story mode</span>
+              <span class="story-kicker" id="storyCounter">1 / 5</span>
+            </div>
+            <h3 class="story-step-title" id="storyTitle"></h3>
+            <p class="story-step-copy" id="storyCopy"></p>
+            <div class="story-controls">
+              <div class="story-nav">
+                <button class="story-btn" type="button" id="storyPrev" aria-label="Previous story step">←</button>
+                <button class="story-btn" type="button" id="storyNext" aria-label="Next story step">→</button>
+              </div>
+              <div class="story-dots" id="storyDots" aria-hidden="true"></div>
+            </div>
+          </div>
+
+          <div class="plot-wrap">
+            <div class="plot-container">
+              <div id="plot"></div>
+              <div id="tooltip" class="tooltip" role="status" aria-hidden="true"></div>
+            </div>
+            <div class="plot-note">
+              <span>Hover a patient to see exact values and enrollment status.</span>
+              <span>Threshold is applied after the chosen fairness adjustment.</span>
+            </div>
+          </div>
+
+          <div class="plot-legend" aria-label="Legend">
+            <span class="legend-pill"><span class="legend-swatch"></span>Group A</span>
+            <span class="legend-pill"><span class="legend-swatch cardinal"></span>Group B</span>
+            <span class="legend-pill"><span class="legend-swatch muted"></span>Muted points were not enrolled</span>
+          </div>
+        </article>
+
+        <aside class="bias-panel">
+          <div class="panel-top">
+            <div>
+              <h2 class="panel-title">Controls</h2>
+              <p class="panel-subtitle">
+                Adjust the model's target, threshold, and assumptions about access barriers. Fairness settings reshape
+                the score before the common enrollment cutoff is applied.
+              </p>
+            </div>
+          </div>
+
+          <div class="controls-grid">
+            <div class="control-card">
+              <label for="targetSelect">Prediction target <span class="control-value" id="targetLabel">Cost proxy</span></label>
+              <div class="control-row">
+                <select id="targetSelect">
+                  <option value="cost" selected>Predict healthcare cost</option>
+                  <option value="need">Predict health need</option>
+                </select>
+              </div>
+              <small>Cost reflects observed spending, which is distorted by access barriers. Need uses the latent need signal directly.</small>
+            </div>
+
+            <div class="control-card">
+              <label for="threshold">Enrollment threshold <span class="control-value" id="thresholdLabel">62</span></label>
+              <div class="control-row">
+                <input id="threshold" type="range" min="30" max="85" step="1" value="62" />
+              </div>
+              <small>Patients above the threshold are enrolled in the care management program.</small>
+            </div>
+
+            <div class="control-card">
+              <label for="accessDisparity">Access disparity <span class="control-value" id="accessLabel">30%</span></label>
+              <div class="control-row">
+                <input id="accessDisparity" type="range" min="0" max="50" step="1" value="30" />
+              </div>
+              <small>Higher values suppress Group B spending more strongly at the same underlying level of need.</small>
+            </div>
+
+            <div class="control-card">
+              <label for="fairnessSelect">Fairness constraint <span class="control-value" id="fairnessLabel">None</span></label>
+              <div class="control-row">
+                <select id="fairnessSelect">
+                  <option value="none" selected>None</option>
+                  <option value="demographic-parity">Demographic parity</option>
+                  <option value="equalized-odds">Equalized odds</option>
+                  <option value="calibration">Calibration</option>
+                </select>
+              </div>
+              <small>Each setting applies a different post-processing step to the model score before the threshold is used.</small>
+            </div>
+
+            <div class="control-card">
+              <div class="control-inline">
+                <div>
+                  <label style="margin: 0;">What to watch</label>
+                  <div class="tiny">The most revealing shift is usually the true positive rate gap between groups.</div>
+                </div>
+                <div class="tiny" id="updateStamp"></div>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="bias-dashboard" aria-label="Metrics and fairness summary">
+        <article class="bias-panel">
+          <div class="dashboard-header">
+            <div>
+              <h2>Fairness summary</h2>
+              <p>
+                The model is scored against the underlying need threshold, then summarized by group. This is where the
+                tension becomes visible: correcting one problem can create another.
+              </p>
+            </div>
+          </div>
+          <div class="callout" id="fairnessCallout">
+            <strong>Current bias readout</strong>
+            <p id="fairnessText">Loading...</p>
+          </div>
+          <div class="metric-grid">
+            <div class="metric-card">
+              <span>Overall accuracy</span>
+              <strong id="accuracyValue">—</strong>
+              <p>Share of patients classified correctly against the true need threshold.</p>
+            </div>
+            <div class="metric-card">
+              <span>Group A enrollment</span>
+              <strong id="enrollAValue">—</strong>
+              <p id="enrollASub">Positive prediction rate for Group A.</p>
+            </div>
+            <div class="metric-card">
+              <span>Group B enrollment</span>
+              <strong id="enrollBValue">—</strong>
+              <p id="enrollBSub">Positive prediction rate for Group B.</p>
+            </div>
+            <div class="metric-card">
+              <span>True positive gap</span>
+              <strong id="tprGapValue">—</strong>
+              <p>Difference in TPR between groups. Big gaps mean one group's high-need patients are being missed more often.</p>
+            </div>
+            <div class="metric-card">
+              <span>False negative gap</span>
+              <strong id="fnrGapValue">—</strong>
+              <p>Difference in missed high-need cases between groups.</p>
+            </div>
+            <div class="metric-card">
+              <span>Positive predictive value gap</span>
+              <strong id="ppvGapValue">—</strong>
+              <p>When equalized odds improves one metric, calibration or PPV can still move in the wrong direction.</p>
+            </div>
+          </div>
+        </article>
+
+        <aside class="bias-panel">
+          <div class="dashboard-header">
+            <div>
+              <h2>Confusion matrices</h2>
+              <p>Counts are based on a true-need threshold of 60 on the 0-100 need scale.</p>
+            </div>
+          </div>
+          <div id="matrices"></div>
+        </aside>
+      </section>
+
+      <section class="bias-projects" id="projects">
+        <h2>Projects</h2>
+        <div class="project-grid">
+          <a class="project-link" href="algorithmic-bias-explorer.html">
+            <strong>Algorithmic Bias Explorer</strong>
+            <p>Interactive explainer showing how a cost proxy can systematically underserve patients with equal need.</p>
+          </a>
+          <a class="project-link" href="health-policy-simulator.html">
+            <strong>Health Policy Simulator</strong>
+            <p>Policy sandbox for exploring tradeoffs between coverage, cost, access, and reimbursement.</p>
+          </a>
         </div>
       </section>
+
+      <details class="bias-details">
+        <summary>About this tool</summary>
+        <div class="bias-details-body">
+          <p>
+            This page is a simplified teaching model, not a clinical decision system. It simulates 500 patients with
+            similar underlying health-need distributions across two abstract groups, then uses observed healthcare
+            spending as a proxy when the target is set to cost.
+          </p>
+          <ul>
+            <li>Access disparity suppresses Group B spending relative to need, which lowers cost-based scores even when underlying need is the same.</li>
+            <li>Demographic parity equalizes enrollment rates, equalized odds tries to equalize TPR and FPR, and calibration rescales scores so they better reflect need.</li>
+            <li>The formulas are intentionally transparent and approximate. They are meant to illustrate tradeoffs, not estimate real hospital performance.</li>
+            <li>The model runs entirely in the browser and can be used on desktop or mobile without a backend.</li>
+          </ul>
+        </div>
+      </details>
     </div>
-  </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p class="footer-copy">© <span class="year"></span> Adam Langshaw</p>
+      <ul class="footer-links">
+        <li><a href="about.html">About</a></li>
+        <li><a href="writing.html">Writing</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+  </footer>
 
   <script>
-    const scenarios = {
-      loans: {
-        id: "loans",
-        description:
-          "Positive = “approved for a loan.” False negatives mean qualified applicants are denied; false positives mean risky loans are approved.",
-        errorPreference:
-          "Here we usually worry more about false negatives for marginalized groups (qualified but denied).",
-      },
-      hiring: {
-        id: "hiring",
-        description:
-          "Positive = “invited to interview.” False negatives mean strong candidates are filtered out; false positives mean weaker candidates get through.",
-        errorPreference:
-          "False negatives weigh heavily here: a group with more false negatives may be shut out of opportunities.",
-      },
-      health: {
-        id: "health",
-        description:
-          "Positive = “flagged as high-risk and given extra care.” False negatives mean high-risk patients are missed; false positives mean low-risk patients are overtreated.",
-        errorPreference:
-          "In health risk, missing high-risk patients (false negatives) can be far more harmful than over-flagging.",
-      },
-    };
+    (() => {
+      const nav = document.getElementById("site-nav");
+      const navBtn = document.getElementById("nav-menu-btn");
+      const navLinks = document.getElementById("nav-links");
+      const year = document.querySelector(".year");
+      const root = document.documentElement;
 
-    let currentScenario = "loans";
+      year.textContent = new Date().getFullYear();
 
-    document.querySelectorAll(".scenario-card").forEach((card) => {
-      card.addEventListener("click", () => {
-        document.querySelectorAll(".scenario-card").forEach((c) => c.classList.remove("selected"));
-        card.classList.add("selected");
-        currentScenario = card.dataset.scenario;
-        document.getElementById("scenarioDescription").textContent =
-          scenarios[currentScenario].description + " " + scenarios[currentScenario].errorPreference;
-        updateBiasModel();
+      const syncNav = () => {
+        nav.classList.toggle("scrolled", window.scrollY > 8);
+      };
+
+      syncNav();
+      window.addEventListener("scroll", syncNav, { passive: true });
+
+      if (navBtn && navLinks) {
+        navBtn.addEventListener("click", () => {
+          const open = navLinks.classList.toggle("open");
+          navBtn.setAttribute("aria-expanded", String(open));
+        });
+
+        navLinks.querySelectorAll("a").forEach((link) => {
+          link.addEventListener("click", () => {
+            navLinks.classList.remove("open");
+            navBtn.setAttribute("aria-expanded", "false");
+          });
+        });
+      }
+
+      const state = {
+        target: "cost",
+        threshold: 62,
+        accessDisparity: 30,
+        fairness: "none",
+        storyMode: true,
+        storyStep: 0,
+      };
+
+      const needCutoff = 60;
+      const width = 500;
+      const height = 500;
+      const margin = { top: 26, right: 24, bottom: 58, left: 58 };
+      const plotNode = document.getElementById("plot");
+      const tooltip = d3.select("#tooltip");
+      const storyPanel = document.getElementById("storyPanel");
+      const storyTitle = document.getElementById("storyTitle");
+      const storyCopy = document.getElementById("storyCopy");
+      const storyCounter = document.getElementById("storyCounter");
+      const storyDots = document.getElementById("storyDots");
+      const storyModeInput = document.getElementById("storyMode");
+      const targetSelect = document.getElementById("targetSelect");
+      const thresholdInput = document.getElementById("threshold");
+      const accessInput = document.getElementById("accessDisparity");
+      const fairnessSelect = document.getElementById("fairnessSelect");
+
+      const targetLabel = document.getElementById("targetLabel");
+      const thresholdLabel = document.getElementById("thresholdLabel");
+      const accessLabel = document.getElementById("accessLabel");
+      const fairnessLabel = document.getElementById("fairnessLabel");
+      const updateStamp = document.getElementById("updateStamp");
+
+      const fairnessText = document.getElementById("fairnessText");
+      const accuracyValue = document.getElementById("accuracyValue");
+      const enrollAValue = document.getElementById("enrollAValue");
+      const enrollBValue = document.getElementById("enrollBValue");
+      const enrollASub = document.getElementById("enrollASub");
+      const enrollBSub = document.getElementById("enrollBSub");
+      const tprGapValue = document.getElementById("tprGapValue");
+      const fnrGapValue = document.getElementById("fnrGapValue");
+      const ppvGapValue = document.getElementById("ppvGapValue");
+      const matricesNode = document.getElementById("matrices");
+      let currentById = new Map();
+
+      const stories = [
+        {
+          title: "Same health need, different spending",
+          copy: "The two groups start with almost identical need distributions. That keeps the source of bias focused on the proxy itself, not on the underlying population.",
+          preset: { target: "cost", threshold: 62, accessDisparity: 0, fairness: "none" },
+        },
+        {
+          title: "Access barriers suppress Group B spending",
+          copy: "Turn on the disparity and Group B's observed spending falls at the same level of need. A cost-based model now has a reason to underrate those patients.",
+          preset: { target: "cost", threshold: 62, accessDisparity: 35, fairness: "none" },
+        },
+        {
+          title: "The proxy misses sick patients",
+          copy: "With a cost target, the threshold catches more high-need Group A patients than Group B patients. The same need is no longer being treated the same way.",
+          preset: { target: "cost", threshold: 62, accessDisparity: 35, fairness: "none" },
+        },
+        {
+          title: "Predict need directly",
+          copy: "Switching the target from cost to need dramatically reduces the distortion. This is the cleanest way to show why the choice of label matters.",
+          preset: { target: "need", threshold: 62, accessDisparity: 35, fairness: "none" },
+        },
+        {
+          title: "Now explore the fairness tradeoffs",
+          copy: "Try demographic parity, equalized odds, or calibration. Each choice improves one definition of fairness while moving other metrics in a different direction.",
+          preset: { target: "cost", threshold: 62, accessDisparity: 35, fairness: "equalized-odds" },
+        },
+      ];
+
+      const prng = mulberry32(73421);
+      const patients = d3.range(500).map((i) => {
+        const group = i < 250 ? "A" : "B";
+        return {
+          id: i + 1,
+          group,
+          need: clamp(sampleNeed(prng), 6, 98),
+          jitter: (prng() - 0.5) * 3.2,
+        };
       });
-    });
 
-    function simulateGroup(baseRatePct, thresholdPct) {
-      const baseRate = baseRatePct / 100;
-      const threshold = thresholdPct / 100;
-      const n = 10000;
+      storyDots.innerHTML = stories.map((_, i) => `<span class="story-dot${i === 0 ? " active" : ""}" data-step="${i}"></span>`).join("");
 
-      let tp = 0;
-      let fp = 0;
-      let tn = 0;
-      let fn = 0;
+      const svg = d3
+        .select(plotNode)
+        .append("svg")
+        .attr("viewBox", `0 0 ${width} ${height}`)
+        .attr("class", "plot-svg")
+        .attr("role", "img")
+        .attr("aria-label", "Scatter plot of predicted risk score against actual need");
 
-      for (let i = 0; i < n; i++) {
-        const isPositive = Math.random() < baseRate;
-        // Simulate a score: if truly positive, scores are higher on average
-        const mean = isPositive ? 0.7 : 0.3;
-        const score = clamp01(mean + (Math.random() - 0.5) * 0.6);
-        const predictedPositive = score >= threshold;
+      const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+      const innerWidth = width - margin.left - margin.right;
+      const innerHeight = height - margin.top - margin.bottom;
 
-        if (isPositive && predictedPositive) tp++;
-        else if (isPositive && !predictedPositive) fn++;
-        else if (!isPositive && predictedPositive) fp++;
-        else tn++;
+      const xScale = d3.scaleLinear().domain([0, 100]).range([0, innerWidth]);
+      const yScale = d3.scaleLinear().domain([0, 100]).range([innerHeight, 0]);
+      const color = d3.scaleOrdinal().domain(["A", "B"]).range(["#2b313b", "#8c1515"]);
+
+      const xGrid = g.append("g").attr("aria-hidden", "true");
+      const yGrid = g.append("g").attr("aria-hidden", "true");
+      const referenceLayer = g.append("g");
+      const pointsLayer = g.append("g");
+      const axisLayer = g.append("g");
+
+      const defs = svg.append("defs");
+      defs
+        .append("clipPath")
+        .attr("id", "plotClip")
+        .append("rect")
+        .attr("x", margin.left)
+        .attr("y", margin.top)
+        .attr("width", innerWidth)
+        .attr("height", innerHeight);
+
+      g.attr("clip-path", "url(#plotClip)");
+
+      const xAxis = d3.axisBottom(xScale).ticks(5).tickSizeOuter(0);
+      const yAxis = d3.axisLeft(yScale).ticks(5).tickSizeOuter(0);
+
+      const xAxisGroup = axisLayer
+        .append("g")
+        .attr("class", "svg-axis")
+        .attr("transform", `translate(0,${innerHeight})`)
+        .call(xAxis);
+
+      const yAxisGroup = axisLayer.append("g").attr("class", "svg-axis").call(yAxis);
+
+      axisLayer
+        .append("text")
+        .attr("class", "axis-title")
+        .attr("x", innerWidth / 2)
+        .attr("y", innerHeight + 42)
+        .attr("text-anchor", "middle")
+        .text("Predicted risk score");
+
+      axisLayer
+        .append("text")
+        .attr("class", "axis-title")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -innerHeight / 2)
+        .attr("y", -38)
+        .attr("text-anchor", "middle")
+        .text("Actual health need");
+
+      referenceLayer
+        .append("line")
+        .attr("class", "ref-line")
+        .attr("x1", xScale(10))
+        .attr("x2", xScale(90))
+        .attr("y1", yScale(10))
+        .attr("y2", yScale(90));
+
+      const thresholdGroup = referenceLayer.append("g");
+
+      const nodes = pointsLayer
+        .selectAll("circle")
+        .data(patients, (d) => d.id)
+        .join("circle")
+        .attr("class", (d) => `point ${d.group === "A" ? "group-a" : "group-b"}`)
+        .attr("r", 4.8)
+        .attr("stroke", "rgba(255,255,255,0.72)")
+        .attr("stroke-width", 0.8)
+        .attr("vector-effect", "non-scaling-stroke");
+
+      nodes
+        .on("pointerenter", function (event, d) {
+          d3.select(this).classed("hovered", true);
+          showTooltip(event, d);
+        })
+        .on("pointermove", function (event, d) {
+          showTooltip(event, d);
+        })
+        .on("pointerleave", function () {
+          d3.select(this).classed("hovered", false);
+          hideTooltip();
+        });
+
+      const resizeObserver = new ResizeObserver(() => {
+        render(false);
+      });
+      resizeObserver.observe(plotNode);
+
+      document.getElementById("storyPrev").addEventListener("click", () => {
+        if (!state.storyMode) {
+          state.storyMode = true;
+          storyModeInput.checked = true;
+        }
+        state.storyStep = (state.storyStep + stories.length - 1) % stories.length;
+        applyStoryStep(state.storyStep);
+      });
+
+      document.getElementById("storyNext").addEventListener("click", () => {
+        if (!state.storyMode) {
+          state.storyMode = true;
+          storyModeInput.checked = true;
+        }
+        state.storyStep = (state.storyStep + 1) % stories.length;
+        applyStoryStep(state.storyStep);
+      });
+
+      storyModeInput.addEventListener("change", () => {
+        state.storyMode = storyModeInput.checked;
+        storyPanel.classList.toggle("hidden", !state.storyMode);
+        if (state.storyMode) {
+          applyStoryStep(state.storyStep, true);
+        }
+      });
+
+      targetSelect.addEventListener("change", () => {
+        state.target = targetSelect.value;
+        if (state.storyMode && state.storyStep === 3 && state.target !== "need") {
+          state.storyStep = 3;
+        }
+        render();
+      });
+
+      thresholdInput.addEventListener("input", () => {
+        state.threshold = Number(thresholdInput.value);
+        render();
+      });
+
+      accessInput.addEventListener("input", () => {
+        state.accessDisparity = Number(accessInput.value);
+        render();
+      });
+
+      fairnessSelect.addEventListener("change", () => {
+        state.fairness = fairnessSelect.value;
+        render();
+      });
+
+      document.addEventListener("pointermove", (event) => {
+        const bounds = document.body.getBoundingClientRect();
+        const x = ((event.clientX - bounds.left) / bounds.width) * 100;
+        const y = ((event.clientY - bounds.top) / bounds.height) * 100;
+        root.style.setProperty("--pointer-x", `${clamp(x, 0, 100)}%`);
+        root.style.setProperty("--pointer-y", `${clamp(y, 0, 100)}%`);
+      }, { passive: true });
+
+      applyStoryStep(0, true);
+
+      function applyStoryStep(index, silent = false) {
+        const story = stories[index];
+        state.storyStep = index;
+        if (story && story.preset) {
+          state.target = story.preset.target;
+          state.threshold = story.preset.threshold;
+          state.accessDisparity = story.preset.accessDisparity;
+          state.fairness = story.preset.fairness;
+        }
+        targetSelect.value = state.target;
+        thresholdInput.value = state.threshold;
+        accessInput.value = state.accessDisparity;
+        fairnessSelect.value = state.fairness;
+        storyModeInput.checked = state.storyMode;
+        storyPanel.classList.toggle("hidden", !state.storyMode);
+        render(silent);
       }
 
-      const selectionRate = (tp + fp) / n;
-      const tpr = tp / (tp + fn || 1);
-      const fpr = fp / (fp + tn || 1);
+      function render(silent = false) {
+        targetLabel.textContent = state.target === "cost" ? "Cost proxy" : "Need";
+        thresholdLabel.textContent = state.threshold;
+        accessLabel.textContent = `${state.accessDisparity}%`;
+        fairnessLabel.textContent = prettyFairness(state.fairness);
+        updateStamp.textContent = state.storyMode ? `Story ${state.storyStep + 1}` : "Manual mode";
 
-      return { selectionRate, tpr, fpr, tp, fp, tn, fn };
-    }
+        const prepared = preparePatients();
+        const scoresA = prepared.filter((d) => d.group === "A").map((d) => d.rawScore);
+        const scoresB = prepared.filter((d) => d.group === "B").map((d) => d.rawScore);
+        const labelA = prepared.filter((d) => d.group === "A").map((d) => d.isHighNeed);
+        const labelB = prepared.filter((d) => d.group === "B").map((d) => d.isHighNeed);
 
-    function clamp01(x) {
-      return Math.min(1, Math.max(0, x));
-    }
+        const baseA = scoreMetrics(scoresA, labelA, state.threshold);
+        const baseB = scoreMetrics(scoresB, labelB, state.threshold);
+        const shifts = computeFairnessShifts({
+          scoresA,
+          scoresB,
+          labelA,
+          labelB,
+          baseA,
+          baseB,
+        });
 
-    function pct(x) {
-      return (x * 100).toFixed(1) + "%";
-    }
+        const finalData = prepared.map((patient) => {
+          const shift = shifts[patient.group];
+          const effectiveScore = applyTransform(
+            patient.rawScore,
+            patient,
+            shift,
+            prepared,
+          );
+          const enrolled = effectiveScore >= state.threshold;
+          return {
+            ...patient,
+            effectiveScore,
+            enrolled,
+            x: clamp(effectiveScore, 0, 100),
+            y: clamp(patient.need, 0, 100),
+          };
+        });
 
-    function updateBiasModel() {
-      const baseRateA = parseInt(document.getElementById("baseRateA").value, 10);
-      const baseRateB = parseInt(document.getElementById("baseRateB").value, 10);
-      const thresholdA = parseInt(document.getElementById("thresholdA").value, 10);
-      const thresholdB = parseInt(document.getElementById("thresholdB").value, 10);
+        currentById = new Map(finalData.map((item) => [item.id, item]));
 
-      document.getElementById("baseRateALabel").textContent = baseRateA + "%";
-      document.getElementById("baseRateBLabel").textContent = baseRateB + "%";
-      document.getElementById("thresholdALabel").textContent = (thresholdA / 100).toFixed(2);
-      document.getElementById("thresholdBLabel").textContent = (thresholdB / 100).toFixed(2);
+        const groups = groupStats(finalData);
+        const overallAccuracy = finalData.reduce((acc, d) => acc + (d.enrolled === d.isHighNeed ? 1 : 0), 0) / finalData.length;
+        const metrics = {
+          A: summarizeGroup(groups.A),
+          B: summarizeGroup(groups.B),
+        };
 
-      const statsA = simulateGroup(baseRateA, thresholdA);
-      const statsB = simulateGroup(baseRateB, thresholdB);
+        updateCallout(metrics, shifts);
+        updateMetrics(metrics, overallAccuracy);
+        updateMatrices(metrics);
+        updateStoryPanel();
 
-      // Selection rate display (both groups)
-      const selA = pct(statsA.selectionRate);
-      const selB = pct(statsB.selectionRate);
-      document.getElementById("selectionRateMain").textContent = `${selA} vs ${selB}`;
-      document.getElementById(
-        "selectionRateSub"
-      ).textContent = `Group A vs Group B share receiving a positive decision.`;
+        const maxX = 100;
+        xScale.domain([0, maxX]);
+        yScale.domain([0, 100]);
+        xAxisGroup.transition().duration(silent ? 0 : 500).call(xAxis.scale(xScale));
+        yAxisGroup.transition().duration(silent ? 0 : 500).call(yAxis.scale(yScale));
 
-      // Equal opportunity (TPR) gap
-      const eoGap = (statsA.tpr - statsB.tpr) * 100;
-      const eoAbs = Math.abs(eoGap).toFixed(1);
-      document.getElementById("eoGapMain").textContent = eoAbs + " pts";
-      document.getElementById(
-        "eoGapSub"
-      ).textContent = `Difference in true positive rates — ${pct(statsA.tpr)} vs ${pct(statsB.tpr)}.`;
+        const gridX = d3.range(0, 101, 20).filter((v) => v !== 100);
+        const gridY = d3.range(0, 101, 20).filter((v) => v !== 100);
 
-      // False positive gap
-      const fpGap = (statsA.fpr - statsB.fpr) * 100;
-      const fpAbs = Math.abs(fpGap).toFixed(1);
-      document.getElementById("fpGapMain").textContent = fpAbs + " pts";
-      document.getElementById(
-        "fpGapSub"
-      ).textContent = `Difference in false positive rates — ${pct(statsA.fpr)} vs ${pct(statsB.fpr)}.`;
+        const xLines = xGrid.selectAll("line").data(gridX, (d) => d);
+        xLines.join(
+          (enter) => enter.append("line").attr("class", "grid-line").attr("y1", 0).attr("y2", innerHeight),
+          (update) => update,
+          (exit) => exit.remove(),
+        )
+          .attr("x1", (d) => xScale(d))
+          .attr("x2", (d) => xScale(d));
 
-      // Error burden: which group shoulders more of the "unfair" errors?
-      const weightFalseNegatives = currentScenario === "health" ? 3 : 2;
-      const weightFalsePositives = 1;
+        const yLines = yGrid.selectAll("line").data(gridY, (d) => d);
+        yLines.join(
+          (enter) => enter.append("line").attr("class", "grid-line").attr("x1", 0).attr("x2", innerWidth),
+          (update) => update,
+          (exit) => exit.remove(),
+        )
+          .attr("y1", (d) => yScale(d))
+          .attr("y2", (d) => yScale(d));
 
-      const burdenA =
-        statsA.fn * weightFalseNegatives + statsA.fp * weightFalsePositives;
-      const burdenB =
-        statsB.fn * weightFalseNegatives + statsB.fp * weightFalsePositives;
+        const thresholdX = xScale(state.threshold);
+        const thresholdLines = thresholdGroup.selectAll("line").data([state.threshold]);
+        thresholdLines.join("line")
+          .attr("class", "threshold-line")
+          .attr("x1", thresholdX)
+          .attr("x2", thresholdX)
+          .attr("y1", 0)
+          .attr("y2", innerHeight);
 
-      let burdenText = "Roughly balanced";
-      if (burdenA > burdenB * 1.1) {
-        burdenText = "Group A bears more of the harmful errors.";
-      } else if (burdenB > burdenA * 1.1) {
-        burdenText = "Group B bears more of the harmful errors.";
+        const thresholdLabelNode = thresholdGroup.selectAll("text").data([state.threshold]);
+        thresholdLabelNode.join("text")
+          .attr("class", "threshold-label")
+          .attr("x", thresholdX + 6)
+          .attr("y", 16)
+          .text(`Threshold ${state.threshold}`);
+
+        const t = d3.transition().duration(silent ? 0 : 650).ease(d3.easeCubicOut);
+        nodes
+          .classed("enrolled", (d) => currentById.get(d.id).enrolled)
+          .classed("dimmed", (d) => !currentById.get(d.id).enrolled)
+          .transition(t)
+          .attr("cx", (d) => xScale(currentById.get(d.id).x))
+          .attr("cy", (d) => yScale(currentById.get(d.id).y));
+
+        if (!silent) {
+          updateStoryPanel();
+        }
+
+        function applyHoveredAlpha() {
+          if (!tooltip.node().__visible) {
+            return;
+          }
+        }
       }
 
-      const totalErrors = burdenA + burdenB || 1;
-      const shareA = ((burdenA / totalErrors) * 100).toFixed(1);
-      const shareB = ((burdenB / totalErrors) * 100).toFixed(1);
+      function preparePatients() {
+        return patients.map((patient) => {
+          const access = patient.group === "B" ? state.accessDisparity / 100 : 0;
+          const observedCost = clamp(
+            patient.need * (1 - access * 0.55) + gaussian(patient.id, 3.2),
+            0,
+            100,
+          );
+          const rawScore = state.target === "cost" ? observedCost : patient.need + gaussian(patient.id + 11, 2.2);
+          const isHighNeed = patient.need >= needCutoff;
+          return {
+            ...patient,
+            observedCost,
+            rawScore: clamp(rawScore, 0, 100),
+            isHighNeed,
+          };
+        });
+      }
 
-      document.getElementById("errorBurdenMain").textContent = `${shareA}% vs ${shareB}%`;
-      document.getElementById("errorBurdenSub").textContent = burdenText;
-    }
+      function computeFairnessShifts({ scoresA, scoresB, labelA, labelB, baseA, baseB }) {
+        const shifts = { A: 0, B: 0 };
 
-    // Initialize on load
-    updateBiasModel();
+        if (state.fairness === "none") {
+          return shifts;
+        }
+
+        if (state.fairness === "demographic-parity") {
+          const targetRate = (baseA.selectionRate + baseB.selectionRate) / 2;
+          const thresholdA = quantile(scoresA, 1 - targetRate);
+          const thresholdB = quantile(scoresB, 1 - targetRate);
+          shifts.A = thresholdA - state.threshold;
+          shifts.B = thresholdB - state.threshold;
+          return shifts;
+        }
+
+        if (state.fairness === "equalized-odds") {
+          const targetTPR = (baseA.tpr + baseB.tpr) / 2;
+          const targetFPR = (baseA.fpr + baseB.fpr) / 2;
+          const thresholdA = bestEqualizedOddsThreshold(scoresA, labelA, targetTPR, targetFPR, state.threshold);
+          const thresholdB = bestEqualizedOddsThreshold(scoresB, labelB, targetTPR, targetFPR, state.threshold);
+          shifts.A = thresholdA - state.threshold;
+          shifts.B = thresholdB - state.threshold;
+          return shifts;
+        }
+
+        if (state.fairness === "calibration") {
+          const statsA = calibrationStats(scoresA, patients.filter((d) => d.group === "A").map((d) => d.need));
+          const statsB = calibrationStats(scoresB, patients.filter((d) => d.group === "B").map((d) => d.need));
+          shifts.A = { type: "calibration", ...statsA };
+          shifts.B = { type: "calibration", ...statsB };
+        }
+
+        return shifts;
+      }
+
+      function applyTransform(rawScore, patient, shift, allPatients) {
+        if (state.fairness === "calibration" && shift && shift.type === "calibration") {
+          const transformed = shift.intercept + shift.slope * rawScore;
+          return clamp(transformed, 0, 100);
+        }
+        return clamp(rawScore + (typeof shift === "number" ? shift : 0), 0, 100);
+      }
+
+      function scoreMetrics(scores, labels, threshold) {
+        let tp = 0;
+        let fp = 0;
+        let tn = 0;
+        let fn = 0;
+
+        scores.forEach((score, index) => {
+          const pred = score >= threshold;
+          const actual = labels[index];
+          if (pred && actual) tp += 1;
+          else if (pred && !actual) fp += 1;
+          else if (!pred && actual) fn += 1;
+          else tn += 1;
+        });
+
+        return {
+          tp,
+          fp,
+          tn,
+          fn,
+          selectionRate: (tp + fp) / scores.length,
+          tpr: tp / Math.max(1, tp + fn),
+          fpr: fp / Math.max(1, fp + tn),
+          ppv: tp / Math.max(1, tp + fp),
+        };
+      }
+
+      function bestEqualizedOddsThreshold(scores, labels, targetTPR, targetFPR, fallback) {
+        let best = fallback;
+        let bestScore = Infinity;
+        const candidates = d3.range(0, 100.01, 0.5);
+        for (const candidate of candidates) {
+          const metrics = scoreMetrics(scores, labels, candidate);
+          const score = (metrics.tpr - targetTPR) ** 2 + (metrics.fpr - targetFPR) ** 2;
+          if (score < bestScore) {
+            bestScore = score;
+            best = candidate;
+          }
+        }
+        return best;
+      }
+
+      function calibrationStats(scores, needs) {
+        const meanScore = d3.mean(scores) || 0;
+        const meanNeed = d3.mean(needs) || 0;
+        const sdScore = d3.deviation(scores) || 1;
+        const sdNeed = d3.deviation(needs) || 1;
+        return {
+          slope: sdNeed / sdScore,
+          intercept: meanNeed - (sdNeed / sdScore) * meanScore,
+        };
+      }
+
+      function groupStats(data) {
+        return data.reduce(
+          (acc, item) => {
+            const bucket = acc[item.group];
+            if (!bucket) {
+              return acc;
+            }
+            bucket.count += 1;
+            bucket.tp += item.enrolled && item.isHighNeed ? 1 : 0;
+            bucket.fp += item.enrolled && !item.isHighNeed ? 1 : 0;
+            bucket.tn += !item.enrolled && !item.isHighNeed ? 1 : 0;
+            bucket.fn += !item.enrolled && item.isHighNeed ? 1 : 0;
+            bucket.enrolled += item.enrolled ? 1 : 0;
+            return acc;
+          },
+          {
+            A: { count: 0, tp: 0, fp: 0, tn: 0, fn: 0, enrolled: 0 },
+            B: { count: 0, tp: 0, fp: 0, tn: 0, fn: 0, enrolled: 0 },
+          },
+        );
+      }
+
+      function summarizeGroup(group) {
+        const tpr = group.tp / Math.max(1, group.tp + group.fn);
+        const fnr = group.fn / Math.max(1, group.tp + group.fn);
+        const ppv = group.tp / Math.max(1, group.tp + group.fp);
+        const enrollmentRate = group.enrolled / Math.max(1, group.count);
+        const accuracy = (group.tp + group.tn) / Math.max(1, group.count);
+        return { ...group, tpr, fnr, ppv, enrollmentRate, accuracy };
+      }
+
+      function updateCallout(metrics, shifts) {
+        const tprGap = metrics.A.tpr - metrics.B.tpr;
+        const ppvGap = metrics.A.ppv - metrics.B.ppv;
+        const enrollGap = metrics.A.enrollmentRate - metrics.B.enrollmentRate;
+        let headline = "";
+        let detail = "";
+
+        if (Math.abs(tprGap) >= Math.abs(ppvGap)) {
+          headline = `Group B's true positive rate is ${Math.abs(tprGap * 100).toFixed(1)} points ${tprGap > 0 ? "lower" : "higher"} than Group A's.`;
+          detail = `That means patients with equal need are being missed at different rates. Enrollment differs by ${Math.abs(enrollGap * 100).toFixed(1)} points.`;
+        } else {
+          headline = `Positive predictive value differs by ${Math.abs(ppvGap * 100).toFixed(1)} points between groups.`;
+          detail = "The model may look more balanced after a fairness adjustment, but it can still be better calibrated for one group than the other.";
+        }
+
+        if (state.fairness === "demographic-parity") {
+          detail = `Demographic parity equalizes enrollment rates, but it can widen other gaps. Current enrollment difference: ${Math.abs(enrollGap * 100).toFixed(1)} points.`;
+        } else if (state.fairness === "equalized-odds") {
+          detail = `Equalized odds pulls TPR and FPR closer together, but the PPV gap is still ${Math.abs(ppvGap * 100).toFixed(1)} points.`;
+        } else if (state.fairness === "calibration") {
+          detail = "Calibration rescales the score so it better tracks need within each group, but it does not guarantee equal enrollment or equal error rates.";
+        }
+
+        fairnessText.textContent = `${headline} ${detail}`;
+      }
+
+      function updateMetrics(metrics, overallAccuracy) {
+        accuracyValue.textContent = `${fmtPct(overallAccuracy)}`;
+        enrollAValue.textContent = `${fmtPct(metrics.A.enrollmentRate)}`;
+        enrollBValue.textContent = `${fmtPct(metrics.B.enrollmentRate)}`;
+        enrollASub.textContent = `TPR ${fmtPct(metrics.A.tpr)} · FNR ${fmtPct(metrics.A.fnr)} · PPV ${fmtPct(metrics.A.ppv)}`;
+        enrollBSub.textContent = `TPR ${fmtPct(metrics.B.tpr)} · FNR ${fmtPct(metrics.B.fnr)} · PPV ${fmtPct(metrics.B.ppv)}`;
+        tprGapValue.textContent = `${fmtSignedGap(metrics.A.tpr - metrics.B.tpr)}`;
+        fnrGapValue.textContent = `${fmtSignedGap(metrics.A.fnr - metrics.B.fnr)}`;
+        ppvGapValue.textContent = `${fmtSignedGap(metrics.A.ppv - metrics.B.ppv)}`;
+      }
+
+      function updateMatrices(metrics) {
+        matricesNode.innerHTML = ["A", "B"].map((group) => {
+          const m = metrics[group];
+          return `
+            <article class="confusion-card">
+              <h3>Group ${group}</h3>
+              <div class="confusion-grid">
+                <div class="confusion-cell">
+                  <span>True positive</span>
+                  <strong>${m.tp}</strong>
+                  <p>Enrolled and truly high need</p>
+                </div>
+                <div class="confusion-cell">
+                  <span>False positive</span>
+                  <strong>${m.fp}</strong>
+                  <p>Enrolled but not truly high need</p>
+                </div>
+                <div class="confusion-cell">
+                  <span>False negative</span>
+                  <strong>${m.fn}</strong>
+                  <p>Missed high-need patient</p>
+                </div>
+                <div class="confusion-cell">
+                  <span>True negative</span>
+                  <strong>${m.tn}</strong>
+                  <p>Correctly not enrolled</p>
+                </div>
+              </div>
+            </article>
+          `;
+        }).join("");
+      }
+
+      function updateStoryPanel() {
+        const story = stories[state.storyStep];
+        storyTitle.textContent = story.title;
+        storyCopy.textContent = story.copy;
+        storyCounter.textContent = `${state.storyStep + 1} / ${stories.length}`;
+        storyDots.querySelectorAll(".story-dot").forEach((dot, index) => {
+          dot.classList.toggle("active", index === state.storyStep);
+        });
+      }
+
+      function showTooltip(event, d) {
+        const current = currentById.get(d.id) || d;
+        const node = plotNode.parentElement.getBoundingClientRect();
+        const pageX = event.clientX - node.left;
+        const pageY = event.clientY - node.top;
+        tooltip
+          .style("left", `${pageX}px`)
+          .style("top", `${pageY}px`)
+          .style("opacity", 1)
+          .attr("aria-hidden", "false")
+          .html(`
+            <strong>Patient ${current.id} · Group ${current.group}</strong>
+            <p>Actual need: ${fmtNum(current.need)}<br>Observed spending: ${fmtNum(current.observedCost)}<br>Score: ${fmtNum(current.effectiveScore)}<br>${current.enrolled ? "Enrolled" : "Not enrolled"}</p>
+          `);
+        tooltip.node().__visible = true;
+      }
+
+      function hideTooltip() {
+        tooltip.style("opacity", 0).attr("aria-hidden", "true");
+        tooltip.node().__visible = false;
+      }
+
+      function prettyFairness(value) {
+        switch (value) {
+          case "demographic-parity":
+            return "Demographic parity";
+          case "equalized-odds":
+            return "Equalized odds";
+          case "calibration":
+            return "Calibration";
+          default:
+            return "None";
+        }
+      }
+
+      function fmtNum(value) {
+        return d3.format(".1f")(value);
+      }
+
+      function fmtPct(value) {
+        return `${d3.format(".1%")(value)}`;
+      }
+
+      function fmtSignedGap(value) {
+        const signed = `${value >= 0 ? "+" : "–"}${d3.format(".1f")(Math.abs(value) * 100)} pts`;
+        return signed;
+      }
+
+      function sampleNeed(rng) {
+        const base = rng() < 0.66 ? gaussianFromRng(rng, 59, 12) : gaussianFromRng(rng, 33, 10);
+        return base;
+      }
+
+      function gaussian(seed, spread) {
+        const r1 = seeded(seed + 97);
+        const r2 = seeded(seed + 193);
+        const u1 = Math.max(1e-6, r1());
+        const u2 = r2();
+        const z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+        return z * spread;
+      }
+
+      function gaussianFromRng(rng, mean, sd) {
+        const u1 = Math.max(1e-6, rng());
+        const u2 = rng();
+        const z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+        return mean + z * sd;
+      }
+
+      function seeded(seed) {
+        let value = seed % 2147483647;
+        if (value <= 0) value += 2147483646;
+        return () => {
+          value = (value * 16807) % 2147483647;
+          return (value - 1) / 2147483646;
+        };
+      }
+
+      function mulberry32(seed) {
+        return function () {
+          let t = (seed += 0x6d2b79f5);
+          t = Math.imul(t ^ (t >>> 15), t | 1);
+          t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+
+      function clamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
+      }
+
+      function quantile(values, p) {
+        const sorted = values.slice().sort((a, b) => a - b);
+        return d3.quantileSorted(sorted, clamp(p, 0, 1));
+      }
+
+      function updateStoryVisibility() {
+        storyPanel.classList.toggle("hidden", !state.storyMode);
+      }
+
+      function transitionSelection(selection, silent = false) {
+        return silent ? selection : selection.transition(d3.transition().duration(650).ease(d3.easeCubicOut));
+      }
+
+      function renderAxesAndPoints() {
+        const prepared = preparePatients();
+        const scoresA = prepared.filter((d) => d.group === "A").map((d) => d.rawScore);
+        const scoresB = prepared.filter((d) => d.group === "B").map((d) => d.rawScore);
+        const labelA = prepared.filter((d) => d.group === "A").map((d) => d.isHighNeed);
+        const labelB = prepared.filter((d) => d.group === "B").map((d) => d.isHighNeed);
+        const baseA = scoreMetrics(scoresA, labelA, state.threshold);
+        const baseB = scoreMetrics(scoresB, labelB, state.threshold);
+        const shifts = computeFairnessShifts({ scoresA, scoresB, labelA, labelB, baseA, baseB });
+        return prepared.map((patient) => {
+          const shift = shifts[patient.group];
+          const effectiveScore = applyTransform(patient.rawScore, patient, shift, prepared);
+          return {
+            ...patient,
+            effectiveScore,
+            enrolled: effectiveScore >= state.threshold,
+            x: clamp(effectiveScore, 0, 100),
+            y: clamp(patient.need, 0, 100),
+          };
+        });
+      }
+
+      function render(silent = false) {
+        updateStoryVisibility();
+        if (state.storyMode) {
+          updateStoryPanel();
+        }
+
+        targetLabel.textContent = state.target === "cost" ? "Cost proxy" : "Need";
+        thresholdLabel.textContent = state.threshold;
+        accessLabel.textContent = `${state.accessDisparity}%`;
+        fairnessLabel.textContent = prettyFairness(state.fairness);
+        updateStamp.textContent = state.storyMode ? `Story ${state.storyStep + 1}` : "Manual mode";
+
+        const finalData = renderAxesAndPoints();
+        currentById = new Map(finalData.map((item) => [item.id, item]));
+        const grouped = groupStats(finalData);
+        const metrics = {
+          A: summarizeGroup(grouped.A),
+          B: summarizeGroup(grouped.B),
+        };
+        const overallAccuracy = finalData.reduce((acc, d) => acc + (d.enrolled === d.isHighNeed ? 1 : 0), 0) / finalData.length;
+
+        const scoresA = finalData.filter((d) => d.group === "A").map((d) => d.effectiveScore);
+        const scoresB = finalData.filter((d) => d.group === "B").map((d) => d.effectiveScore);
+        const labelsA = finalData.filter((d) => d.group === "A").map((d) => d.isHighNeed);
+        const labelsB = finalData.filter((d) => d.group === "B").map((d) => d.isHighNeed);
+        const calcA = scoreMetrics(scoresA, labelsA, state.threshold);
+        const calcB = scoreMetrics(scoresB, labelsB, state.threshold);
+        metrics.A = { ...metrics.A, ...calcA };
+        metrics.B = { ...metrics.B, ...calcB };
+
+        updateCallout(metrics);
+        updateMetrics(metrics, overallAccuracy);
+        updateMatrices(metrics);
+
+        xScale.domain([0, 100]);
+        yScale.domain([0, 100]);
+        xAxisGroup.call(xAxis.scale(xScale));
+        yAxisGroup.call(yAxis.scale(yScale));
+
+        xGrid.selectAll("line")
+          .data(d3.range(0, 101, 20).filter((v) => v !== 100))
+          .join("line")
+          .attr("class", "grid-line")
+          .attr("x1", (d) => xScale(d))
+          .attr("x2", (d) => xScale(d))
+          .attr("y1", 0)
+          .attr("y2", innerHeight);
+
+        yGrid.selectAll("line")
+          .data(d3.range(0, 101, 20).filter((v) => v !== 100))
+          .join("line")
+          .attr("class", "grid-line")
+          .attr("x1", 0)
+          .attr("x2", innerWidth)
+          .attr("y1", (d) => yScale(d))
+          .attr("y2", (d) => yScale(d));
+
+        thresholdGroup.selectAll("line")
+          .data([state.threshold])
+          .join("line")
+          .attr("class", "threshold-line")
+          .attr("x1", xScale(state.threshold))
+          .attr("x2", xScale(state.threshold))
+          .attr("y1", 0)
+          .attr("y2", innerHeight);
+
+        thresholdGroup.selectAll("text")
+          .data([state.threshold])
+          .join("text")
+          .attr("class", "threshold-label")
+          .attr("x", xScale(state.threshold) + 6)
+          .attr("y", 16)
+          .text(`Threshold ${state.threshold}`);
+
+        const transition = d3.transition().duration(silent ? 0 : 700).ease(d3.easeCubicOut);
+        nodes
+          .classed("enrolled", (d) => currentById.get(d.id).enrolled)
+          .classed("dimmed", (d) => !currentById.get(d.id).enrolled)
+          .transition(transition)
+          .attr("cx", (d) => xScale(currentById.get(d.id).x))
+          .attr("cy", (d) => yScale(currentById.get(d.id).y));
+
+        updateStoryPanel();
+      }
+
+      function applyStoryStep(index, silent = false) {
+        const story = stories[index];
+        state.storyStep = index;
+        if (story.preset) {
+          state.target = story.preset.target;
+          state.threshold = story.preset.threshold;
+          state.accessDisparity = story.preset.accessDisparity;
+          state.fairness = story.preset.fairness;
+        }
+        targetSelect.value = state.target;
+        thresholdInput.value = state.threshold;
+        accessInput.value = state.accessDisparity;
+        fairnessSelect.value = state.fairness;
+        render(silent);
+      }
+
+      function groupStats(data) {
+        return data.reduce(
+          (acc, item) => {
+            const bucket = acc[item.group];
+            bucket.count += 1;
+            bucket.tp += item.enrolled && item.isHighNeed ? 1 : 0;
+            bucket.fp += item.enrolled && !item.isHighNeed ? 1 : 0;
+            bucket.tn += !item.enrolled && !item.isHighNeed ? 1 : 0;
+            bucket.fn += !item.enrolled && item.isHighNeed ? 1 : 0;
+            bucket.enrolled += item.enrolled ? 1 : 0;
+            return acc;
+          },
+          {
+            A: { count: 0, tp: 0, fp: 0, tn: 0, fn: 0, enrolled: 0 },
+            B: { count: 0, tp: 0, fp: 0, tn: 0, fn: 0, enrolled: 0 },
+          },
+        );
+      }
+    })();
   </script>
 </body>
 </html>
-

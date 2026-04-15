@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projects — Adam Langshaw</title>
+  <meta name="description" content="Interactive policy and ethics tools by Adam Langshaw.">
+  <meta property="og:title" content="Projects — Adam Langshaw">
+  <meta property="og:description" content="Interactive tools on health policy tradeoffs and algorithmic fairness in healthcare.">
+  <link rel="icon" type="image/png" href="assets/favicon-ec29af6c-5854-4529-b155-a2d1de3ed322.png">
+  <link rel="stylesheet" href="style.css?v=3">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="site-nav" id="site-nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand" aria-label="Adam Langshaw home">
+        <span class="nav-brand-name">Adam Langshaw</span>
+        <span class="nav-brand-meta">Stanford '29</span>
+      </a>
+      <button class="nav-menu-btn" id="nav-menu-btn" aria-expanded="false" aria-controls="nav-links">Menu</button>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="about.html">About</a></li>
+        <li><a href="projects.html" aria-current="page">Projects</a></li>
+        <li><a href="writing.html">Writing</a></li>
+        <li><a href="research.html">Research</a></li>
+        <li><a href="influences.html">Influences</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="page-shell">
+    <section class="page-panel">
+      <div class="page-hero">
+        <span class="eyebrow">Projects</span>
+        <div class="projects-hero-grid">
+          <div>
+            <h1 class="page-title">Interactive work with policy, data, and ethics at the center.</h1>
+            <p class="page-intro">These tools are built as teaching and thinking instruments, not just demos. Each tries to make a hard conceptual problem visible, manipulable, and intellectually honest.</p>
+          </div>
+          <div class="page-card">
+            <span class="tool-badge">Newly rebuilt</span>
+            <p class="projects-note">Shared navigation, typography, and layout now tie the applications directly into the rest of the site, so they read as part of one body of work.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-grid">
+        <article class="project-card">
+          <span class="card-kicker">Health Policy</span>
+          <h3 class="card-title">Health Policy Simulator</h3>
+          <p>Explore how subsidies, mandates, reimbursement, and public program eligibility shift the balance between coverage, cost, and access.</p>
+          <p><a href="health-policy-simulator.html" class="card-link">Open simulator</a></p>
+        </article>
+        <article class="project-card">
+          <span class="card-kicker">Algorithmic Fairness</span>
+          <h3 class="card-title">Algorithmic Bias Explorer</h3>
+          <p>See how cost-based prediction can miss high-need patients and how fairness constraints trade off against accuracy in clinical allocation systems.</p>
+          <p><a href="algorithmic-bias-explorer.html" class="card-link">Open explorer</a></p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p class="footer-copy">© <span class="year"></span> Adam Langshaw</p>
+      <ul class="footer-links">
+        <li><a href="about.html">About</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="writing.html">Writing</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <p class="footer-note">Interactive work at the intersection of policy, medicine, and computation.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
