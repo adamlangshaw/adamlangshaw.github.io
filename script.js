@@ -120,11 +120,8 @@ function initCommandPalette() {
   let filteredCommands = [];
   let activeIndex = 0;
 
-  const isHome = /(^|\/)index\.html$/.test(window.location.pathname) || window.location.pathname === "/";
   const commands = [
     command("Home", "Overview and featured work", "index.html"),
-    command("About", "Merged home section", isHome ? "#about" : "index.html#about"),
-    command("Work", "Research, writing, and tools", isHome ? "#trajectory" : "index.html#trajectory"),
     command("Projects", "Interactive tools", "projects.html"),
     command("Health Policy Simulator", "Coverage, cost, and access model", "health-policy-simulator.html"),
     command("Algorithmic Bias Explorer", "Clinical fairness explainer", "algorithmic-bias-explorer.html"),
