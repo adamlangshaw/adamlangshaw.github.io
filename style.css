@@ -54,7 +54,7 @@ body::before {
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(550px circle at var(--pointer-x) var(--pointer-y), rgba(140, 21, 21, 0.13), transparent 100%);
+    radial-gradient(550px circle at var(--pointer-x) var(--pointer-y), rgba(140, 21, 21, 0.07), transparent 100%);
   mix-blend-mode: multiply;
   opacity: 1;
   transition: opacity 220ms ease;

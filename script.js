@@ -121,14 +121,14 @@ function initCommandPalette() {
   let activeIndex = 0;
 
   const commands = [
-    command("Home", "Overview and featured work", "index.html"),
-    command("Projects", "Interactive tools", "projects.html"),
-    command("Health Policy Simulator", "Coverage, cost, and access model", "health-policy-simulator.html"),
-    command("Algorithmic Bias Explorer", "Clinical fairness explainer", "algorithmic-bias-explorer.html"),
-    command("Writing", "Stanford Daily work", "writing.html"),
-    command("Research", "Publications and academic work", "research.html"),
-    command("Influences", "Reading and ideas", "influences.html"),
-    command("Contact", "Email, LinkedIn, and links", "contact.html"),
+    command("Home", "Overview and featured work", "/"),
+    command("Projects", "Interactive tools", "/projects/"),
+    command("Health Policy Simulator", "Coverage, cost, and access model", "/health-policy-simulator/"),
+    command("Algorithmic Bias Explorer", "Clinical fairness explainer", "/algorithmic-bias-explorer/"),
+    command("Writing", "Stanford Daily work", "/writing/"),
+    command("Research", "Publications and academic work", "/research/"),
+    command("Influences", "Reading and ideas", "/influences/"),
+    command("Contact", "Email, LinkedIn, and links", "/contact/"),
     command("Email Adam", "Open a new message", "mailto:me@adamlangshaw.com", "Action"),
     command("LinkedIn", "Professional profile", "https://www.linkedin.com/in/adamlangshaw/", "Action"),
   ];
