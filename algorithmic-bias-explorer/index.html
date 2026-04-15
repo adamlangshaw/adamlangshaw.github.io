@@ -14,7 +14,7 @@
     content="An interactive explainer showing how clinical risk algorithms can miss patients when cost is used as a proxy for need."
   />
   <link rel="icon" type="image/png" href="/assets/favicon-ec29af6c-5854-4529-b155-a2d1de3ed322.png" />
-  <link rel="stylesheet" href="/style.css?v=10" />
+  <link rel="stylesheet" href="/style.css?v=11" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -282,6 +282,11 @@
       min-height: 100%;
     }
 
+    .hero-card > * {
+      position: relative;
+      z-index: 1;
+    }
+
     .hero-card h2,
     .panel-title,
     .section-title,
@@ -294,11 +299,12 @@
       margin: 0;
       font-size: 1.65rem;
       line-height: 1.05;
+      color: var(--text);
     }
 
     .hero-card p {
       margin: 0;
-      color: var(--text-soft);
+      color: rgba(22, 22, 22, 0.78);
       line-height: 1.75;
       font-size: 0.98rem;
     }
@@ -316,8 +322,8 @@
       padding: 0.85rem 0.95rem;
       border-radius: var(--radius-sm);
       border: 1px solid rgba(22, 22, 22, 0.08);
-      background: rgba(255, 255, 255, 0.66);
-      color: var(--text-soft);
+      background: rgba(255, 255, 255, 0.78);
+      color: rgba(22, 22, 22, 0.78);
       line-height: 1.55;
       font-size: 0.88rem;
     }
