@@ -37,7 +37,6 @@ if (menuBtn && navLinks) {
 initScrollProgress();
 initPointerWash();
 initCommandPalette();
-initSectionRail();
 
 function initScrollProgress() {
   const progress = document.createElement("div");
@@ -125,8 +124,7 @@ function initCommandPalette() {
   const commands = [
     command("Home", "Overview and featured work", "index.html"),
     command("About", "Merged home section", isHome ? "#about" : "index.html#about"),
-    command("Trajectory", "Research, writing, and tools", isHome ? "#trajectory" : "index.html#trajectory"),
-    command("Work", "Projects and writing highlights", isHome ? "#work" : "index.html#work"),
+    command("Work", "Research, writing, and tools", isHome ? "#trajectory" : "index.html#trajectory"),
     command("Projects", "Interactive tools", "projects.html"),
     command("Health Policy Simulator", "Coverage, cost, and access model", "health-policy-simulator.html"),
     command("Algorithmic Bias Explorer", "Clinical fairness explainer", "algorithmic-bias-explorer.html"),
@@ -248,39 +246,4 @@ function initCommandPalette() {
       closePalette();
     }
   });
-}
-
-function initSectionRail() {
-  const rail = document.querySelector(".section-rail");
-  if (!rail) return;
-
-  const links = Array.from(rail.querySelectorAll("a[href^='#']"));
-  const sections = links
-    .map((link) => document.querySelector(link.getAttribute("href")))
-    .filter(Boolean);
-
-  if (!sections.length) return;
-
-  const setActive = (id) => {
-    links.forEach((link) => {
-      link.classList.toggle("is-active", link.getAttribute("href") === `#${id}`);
-    });
-  };
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      const visible = entries
-        .filter((entry) => entry.isIntersecting)
-        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-      if (visible) {
-        setActive(visible.target.id);
-      }
-    },
-    {
-      rootMargin: "-20% 0px -55% 0px",
-      threshold: [0.2, 0.45, 0.7],
-    }
-  );
-
-  sections.forEach((section) => observer.observe(section));
 }

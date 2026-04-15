@@ -8,7 +8,7 @@
   <meta property="og:title" content="Health Policy Simulator | Adam Langshaw">
   <meta property="og:description" content="An interactive health policy simulator exploring coverage, cost, and access tradeoffs.">
   <link rel="icon" type="image/png" href="assets/favicon-ec29af6c-5854-4529-b155-a2d1de3ed322.png">
-  <link rel="stylesheet" href="style.css?v=6">
+  <link rel="stylesheet" href="style.css?v=7">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -685,13 +685,6 @@
       margin-bottom: 0.35rem;
     }
 
-    .hps-footer-note {
-      margin-top: 0.75rem;
-      color: var(--hps-muted);
-      font-size: 0.83rem;
-      line-height: 1.5;
-    }
-
     @media (max-width: 980px) {
       .hps-layout,
       .hps-chart-grid,
@@ -765,16 +758,11 @@
       <div class="hps-intro">
         <div class="hps-kicker">Interactive policy lab</div>
         <h1>Health Policy Simulator</h1>
-        <p>
-          Explore how coverage expansion, cost sharing, and provider payment interact in U.S. health policy.
-          The model is intentionally simplified, but it is structured to surface the same tradeoffs policy
-          analysts discuss: more coverage can mean higher public spending, lower premiums can widen access,
-          and reimbursement cuts can strain provider participation.
-        </p>
+        <p>Explore tradeoffs between coverage, cost, and access in U.S. health policy.</p>
         <div class="hps-meta-row" aria-label="Highlights">
           <span class="hps-chip"><strong>Baseline systems</strong> ACA, public option, single-payer, market-based</span>
-          <span class="hps-chip"><strong>Updated live</strong> no reloads, no lag</span>
-          <span class="hps-chip"><strong>Framework</strong> vanilla HTML, CSS, and JS</span>
+          <span class="hps-chip"><strong>Live</strong> browser-based</span>
+          <span class="hps-chip"><strong>Built with</strong> HTML, CSS, and JS</span>
         </div>
       </div>
 
@@ -786,10 +774,7 @@
       </div>
 
       <div class="hps-actions">
-        <div class="hps-actions-note" id="comparisonNote">
-          The live configuration is compared against the selected baseline. Lock the current state to compare
-          it side-by-side with future tweaks. Your last view is also remembered on this device.
-        </div>
+        <div class="hps-actions-note" id="comparisonNote">Compare the live configuration to the selected baseline, or lock a view side by side.</div>
         <div class="hps-actions">
           <button class="hps-button secondary" type="button" id="lockComparisonBtn">Lock current view</button>
           <button class="hps-button ghost" type="button" id="clearComparisonBtn" hidden>Clear comparison</button>
@@ -801,7 +786,7 @@
         <aside class="hps-panel hps-controls" aria-label="Policy controls">
           <div class="hps-controls-head">
             <h2>Policy settings</h2>
-            <p>Use the sliders to explore coverage, financing, and access. The preset buttons set a full policy package, and you can then fine-tune each parameter.</p>
+            <p>Adjust the policy settings.</p>
           </div>
 
           <div class="hps-control-group">
@@ -956,7 +941,6 @@
             </article>
           </div>
 
-          <p class="hps-footer-note">The model is calibrated to illustrate policy relationships, not to forecast budgets or outcomes precisely.</p>
         </section>
       </div>
 

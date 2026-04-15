@@ -14,7 +14,7 @@
     content="An interactive explainer showing how clinical risk algorithms can miss patients when cost is used as a proxy for need."
   />
   <link rel="icon" type="image/png" href="assets/favicon-ec29af6c-5854-4529-b155-a2d1de3ed322.png" />
-  <link rel="stylesheet" href="style.css?v=6" />
+  <link rel="stylesheet" href="style.css?v=7" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -1214,21 +1214,12 @@
           <div class="hero-copy">
             <span class="eyebrow">Interactive explainer</span>
             <h1>Algorithmic Bias Explorer</h1>
-            <p>
-              A polished, fully client-side simulation of a clinical risk prediction system inspired by the
-              cost-as-proxy problem in the Obermeyer et al. Science paper. It shows how a model can look neutral
-              while still underserving patients whose healthcare spending is artificially suppressed.
-            </p>
-            <p>
-              Both groups in this simulation have similar underlying health need. The distortion comes from the
-              measurement process, not from biology, which is exactly why the tool is useful in class or in a policy
-              discussion.
-            </p>
+            <p>A clinical risk prediction simulation based on the cost-as-proxy problem described by Obermeyer et al.</p>
             <div class="hero-chips">
               <span class="chip">500 simulated patients</span>
               <span class="chip">Client-side only</span>
               <span class="chip">D3-powered scatter plot</span>
-              <span class="chip">Fairness tradeoffs made visible</span>
+              <span class="chip">Fairness tradeoffs</span>
             </div>
           </div>
         </article>
@@ -1237,11 +1228,7 @@
           <div>
             <span class="eyebrow">Key idea</span>
             <h2>When cost is the target, access barriers leak into the prediction.</h2>
-            <p>
-              The plot and metrics below let users toggle the prediction target, enrollment threshold, access
-              disparity, and fairness constraint so they can see how different rules change who gets flagged for a
-              care management program.
-            </p>
+            <p>Switch the target, threshold, disparity, and fairness rule to see who gets flagged.</p>
           </div>
           <div class="story-steps">
             <div class="story-step"><strong>1.</strong> Similar need distributions, different spending patterns.</div>
