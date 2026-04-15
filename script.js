@@ -1,49 +1,31 @@
 // Footer year
-document.getElementById("year").textContent = new Date().getFullYear();
+document.querySelectorAll(".year").forEach(el => {
+  el.textContent = new Date().getFullYear();
+});
 
-// Spotlight cursor (fine pointer only — not touch)
-const spotlight = document.getElementById("spotlight");
-if (spotlight && window.matchMedia("(pointer: fine)").matches) {
-  document.addEventListener("mousemove", (e) => {
-    spotlight.style.setProperty("--x", e.clientX + "px");
-    spotlight.style.setProperty("--y", e.clientY + "px");
-  }, { passive: true });
+// Nav: add scrolled class for background
+const nav = document.getElementById("site-nav");
+if (nav) {
+  const onScroll = () => nav.classList.toggle("scrolled", window.scrollY > 24);
+  onScroll();
+  window.addEventListener("scroll", onScroll, { passive: true });
 }
 
-// Header scroll shadow
-const header = document.getElementById("header");
-if (header) {
-  window.addEventListener("scroll", () => {
-    header.classList.toggle("scrolled", window.scrollY > 20);
-  }, { passive: true });
-}
-
-// Mobile nav toggle
-const navToggle = document.querySelector(".nav-toggle");
-const navLinks = document.querySelector(".nav-links");
-if (navToggle && navLinks) {
-  navToggle.addEventListener("click", () => {
-    const isOpen = navLinks.classList.toggle("is-open");
-    navToggle.setAttribute("aria-expanded", String(isOpen));
+// Nav: mobile menu toggle (text button, not hamburger)
+const menuBtn = document.getElementById("nav-menu-btn");
+const navLinks = document.getElementById("nav-links");
+if (menuBtn && navLinks) {
+  menuBtn.addEventListener("click", () => {
+    const isOpen = navLinks.classList.toggle("open");
+    menuBtn.setAttribute("aria-expanded", String(isOpen));
+    menuBtn.textContent = isOpen ? "Close" : "Menu";
   });
-  navLinks.querySelectorAll("a").forEach((link) => {
+  // Close on link click
+  navLinks.querySelectorAll("a").forEach(link => {
     link.addEventListener("click", () => {
-      navLinks.classList.remove("is-open");
-      navToggle.setAttribute("aria-expanded", "false");
+      navLinks.classList.remove("open");
+      menuBtn.setAttribute("aria-expanded", "false");
+      menuBtn.textContent = "Menu";
     });
   });
 }
-
-// Scroll fade-in
-const observer = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("visible");
-        observer.unobserve(entry.target);
-      }
-    });
-  },
-  { threshold: 0.07, rootMargin: "0px 0px -48px 0px" }
-);
-document.querySelectorAll(".fade-in").forEach((el) => observer.observe(el));
