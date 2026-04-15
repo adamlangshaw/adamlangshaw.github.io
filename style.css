@@ -439,6 +439,35 @@ main, header, footer { position: relative; z-index: 1; }
   text-decoration: none;
 }
 
+/* ── Influences ── */
+.influences-list {
+  margin-top: 0.25rem;
+}
+.influences-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0;
+}
+.influences-items li {
+  font-size: 0.9375rem;
+  color: var(--text-muted);
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border);
+  line-height: 1.5;
+}
+.influences-items li:last-child { border-bottom: none; }
+.influence-author {
+  color: var(--text);
+  font-weight: 500;
+  margin-right: 0.15em;
+}
+.influences-items em {
+  font-style: italic;
+  color: var(--text);
+}
+
 /* ── Footer ── */
 .footer {
   max-width: var(--max-width);
