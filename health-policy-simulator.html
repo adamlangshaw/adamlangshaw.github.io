@@ -8,7 +8,7 @@
   <meta property="og:title" content="Health Policy Simulator | Adam Langshaw">
   <meta property="og:description" content="An interactive health policy simulator exploring coverage, cost, and access tradeoffs.">
   <link rel="icon" type="image/png" href="assets/favicon-ec29af6c-5854-4529-b155-a2d1de3ed322.png">
-  <link rel="stylesheet" href="style.css?v=3">
+  <link rel="stylesheet" href="style.css?v=4">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -750,7 +750,7 @@
       </a>
       <button class="nav-menu-btn" id="nav-menu-btn" aria-expanded="false" aria-controls="nav-links">Menu</button>
       <ul class="nav-links" id="nav-links">
-        <li><a href="about.html">About</a></li>
+        <li><a href="index.html#about">About</a></li>
         <li><a href="projects.html" aria-current="page">Projects</a></li>
         <li><a href="writing.html">Writing</a></li>
         <li><a href="research.html">Research</a></li>
@@ -788,11 +788,12 @@
       <div class="hps-actions">
         <div class="hps-actions-note" id="comparisonNote">
           The live configuration is compared against the selected baseline. Lock the current state to compare
-          it side-by-side with future tweaks.
+          it side-by-side with future tweaks. Your last view is also remembered on this device.
         </div>
         <div class="hps-actions">
           <button class="hps-button secondary" type="button" id="lockComparisonBtn">Lock current view</button>
           <button class="hps-button ghost" type="button" id="clearComparisonBtn" hidden>Clear comparison</button>
+          <button class="hps-button ghost" type="button" id="shareViewBtn">Copy share link</button>
         </div>
       </div>
 
@@ -988,7 +989,7 @@
     <div class="footer-inner">
       <p class="footer-copy">© <span class="year"></span> Adam Langshaw</p>
       <ul class="footer-links">
-        <li><a href="about.html">About</a></li>
+        <li><a href="index.html#about">About</a></li>
         <li><a href="projects.html">Projects</a></li>
         <li><a href="writing.html">Writing</a></li>
         <li><a href="contact.html">Contact</a></li>
@@ -1095,6 +1096,7 @@
         comparisonNote: document.getElementById("comparisonNote"),
         lockComparisonBtn: document.getElementById("lockComparisonBtn"),
         clearComparisonBtn: document.getElementById("clearComparisonBtn"),
+        shareViewBtn: document.getElementById("shareViewBtn"),
         uninsuredMetric: document.getElementById("uninsuredMetric"),
         premiumMetric: document.getElementById("premiumMetric"),
         federalMetric: document.getElementById("federalMetric"),
@@ -1129,6 +1131,8 @@
         locked: null
       };
 
+      const STORAGE_KEY = "adam-health-policy-simulator-view-v1";
+
       const fmt = {
         currency(value) {
           return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(value);
@@ -1151,6 +1155,104 @@
 
       function clamp(value, min, max) {
         return Math.min(max, Math.max(min, value));
+      }
+
+      function snapshotState() {
+        return {
+          system: state.system,
+          subsidy: state.subsidy,
+          mandate: state.mandate,
+          reimbursement: state.reimbursement,
+          oopMax: state.oopMax,
+          medicaid: state.medicaid,
+          employer: state.employer
+        };
+      }
+
+      function encodeState(config) {
+        const params = new URLSearchParams();
+        params.set("system", config.system);
+        params.set("subsidy", String(config.subsidy));
+        params.set("mandate", config.mandate);
+        params.set("reimbursement", String(config.reimbursement));
+        params.set("oop", String(config.oopMax));
+        params.set("medicaid", String(config.medicaid));
+        params.set("employer", String(config.employer));
+        return params;
+      }
+
+      function decodeState(source) {
+        if (!source) return null;
+        const system = source.get("system");
+        if (!PRESETS[system]) return null;
+        const mandate = source.get("mandate");
+        if (!MANDATE_LEVEL.hasOwnProperty(mandate)) return null;
+
+        return {
+          system,
+          subsidy: clamp(Number(source.get("subsidy")), 0, 100),
+          mandate,
+          reimbursement: clamp(Number(source.get("reimbursement")), 50, 120),
+          oopMax: clamp(Number(source.get("oop")), 0, 15000),
+          medicaid: clamp(Number(source.get("medicaid")), 0, 400),
+          employer: clamp(Number(source.get("employer")), 0, 100)
+        };
+      }
+
+      function applyState(config) {
+        state.system = config.system;
+        state.subsidy = config.subsidy;
+        state.mandate = config.mandate;
+        state.reimbursement = config.reimbursement;
+        state.oopMax = config.oopMax;
+        state.medicaid = config.medicaid;
+        state.employer = config.employer;
+      }
+
+      function restoreState() {
+        const fromUrl = decodeState(new URLSearchParams(window.location.search));
+        if (fromUrl) {
+          applyState(fromUrl);
+          return;
+        }
+
+        try {
+          const saved = window.localStorage.getItem(STORAGE_KEY);
+          if (!saved) return;
+          const parsed = JSON.parse(saved);
+          const source = new URLSearchParams(parsed);
+          const restored = decodeState(source);
+          if (restored) {
+            applyState(restored);
+          }
+        } catch (_error) {
+        }
+      }
+
+      function persistState() {
+        const snapshot = snapshotState();
+        const params = encodeState(snapshot);
+        const nextUrl = `${window.location.pathname}?${params.toString()}`;
+        window.history.replaceState(null, "", nextUrl);
+        try {
+          window.localStorage.setItem(STORAGE_KEY, JSON.stringify(Object.fromEntries(params.entries())));
+        } catch (_error) {
+        }
+      }
+
+      async function copyShareLink() {
+        const url = new URL(window.location.href);
+        url.search = encodeState(snapshotState()).toString();
+        const original = els.shareViewBtn.textContent;
+        try {
+          await navigator.clipboard.writeText(url.toString());
+          els.shareViewBtn.textContent = "Link copied";
+        } catch (_error) {
+          els.shareViewBtn.textContent = "Copy failed";
+        }
+        window.setTimeout(() => {
+          els.shareViewBtn.textContent = original;
+        }, 1600);
       }
 
       function rangeFill(el) {
@@ -1587,6 +1689,7 @@
         });
         setMetrics(current, compareTarget);
         updateCharts(current, compareTarget);
+        persistState();
       }
 
       function applyPreset(key) {
@@ -1690,7 +1793,9 @@
 
       els.lockComparisonBtn.addEventListener("click", lockComparison);
       els.clearComparisonBtn.addEventListener("click", clearComparison);
+      els.shareViewBtn.addEventListener("click", copyShareLink);
 
+      restoreState();
       syncInputs();
       activePresetButton();
       activeMandateButton();

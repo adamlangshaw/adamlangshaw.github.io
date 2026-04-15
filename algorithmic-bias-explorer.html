@@ -14,7 +14,7 @@
     content="An interactive explainer showing how clinical risk algorithms can miss patients when cost is used as a proxy for need."
   />
   <link rel="icon" type="image/png" href="assets/favicon-ec29af6c-5854-4529-b155-a2d1de3ed322.png" />
-  <link rel="stylesheet" href="style.css?v=3" />
+  <link rel="stylesheet" href="style.css?v=4" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -768,6 +768,36 @@
       line-height: 1.45;
     }
 
+    .control-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      margin-top: 0.95rem;
+    }
+
+    .mini-button {
+      appearance: none;
+      border: 1px solid rgba(22, 22, 22, 0.1);
+      background: rgba(255, 255, 255, 0.82);
+      color: var(--text);
+      min-height: 2.45rem;
+      padding: 0 0.95rem;
+      border-radius: 999px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+
+    .mini-button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(140, 21, 21, 0.22);
+    }
+
+    .mini-button.ghost {
+      background: transparent;
+    }
+
     .bias-dashboard {
       display: grid;
       grid-template-columns: minmax(0, 1.18fr) minmax(300px, 0.82fr);
@@ -1167,7 +1197,7 @@
       </a>
       <button class="nav-menu-btn" id="nav-menu-btn" aria-expanded="false" aria-controls="nav-links">Menu</button>
       <ul class="nav-links" id="nav-links">
-        <li><a href="about.html">About</a></li>
+        <li><a href="index.html#about">About</a></li>
         <li><a href="projects.html" aria-current="page">Projects</a></li>
         <li><a href="writing.html">Writing</a></li>
         <li><a href="research.html">Research</a></li>
@@ -1348,6 +1378,10 @@
                 </div>
                 <div class="tiny" id="updateStamp"></div>
               </div>
+              <div class="control-actions">
+                <button class="mini-button" type="button" id="copyBiasViewBtn">Copy share link</button>
+                <button class="mini-button ghost" type="button" id="resetBiasViewBtn">Reset view</button>
+              </div>
             </div>
           </div>
         </aside>
@@ -1436,7 +1470,7 @@
     <div class="footer-inner">
       <p class="footer-copy">© <span class="year"></span> Adam Langshaw</p>
       <ul class="footer-links">
-        <li><a href="about.html">About</a></li>
+        <li><a href="index.html#about">About</a></li>
         <li><a href="projects.html">Projects</a></li>
         <li><a href="writing.html">Writing</a></li>
         <li><a href="contact.html">Contact</a></li>
@@ -1480,6 +1514,8 @@
       const accessLabel = document.getElementById("accessLabel");
       const fairnessLabel = document.getElementById("fairnessLabel");
       const updateStamp = document.getElementById("updateStamp");
+      const copyBiasViewBtn = document.getElementById("copyBiasViewBtn");
+      const resetBiasViewBtn = document.getElementById("resetBiasViewBtn");
 
       const fairnessText = document.getElementById("fairnessText");
       const accuracyValue = document.getElementById("accuracyValue");
@@ -1492,6 +1528,7 @@
       const ppvGapValue = document.getElementById("ppvGapValue");
       const matricesNode = document.getElementById("matrices");
       let currentById = new Map();
+      const STORAGE_KEY = "adam-bias-explorer-view-v1";
 
       const stories = [
         {
@@ -1657,6 +1694,8 @@
         storyPanel.classList.toggle("hidden", !state.storyMode);
         if (state.storyMode) {
           applyStoryStep(state.storyStep, true);
+        } else {
+          render(true);
         }
       });
 
@@ -1683,6 +1722,27 @@
         render();
       });
 
+      copyBiasViewBtn.addEventListener("click", async () => {
+        const url = new URL(window.location.href);
+        url.search = encodeView(snapshotView()).toString();
+        const original = copyBiasViewBtn.textContent;
+        try {
+          await navigator.clipboard.writeText(url.toString());
+          copyBiasViewBtn.textContent = "Link copied";
+        } catch (_error) {
+          copyBiasViewBtn.textContent = "Copy failed";
+        }
+        window.setTimeout(() => {
+          copyBiasViewBtn.textContent = original;
+        }, 1600);
+      });
+
+      resetBiasViewBtn.addEventListener("click", () => {
+        state.storyMode = true;
+        storyModeInput.checked = true;
+        applyStoryStep(0);
+      });
+
       document.addEventListener("pointermove", (event) => {
         const bounds = document.body.getBoundingClientRect();
         const x = ((event.clientX - bounds.left) / bounds.width) * 100;
@@ -1691,143 +1751,7 @@
         root.style.setProperty("--pointer-y", `${clamp(y, 0, 100)}%`);
       }, { passive: true });
 
-      applyStoryStep(0, true);
-
-      function applyStoryStep(index, silent = false) {
-        const story = stories[index];
-        state.storyStep = index;
-        if (story && story.preset) {
-          state.target = story.preset.target;
-          state.threshold = story.preset.threshold;
-          state.accessDisparity = story.preset.accessDisparity;
-          state.fairness = story.preset.fairness;
-        }
-        targetSelect.value = state.target;
-        thresholdInput.value = state.threshold;
-        accessInput.value = state.accessDisparity;
-        fairnessSelect.value = state.fairness;
-        storyModeInput.checked = state.storyMode;
-        storyPanel.classList.toggle("hidden", !state.storyMode);
-        render(silent);
-      }
-
-      function render(silent = false) {
-        targetLabel.textContent = state.target === "cost" ? "Cost proxy" : "Need";
-        thresholdLabel.textContent = state.threshold;
-        accessLabel.textContent = `${state.accessDisparity}%`;
-        fairnessLabel.textContent = prettyFairness(state.fairness);
-        updateStamp.textContent = state.storyMode ? `Story ${state.storyStep + 1}` : "Manual mode";
-
-        const prepared = preparePatients();
-        const scoresA = prepared.filter((d) => d.group === "A").map((d) => d.rawScore);
-        const scoresB = prepared.filter((d) => d.group === "B").map((d) => d.rawScore);
-        const labelA = prepared.filter((d) => d.group === "A").map((d) => d.isHighNeed);
-        const labelB = prepared.filter((d) => d.group === "B").map((d) => d.isHighNeed);
-
-        const baseA = scoreMetrics(scoresA, labelA, state.threshold);
-        const baseB = scoreMetrics(scoresB, labelB, state.threshold);
-        const shifts = computeFairnessShifts({
-          scoresA,
-          scoresB,
-          labelA,
-          labelB,
-          baseA,
-          baseB,
-        });
-
-        const finalData = prepared.map((patient) => {
-          const shift = shifts[patient.group];
-          const effectiveScore = applyTransform(
-            patient.rawScore,
-            patient,
-            shift,
-            prepared,
-          );
-          const enrolled = effectiveScore >= state.threshold;
-          return {
-            ...patient,
-            effectiveScore,
-            enrolled,
-            x: clamp(effectiveScore, 0, 100),
-            y: clamp(patient.need, 0, 100),
-          };
-        });
-
-        currentById = new Map(finalData.map((item) => [item.id, item]));
-
-        const groups = groupStats(finalData);
-        const overallAccuracy = finalData.reduce((acc, d) => acc + (d.enrolled === d.isHighNeed ? 1 : 0), 0) / finalData.length;
-        const metrics = {
-          A: summarizeGroup(groups.A),
-          B: summarizeGroup(groups.B),
-        };
-
-        updateCallout(metrics, shifts);
-        updateMetrics(metrics, overallAccuracy);
-        updateMatrices(metrics);
-        updateStoryPanel();
-
-        const maxX = 100;
-        xScale.domain([0, maxX]);
-        yScale.domain([0, 100]);
-        xAxisGroup.transition().duration(silent ? 0 : 500).call(xAxis.scale(xScale));
-        yAxisGroup.transition().duration(silent ? 0 : 500).call(yAxis.scale(yScale));
-
-        const gridX = d3.range(0, 101, 20).filter((v) => v !== 100);
-        const gridY = d3.range(0, 101, 20).filter((v) => v !== 100);
-
-        const xLines = xGrid.selectAll("line").data(gridX, (d) => d);
-        xLines.join(
-          (enter) => enter.append("line").attr("class", "grid-line").attr("y1", 0).attr("y2", innerHeight),
-          (update) => update,
-          (exit) => exit.remove(),
-        )
-          .attr("x1", (d) => xScale(d))
-          .attr("x2", (d) => xScale(d));
-
-        const yLines = yGrid.selectAll("line").data(gridY, (d) => d);
-        yLines.join(
-          (enter) => enter.append("line").attr("class", "grid-line").attr("x1", 0).attr("x2", innerWidth),
-          (update) => update,
-          (exit) => exit.remove(),
-        )
-          .attr("y1", (d) => yScale(d))
-          .attr("y2", (d) => yScale(d));
-
-        const thresholdX = xScale(state.threshold);
-        const thresholdLines = thresholdGroup.selectAll("line").data([state.threshold]);
-        thresholdLines.join("line")
-          .attr("class", "threshold-line")
-          .attr("x1", thresholdX)
-          .attr("x2", thresholdX)
-          .attr("y1", 0)
-          .attr("y2", innerHeight);
-
-        const thresholdLabelNode = thresholdGroup.selectAll("text").data([state.threshold]);
-        thresholdLabelNode.join("text")
-          .attr("class", "threshold-label")
-          .attr("x", thresholdX + 6)
-          .attr("y", 16)
-          .text(`Threshold ${state.threshold}`);
-
-        const t = d3.transition().duration(silent ? 0 : 650).ease(d3.easeCubicOut);
-        nodes
-          .classed("enrolled", (d) => currentById.get(d.id).enrolled)
-          .classed("dimmed", (d) => !currentById.get(d.id).enrolled)
-          .transition(t)
-          .attr("cx", (d) => xScale(currentById.get(d.id).x))
-          .attr("cy", (d) => yScale(currentById.get(d.id).y));
-
-        if (!silent) {
-          updateStoryPanel();
-        }
-
-        function applyHoveredAlpha() {
-          if (!tooltip.node().__visible) {
-            return;
-          }
-        }
-      }
+      restoreViewState();
 
       function preparePatients() {
         return patients.map((patient) => {
@@ -2152,6 +2076,97 @@
         return d3.quantileSorted(sorted, clamp(p, 0, 1));
       }
 
+      function snapshotView() {
+        return {
+          target: state.target,
+          threshold: state.threshold,
+          access: state.accessDisparity,
+          fairness: state.fairness,
+          storyMode: state.storyMode ? "1" : "0",
+          step: state.storyStep,
+        };
+      }
+
+      function encodeView(view) {
+        const params = new URLSearchParams();
+        params.set("target", view.target);
+        params.set("threshold", String(view.threshold));
+        params.set("access", String(view.access));
+        params.set("fairness", view.fairness);
+        params.set("story", view.storyMode);
+        params.set("step", String(view.step));
+        return params;
+      }
+
+      function decodeView(params) {
+        if (!params || !params.get("target")) return null;
+        const target = params.get("target");
+        const fairness = params.get("fairness");
+        if (!["cost", "need"].includes(target)) return null;
+        if (!["none", "demographic-parity", "equalized-odds", "calibration"].includes(fairness)) return null;
+        return {
+          target,
+          threshold: clamp(Number(params.get("threshold")), 30, 85),
+          accessDisparity: clamp(Number(params.get("access")), 0, 50),
+          fairness,
+          storyMode: params.get("story") !== "0",
+          storyStep: clamp(Number(params.get("step")), 0, stories.length - 1),
+        };
+      }
+
+      function restoreViewState() {
+        const fromUrl = decodeView(new URLSearchParams(window.location.search));
+        if (fromUrl) {
+          applyRestoredView(fromUrl);
+          return;
+        }
+
+        try {
+          const saved = window.localStorage.getItem(STORAGE_KEY);
+          if (!saved) {
+            applyStoryStep(0, true);
+            return;
+          }
+          const restored = decodeView(new URLSearchParams(JSON.parse(saved)));
+          if (restored) {
+            applyRestoredView(restored);
+            return;
+          }
+        } catch (_error) {
+        }
+
+        applyStoryStep(0, true);
+      }
+
+      function applyRestoredView(view) {
+        state.target = view.target;
+        state.threshold = view.threshold;
+        state.accessDisparity = view.accessDisparity;
+        state.fairness = view.fairness;
+        state.storyMode = view.storyMode;
+        state.storyStep = view.storyStep;
+        storyModeInput.checked = state.storyMode;
+        targetSelect.value = state.target;
+        thresholdInput.value = state.threshold;
+        accessInput.value = state.accessDisparity;
+        fairnessSelect.value = state.fairness;
+        if (state.storyMode) {
+          applyStoryStep(state.storyStep, true);
+        } else {
+          render(true);
+        }
+      }
+
+      function persistView() {
+        const snapshot = snapshotView();
+        const params = encodeView(snapshot);
+        window.history.replaceState(null, "", `${window.location.pathname}?${params.toString()}`);
+        try {
+          window.localStorage.setItem(STORAGE_KEY, JSON.stringify(Object.fromEntries(params.entries())));
+        } catch (_error) {
+        }
+      }
+
       function updateStoryVisibility() {
         storyPanel.classList.toggle("hidden", !state.storyMode);
       }
@@ -2265,6 +2280,7 @@
           .attr("cy", (d) => yScale(currentById.get(d.id).y));
 
         updateStoryPanel();
+        persistView();
       }
 
       function applyStoryStep(index, silent = false) {
@@ -2283,24 +2299,6 @@
         render(silent);
       }
 
-      function groupStats(data) {
-        return data.reduce(
-          (acc, item) => {
-            const bucket = acc[item.group];
-            bucket.count += 1;
-            bucket.tp += item.enrolled && item.isHighNeed ? 1 : 0;
-            bucket.fp += item.enrolled && !item.isHighNeed ? 1 : 0;
-            bucket.tn += !item.enrolled && !item.isHighNeed ? 1 : 0;
-            bucket.fn += !item.enrolled && item.isHighNeed ? 1 : 0;
-            bucket.enrolled += item.enrolled ? 1 : 0;
-            return acc;
-          },
-          {
-            A: { count: 0, tp: 0, fp: 0, tn: 0, fn: 0, enrolled: 0 },
-            B: { count: 0, tp: 0, fp: 0, tn: 0, fn: 0, enrolled: 0 },
-          },
-        );
-      }
     })();
   </script>
 </body>

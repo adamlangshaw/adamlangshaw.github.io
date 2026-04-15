@@ -9,7 +9,7 @@
   <meta property="og:description" content="Stanford student working at the intersection of medicine, health policy, research, and technology.">
   <meta property="og:image" content="assets/adam.png">
   <link rel="icon" type="image/png" href="assets/favicon-ec29af6c-5854-4529-b155-a2d1de3ed322.png">
-  <link rel="stylesheet" href="style.css?v=3">
+  <link rel="stylesheet" href="style.css?v=4">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -23,7 +23,7 @@
       </a>
       <button class="nav-menu-btn" id="nav-menu-btn" aria-expanded="false" aria-controls="nav-links">Menu</button>
       <ul class="nav-links" id="nav-links">
-        <li><a href="about.html">About</a></li>
+        <li><a href="#about">About</a></li>
         <li><a href="projects.html">Projects</a></li>
         <li><a href="writing.html">Writing</a></li>
         <li><a href="research.html">Research</a></li>
@@ -34,7 +34,7 @@
   </header>
 
   <main>
-    <section class="hero-shell">
+    <section class="hero-shell" id="home">
       <div class="hero-panel">
         <div class="hero-grid">
           <div class="hero-copy">
@@ -45,7 +45,7 @@
               <p class="hero-lead">I’m currently at Stanford, writing for <em>The Stanford Daily</em>, building policy explainers, and thinking about how rigorous analysis can make systems more humane.</p>
               <div class="hero-actions">
                 <a href="projects.html" class="button">Explore projects</a>
-                <a href="about.html" class="button-secondary">About me</a>
+                <a href="#about" class="button-secondary">About me</a>
                 <a href="contact.html" class="text-link">Get in touch</a>
               </div>
             </div>
@@ -79,10 +79,91 @@
 
     <section class="section">
       <div class="section-shell">
+        <nav class="section-rail" aria-label="Home sections">
+          <a href="#home" class="is-active">Overview</a>
+          <a href="#about">About</a>
+          <a href="#trajectory">Trajectory</a>
+          <a href="#work">Work</a>
+        </nav>
+      </div>
+    </section>
+
+    <section class="section" id="about">
+      <div class="section-shell">
+        <div class="page-panel">
+          <div class="page-grid--sidebar">
+            <div>
+              <span class="eyebrow">About</span>
+              <h2 class="section-title">Interested in how systems decide who gets care, opportunity, and attention.</h2>
+              <div class="body-copy">
+                <p>I'm a Stanford student working at the intersection of medicine, health policy, and technology. I’m especially drawn to questions where quantitative analysis meets institutional design: how incentives shape access, how data can obscure or illuminate inequity, and how policy choices cascade through real lives.</p>
+                <p>My work includes research on health inequities in cystic fibrosis through the University of Miami Miller School of Medicine, writing for <em>The Stanford Daily</em>, and building analytical tools that make complicated public problems easier to reason about.</p>
+                <p>I grew up in Weston, Florida, in a multicultural family with roots in Jamaica and England. Outside the classroom, I care a lot about sports, music, and the craft of making ideas persuasive.</p>
+              </div>
+            </div>
+            <div class="page-card-list">
+              <article class="page-card">
+                <span class="card-kicker">Roots</span>
+                <h3>Weston, Florida</h3>
+                <p>A multicultural family background with roots in Jamaica and England continues to shape how I think about identity and institutions.</p>
+              </article>
+              <article class="page-card">
+                <span class="card-kicker">Discipline</span>
+                <h3>Public policy with quantitative teeth</h3>
+                <p>I care about the part of policy work where moral arguments, empirical reasoning, and system design have to face one another directly.</p>
+              </article>
+              <article class="page-card">
+                <span class="card-kicker">Outside class</span>
+                <h3>Sports, music, and good argument</h3>
+                <p>Football, skiing, DJing, and writing all sharpen the same instincts: rhythm, judgment, and knowing where pressure really sits.</p>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="trajectory">
+      <div class="section-shell">
+        <div class="page-panel">
+          <header class="section-header">
+            <span class="eyebrow">Trajectory</span>
+            <h2 class="section-title">Research, writing, and product-minded technical work.</h2>
+            <p class="section-intro">The throughline across the site is not just subject matter. It’s a way of working: make the structure clear, make the reasoning legible, and build things that help people see a problem more honestly.</p>
+          </header>
+          <div class="timeline">
+            <article class="timeline-item">
+              <div class="timeline-year">Research</div>
+              <div>
+                <h3>Clinical equity and health outcomes</h3>
+                <p class="projects-note">Co-authored work on immigrant patients with cystic fibrosis, contributing to a growing evidence base around access and health inequities.</p>
+              </div>
+            </article>
+            <article class="timeline-item">
+              <div class="timeline-year">Writing</div>
+              <div>
+                <h3>Public argument as a serious discipline</h3>
+                <p class="projects-note">Opinion and sports writing that treats clarity, structure, and judgment as part of the work itself.</p>
+              </div>
+            </article>
+            <article class="timeline-item">
+              <div class="timeline-year">Tools</div>
+              <div>
+                <h3>Interactive models that teach</h3>
+                <p class="projects-note">Building browser-based explainers that translate technical ideas in healthcare policy and algorithmic fairness into something people can actually explore.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="work">
+      <div class="section-shell">
         <header class="section-header">
           <span class="eyebrow">What I’m Building</span>
           <h2 class="section-title">A more serious digital front door.</h2>
-          <p class="section-intro">This site now treats your writing, research, and technical work as part of the same profile: analytical, design-conscious, and professionally presented. The interactive projects are meant to feel like miniature products, not class exercises.</p>
+          <p class="section-intro">This site now treats writing, research, and technical work as part of the same profile: analytical, design-conscious, and professionally presented. The interactive projects are meant to feel like miniature products, not class exercises.</p>
         </header>
         <div class="feature-grid">
           <article class="feature-card">
@@ -137,7 +218,7 @@
     <div class="footer-inner">
       <p class="footer-copy">© <span class="year"></span> Adam Langshaw</p>
       <ul class="footer-links">
-        <li><a href="about.html">About</a></li>
+        <li><a href="#about">About</a></li>
         <li><a href="projects.html">Projects</a></li>
         <li><a href="writing.html">Writing</a></li>
         <li><a href="contact.html">Contact</a></li>
