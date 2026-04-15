@@ -943,6 +943,22 @@ textarea {
   font-size: 0.9rem;
 }
 
+.writing-meta a,
+.research-meta a,
+.contact-meta a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: rgba(140, 21, 21, 0.35);
+  text-underline-offset: 0.16em;
+}
+
+.writing-meta a:hover,
+.research-meta a:hover,
+.contact-meta a:hover {
+  color: var(--text);
+  text-decoration-color: rgba(140, 21, 21, 0.68);
+}
+
 .timeline {
   display: grid;
   gap: 1rem;
