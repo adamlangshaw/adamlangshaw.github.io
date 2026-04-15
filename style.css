@@ -555,6 +555,10 @@ textarea {
   gap: 1rem;
 }
 
+.media-grid--compact {
+  margin-bottom: 1rem;
+}
+
 .feature-card {
   padding: 1.35rem;
 }
@@ -668,6 +672,10 @@ textarea {
 .contact-list-modern {
   display: grid;
   gap: 1rem;
+}
+
+.section-offset {
+  margin-top: 2.5rem;
 }
 
 .metric-strip {

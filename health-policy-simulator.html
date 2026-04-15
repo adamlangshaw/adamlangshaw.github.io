@@ -622,6 +622,11 @@
       font-weight: 600;
     }
 
+    .hps-compare-delta {
+      color: var(--hps-muted);
+      font-weight: 500;
+    }
+
     .hps-methodology {
       margin-top: 1rem;
       border: 1px solid rgba(0, 0, 0, 0.08);
@@ -739,13 +744,16 @@
 <body>
   <header class="site-nav" id="site-nav">
     <div class="nav-inner">
-      <a href="index.html" class="nav-brand">Adam Langshaw</a>
+      <a href="index.html" class="nav-brand" aria-label="Adam Langshaw home">
+        <span class="nav-brand-name">Adam Langshaw</span>
+        <span class="nav-brand-meta">Stanford '29</span>
+      </a>
       <button class="nav-menu-btn" id="nav-menu-btn" aria-expanded="false" aria-controls="nav-links">Menu</button>
       <ul class="nav-links" id="nav-links">
         <li><a href="about.html">About</a></li>
+        <li><a href="projects.html" aria-current="page">Projects</a></li>
         <li><a href="writing.html">Writing</a></li>
         <li><a href="research.html">Research</a></li>
-        <li><a href="projects.html" aria-current="page">Projects</a></li>
         <li><a href="influences.html">Influences</a></li>
         <li><a href="contact.html">Contact</a></li>
       </ul>
@@ -981,9 +989,9 @@
       <p class="footer-copy">© <span class="year"></span> Adam Langshaw</p>
       <ul class="footer-links">
         <li><a href="about.html">About</a></li>
+        <li><a href="projects.html">Projects</a></li>
         <li><a href="writing.html">Writing</a></li>
         <li><a href="contact.html">Contact</a></li>
-        <li><a href="projects.html">Projects</a></li>
       </ul>
     </div>
   </footer>
@@ -1374,7 +1382,7 @@
         const targetRows = rows.map(([label, delta, value]) => `
           <div class="hps-compare-row">
             <span>${label}</span>
-            <span>${value} <span style="color: var(--hps-muted); font-weight: 500;">(${delta})</span></span>
+            <span>${value} <span class="hps-compare-delta">(${delta})</span></span>
           </div>
         `).join("");
 
@@ -1389,7 +1397,7 @@
         ].map(([label, value, delta]) => `
           <div class="hps-compare-row">
             <span>${label}</span>
-            <span>${value} <span style="color: var(--hps-muted); font-weight: 500;">(${delta})</span></span>
+            <span>${value} <span class="hps-compare-delta">(${delta})</span></span>
           </div>
         `).join("");
 

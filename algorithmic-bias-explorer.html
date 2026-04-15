@@ -758,6 +758,10 @@
       gap: 1rem;
     }
 
+    .control-inline-label {
+      margin: 0;
+    }
+
     .control-inline .tiny {
       font-size: 0.78rem;
       color: var(--text-faint);
@@ -903,56 +907,6 @@
       color: var(--text-soft);
       font-size: 0.8rem;
       line-height: 1.4;
-    }
-
-    .bias-projects {
-      margin-bottom: 1.4rem;
-      padding: 1.2rem 1.3rem;
-      border-radius: var(--radius-lg);
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(255, 255, 255, 0.66));
-      border: 1px solid rgba(22, 22, 22, 0.08);
-      box-shadow: var(--shadow-soft);
-    }
-
-    .bias-projects h2 {
-      margin: 0 0 0.8rem;
-      font-family: var(--font-serif);
-      font-size: 1.55rem;
-      line-height: 1.15;
-    }
-
-    .project-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 0.9rem;
-    }
-
-    .project-link {
-      display: block;
-      padding: 1rem 1.05rem;
-      border-radius: var(--radius-md);
-      background: rgba(255, 255, 255, 0.76);
-      border: 1px solid rgba(22, 22, 22, 0.08);
-      transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
-    }
-
-    .project-link:hover {
-      transform: translateY(-2px);
-      border-color: rgba(140, 21, 21, 0.2);
-      box-shadow: 0 18px 38px rgba(24, 18, 14, 0.08);
-    }
-
-    .project-link strong {
-      display: block;
-      margin-bottom: 0.25rem;
-      font-size: 1rem;
-    }
-
-    .project-link p {
-      margin: 0;
-      color: var(--text-soft);
-      font-size: 0.88rem;
-      line-height: 1.6;
     }
 
     .bias-details {
@@ -1117,8 +1071,7 @@
       }
 
       .hero-band,
-      .metric-grid,
-      .project-grid {
+      .metric-grid {
         grid-template-columns: minmax(0, 1fr);
       }
     }
@@ -1166,8 +1119,7 @@
 
       .hero-panel,
       .bias-panel,
-      .bias-details,
-      .bias-projects {
+      .bias-details {
         border-radius: 24px;
       }
 
@@ -1209,13 +1161,17 @@
 <body>
   <header class="site-nav" id="site-nav">
     <div class="nav-inner">
-      <a href="index.html" class="nav-brand">Adam Langshaw</a>
+      <a href="index.html" class="nav-brand" aria-label="Adam Langshaw home">
+        <span class="nav-brand-name">Adam Langshaw</span>
+        <span class="nav-brand-meta">Stanford '29</span>
+      </a>
       <button class="nav-menu-btn" id="nav-menu-btn" aria-expanded="false" aria-controls="nav-links">Menu</button>
       <ul class="nav-links" id="nav-links">
         <li><a href="about.html">About</a></li>
+        <li><a href="projects.html" aria-current="page">Projects</a></li>
         <li><a href="writing.html">Writing</a></li>
         <li><a href="research.html">Research</a></li>
-        <li><a href="projects.html">Projects</a></li>
+        <li><a href="influences.html">Influences</a></li>
         <li><a href="contact.html">Contact</a></li>
       </ul>
     </div>
@@ -1387,7 +1343,7 @@
             <div class="control-card">
               <div class="control-inline">
                 <div>
-                  <label style="margin: 0;">What to watch</label>
+                  <label class="control-inline-label">What to watch</label>
                   <div class="tiny">The most revealing shift is usually the true positive rate gap between groups.</div>
                 </div>
                 <div class="tiny" id="updateStamp"></div>
@@ -1457,20 +1413,6 @@
         </aside>
       </section>
 
-      <section class="bias-projects" id="projects">
-        <h2>Projects</h2>
-        <div class="project-grid">
-          <a class="project-link" href="algorithmic-bias-explorer.html">
-            <strong>Algorithmic Bias Explorer</strong>
-            <p>Interactive explainer showing how a cost proxy can systematically underserve patients with equal need.</p>
-          </a>
-          <a class="project-link" href="health-policy-simulator.html">
-            <strong>Health Policy Simulator</strong>
-            <p>Policy sandbox for exploring tradeoffs between coverage, cost, access, and reimbursement.</p>
-          </a>
-        </div>
-      </section>
-
       <details class="bias-details">
         <summary>About this tool</summary>
         <div class="bias-details-body">
@@ -1495,42 +1437,17 @@
       <p class="footer-copy">© <span class="year"></span> Adam Langshaw</p>
       <ul class="footer-links">
         <li><a href="about.html">About</a></li>
+        <li><a href="projects.html">Projects</a></li>
         <li><a href="writing.html">Writing</a></li>
         <li><a href="contact.html">Contact</a></li>
       </ul>
     </div>
   </footer>
 
+  <script src="script.js"></script>
   <script>
     (() => {
-      const nav = document.getElementById("site-nav");
-      const navBtn = document.getElementById("nav-menu-btn");
-      const navLinks = document.getElementById("nav-links");
-      const year = document.querySelector(".year");
       const root = document.documentElement;
-
-      year.textContent = new Date().getFullYear();
-
-      const syncNav = () => {
-        nav.classList.toggle("scrolled", window.scrollY > 8);
-      };
-
-      syncNav();
-      window.addEventListener("scroll", syncNav, { passive: true });
-
-      if (navBtn && navLinks) {
-        navBtn.addEventListener("click", () => {
-          const open = navLinks.classList.toggle("open");
-          navBtn.setAttribute("aria-expanded", String(open));
-        });
-
-        navLinks.querySelectorAll("a").forEach((link) => {
-          link.addEventListener("click", () => {
-            navLinks.classList.remove("open");
-            navBtn.setAttribute("aria-expanded", "false");
-          });
-        });
-      }
 
       const state = {
         target: "cost",
