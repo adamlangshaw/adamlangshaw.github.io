@@ -757,6 +757,16 @@ textarea {
   object-fit: cover;
 }
 
+.research-media-card {
+  min-height: 100%;
+}
+
+.research-media-card img {
+  height: 100%;
+  min-height: 320px;
+  object-position: center center;
+}
+
 .card-media-body {
   padding: 1.2rem 1.25rem 1.3rem;
 }
@@ -1067,6 +1077,10 @@ a.project-card:hover {
   .hero-visual {
     min-height: 420px;
     padding: 1rem;
+  }
+
+  .research-media-card img {
+    min-height: 260px;
   }
 
   .portrait-frame {
