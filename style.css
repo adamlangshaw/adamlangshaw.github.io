@@ -382,6 +382,10 @@ textarea {
   color: var(--text-muted);
 }
 
+.footer-note {
+  display: none;
+}
+
 .footer-links {
   display: flex;
   align-items: center;
@@ -626,46 +630,41 @@ textarea {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 72% 34%, rgba(140, 21, 21, 0.16), transparent 0 14rem),
-    linear-gradient(180deg, rgba(15, 13, 11, 0.08), rgba(15, 13, 11, 0.46));
+    radial-gradient(circle at 72% 34%, rgba(140, 21, 21, 0.12), transparent 0 14rem),
+    linear-gradient(180deg, rgba(15, 13, 11, 0.04), rgba(15, 13, 11, 0.34));
 }
 
 .portrait-frame {
   position: absolute;
-  right: clamp(1rem, 3vw, 2rem);
-  bottom: clamp(1rem, 3vw, 2rem);
-  width: min(84%, 430px);
+  left: clamp(1rem, 3vw, 2rem);
+  bottom: 0;
+  width: min(56%, 360px);
   z-index: 1;
-  padding: 0.75rem;
-  border-radius: 32px;
-  background: rgba(248, 245, 240, 0.44);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 0 24px 60px rgba(20, 19, 18, 0.24);
-  backdrop-filter: blur(6px);
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  backdrop-filter: none;
 }
 
 .portrait-frame::before {
-  content: "";
-  position: absolute;
-  inset: 10px;
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  pointer-events: none;
+  display: none;
 }
 
 .portrait-image {
   width: 100%;
-  aspect-ratio: 0.8;
+  aspect-ratio: 0.78;
   object-fit: cover;
   object-position: center top;
-  border-radius: 24px;
+  border-radius: 26px 26px 0 0;
+  box-shadow: 0 26px 54px rgba(20, 19, 18, 0.24);
+  -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 1) 74%, transparent 100%);
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 1) 74%, transparent 100%);
 }
 
 .portrait-caption {
-  margin: 0.85rem 0 0;
-  font-size: 0.78rem;
-  line-height: 1.5;
-  color: rgba(252, 251, 248, 0.88);
+  display: none;
 }
 
 .section {
@@ -1161,8 +1160,7 @@ textarea {
 
   .portrait-frame {
     left: 1rem;
-    right: 1rem;
-    width: auto;
+    width: min(62%, 290px);
   }
 
   .section {
