@@ -1,0 +1,143 @@
+---
+import Page from '../layouts/Page.astro';
+import Icon from '../components/Icon.astro';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Adam Langshaw',
+  url: 'https://adamlangshaw.com/',
+  award: [
+    'Hoover Institution First-Year Distinguished Essay Award (2026)',
+    'National Merit Scholarship (2025)',
+    'Salutatorian, Cypress Bay High School (2025)',
+  ],
+};
+---
+
+<Page
+  title="Honors & Awards"
+  description="Adam Langshaw's academic honors, including the Hoover Institution Distinguished Essay Award and the National Merit Scholarship."
+  jsonLd={jsonLd}
+>
+  <header class="page-head">
+    <h1>Honors &amp; awards</h1>
+    <p class="lede">Recognition for writing and for academic work.</p>
+  </header>
+
+  <article class="feature">
+    <p class="eyebrow accent">2026 &middot; Hoover Institution, Stanford</p>
+    <h2>First-Year Distinguished Essay Award</h2>
+    <p class="ctx">
+      For <em>Coverage, Rights, and the Rhetoric of Reform: A Conceptual Analysis of
+      Universal Healthcare in America.</em>
+    </p>
+    <p class="summary">
+      Written for a Stanford seminar on healthcare policy, the essay separates two claims
+      that usually appear together in reform debates: that the United States should adopt
+      universal healthcare, and that healthcare is a human right. It argues these are
+      different kinds of claims, one about how a health system is structured and one a
+      moral argument about obligation. It shows that universal coverage has at least three
+      distinct meanings, that no existing system fully satisfies any of them, and that
+      holding an insurance card is not the same as getting timely care. Every system
+      rations. The essay concludes that Medicare for All would achieve coverage on paper
+      without solving access, and that credible reform has to account for scarcity, cost,
+      and individual freedom rather than treat the goal as met by naming it.
+    </p>
+    <blockquote>The tickets are universal; access is not.</blockquote>
+    <blockquote>
+      The policy implication is that benefits must be cut. Not restructured, not
+      rationalized, not right-sized. Cut.
+    </blockquote>
+    <p class="panel">
+      Selected by a review committee of Russell Berman, Norman Naimark, and John Cochrane.
+      &nbsp;<a href="https://www.hoover.org/" rel="noopener">Hoover announcement <Icon name="arrow" /></a>
+    </p>
+  </article>
+
+  <section class="band">
+    <div class="band-text">
+      <p class="eyebrow band-accent">2025</p>
+      <h3>National Merit Scholar</h3>
+      <p>
+        National Merit $2,500 Scholarship, National Merit Scholarship Corporation. One of
+        about 2,500 scholarship recipients from roughly 3.5 million PSAT takers nationally.
+        <a href="https://www.local10.com/" rel="noopener">Local 10 coverage</a>
+      </p>
+    </div>
+    <div class="band-pic band-pic-nm">
+      <img src="/img/photos/national-merit.jpg" alt="Adam Langshaw, senior portrait" loading="lazy" width="1000" height="1400" />
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="band-text">
+      <p class="eyebrow band-accent">2025</p>
+      <h3>Salutatorian, Cypress Bay High School</h3>
+      <p>
+        Class of 2025, weighted GPA 5.6061. Weston, Florida.
+        <a href="https://www.sun-sentinel.com/" rel="noopener">Sun Sentinel coverage</a>
+      </p>
+    </div>
+    <div class="band-pic band-pic-sal">
+      <img src="/img/photos/salutatorian.jpg" alt="Adam Langshaw with his mother at graduation" loading="lazy" width="1600" height="1143" />
+    </div>
+  </section>
+</Page>
+
+<style>
+  .accent { color: var(--accent); }
+
+  .feature {
+    margin: 2.5rem 0 0;
+    max-width: 58rem;
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    padding: clamp(1.6rem, 4vw, 2.4rem);
+    background: var(--card);
+  }
+  .feature h2 { font-size: clamp(1.5rem, 3.5vw, 1.8rem); margin: 0.6rem 0 0; max-width: 40rem; }
+  .feature .ctx { font-size: 0.9rem; color: var(--muted); margin: 0.5rem 0 0; }
+  .feature .summary { font-size: 1.02rem; line-height: 1.62; margin: 1.2rem 0 0; max-width: 42rem; }
+  .feature blockquote {
+    margin: 1.3rem 0 0;
+    padding-left: 1.1rem;
+    border-left: 2px solid var(--accent);
+    font-family: var(--serif);
+    font-size: 1.2rem;
+    line-height: 1.4;
+    max-width: 38rem;
+  }
+  .feature .panel { font-size: 0.88rem; color: var(--muted); margin: 1.4rem 0 0; }
+  .feature .panel a { display: inline-flex; align-items: center; gap: 0.3rem; }
+
+  .band {
+    margin: 1.4rem 0 0;
+    max-width: 58rem;
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr;
+    background: var(--band);
+    color: var(--band-ink);
+  }
+  .band-text { padding: clamp(1.6rem, 4vw, 2rem); align-self: center; }
+  .band-text h3 { font-size: 1.35rem; margin: 0.5rem 0 0; color: var(--band-ink); }
+  .band-text p { font-size: 0.88rem; color: var(--band-muted); margin: 0.5rem 0 0; max-width: 27rem; }
+  .band-text a { color: var(--band-accent); }
+  .band-pic { position: relative; min-height: 220px; }
+  .band-pic img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .band-pic-nm img { object-position: 50% 14%; }
+  .band-pic-sal img { object-position: 34% 28%; }
+
+  @media (min-width: 720px) {
+    .band { grid-template-columns: 1fr 300px; }
+    .band-pic::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, var(--band) 1%, transparent 52%);
+    }
+  }
+</style>

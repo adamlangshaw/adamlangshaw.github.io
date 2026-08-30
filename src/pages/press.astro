@@ -1,0 +1,77 @@
+---
+import Page from '../layouts/Page.astro';
+import Icon from '../components/Icon.astro';
+import { PRESS } from '../data/press';
+---
+
+<Page
+  title="Press"
+  description="Media coverage of Adam Langshaw, including the Hoover Institution Distinguished Essay Award and academic honors."
+>
+  <header class="page-head">
+    <h1>Press</h1>
+    <p class="lede">Third-party coverage.</p>
+  </header>
+
+  <ul class="items rule-top">
+    {
+      PRESS.map((p) => (
+        <li class="item">
+          <span class="logo">
+            <img src={p.logo} alt={`${p.outlet} logo`} loading="lazy" />
+          </span>
+          <div class="detail">
+            <p class="headline">{p.headline}</p>
+            <p class="outlet">{p.outlet}</p>
+            <p class="note">{p.note}</p>
+            <p class="link">
+              <a href={p.url} rel="noopener">{p.linkLabel} <Icon name="arrow" /></a>
+            </p>
+          </div>
+          <span class="date tabnums">{p.date}</span>
+        </li>
+      ))
+    }
+  </ul>
+</Page>
+
+<style>
+  .items { list-style: none; margin: 2rem 0 0; padding: 0; max-width: 58rem; }
+  .item {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 0.4rem 1.4rem;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--rule);
+    align-items: start;
+  }
+  .logo {
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--rule);
+    border-radius: 9px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 6px;
+  }
+  .logo img { max-width: 100%; max-height: 26px; object-fit: contain; width: auto; }
+  .headline { font-family: var(--serif); font-size: 1.2rem; line-height: 1.32; margin: 0; }
+  .outlet { font-size: 0.8rem; color: var(--muted); margin: 0.25rem 0 0; }
+  .note { font-size: 0.95rem; color: var(--muted); margin: 0.5rem 0 0; max-width: 34rem; }
+  .link { font-size: 0.9rem; margin: 0.55rem 0 0; }
+  .link a { display: inline-flex; align-items: center; gap: 0.3rem; }
+  .date {
+    font-size: 0.8rem;
+    color: var(--muted);
+    white-space: nowrap;
+    grid-column: 2;
+  }
+
+  @media (min-width: 720px) {
+    .item { grid-template-columns: 44px 1fr auto; }
+    .date { grid-column: auto; padding-top: 0.15rem; }
+  }
+</style>
