@@ -21,7 +21,7 @@ import { PRESS } from '../data/press';
             <img src={p.logo} alt={`${p.outlet} logo`} loading="lazy" />
           </span>
           <div class="detail">
-            <p class="headline">{p.headline}</p>
+            <h2 class="headline">{p.headline}</h2>
             <p class="outlet">{p.outlet}</p>
             <p class="note">{p.note}</p>
             <p class="link">
@@ -58,7 +58,7 @@ import { PRESS } from '../data/press';
     padding: 6px;
   }
   .logo img { max-width: 100%; max-height: 26px; object-fit: contain; width: auto; }
-  .headline { font-family: var(--serif); font-size: 1.2rem; line-height: 1.32; margin: 0; }
+  .headline { font-family: var(--serif); font-weight: 500; font-size: 1.2rem; line-height: 1.32; margin: 0; }
   .outlet { font-size: 0.8rem; color: var(--muted); margin: 0.25rem 0 0; }
   .note { font-size: 0.95rem; color: var(--muted); margin: 0.5rem 0 0; max-width: 34rem; }
   .link { font-size: 0.9rem; margin: 0.55rem 0 0; }
