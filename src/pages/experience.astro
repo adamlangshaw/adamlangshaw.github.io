@@ -1,0 +1,75 @@
+---
+import Page from '../layouts/Page.astro';
+import { EXPERIENCE } from '../data/experience';
+---
+
+<Page
+  title="Experience"
+  description="Research, technical, and editorial experience. Adam Langshaw, Stanford University."
+>
+  <header class="page-head">
+    <h1>Experience</h1>
+    <p class="lede">Research, technical, and editorial work.</p>
+  </header>
+
+  <ol class="roles rule-top">
+    {
+      EXPERIENCE.map((r) => (
+        <li class="role">
+          <span class="when tabnums">{r.dates}</span>
+          <span class="mark">
+            <img src={r.logo} alt={`${r.org} logo`} loading="lazy" />
+          </span>
+          <div class="detail">
+            <h2>
+              {r.role}
+              {r.contract && <span class="contract"> (Contract)</span>}
+            </h2>
+            <p class="org">
+              {r.org}
+              {r.meta && <span class="meta"> &middot; {r.meta}</span>}
+            </p>
+            <p class="summary">{r.summary}</p>
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+</Page>
+
+<style>
+  .roles { list-style: none; margin: 2.5rem 0 0; padding: 0; max-width: 58rem; }
+  .role {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.4rem 1.5rem;
+    padding: 1.6rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .when { font-size: 0.85rem; color: var(--muted); }
+  .mark {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--rule);
+    border-radius: 9px;
+    background: #fff;
+    padding: 7px;
+    overflow: hidden;
+  }
+  .mark img { max-width: 100%; max-height: 26px; object-fit: contain; width: auto; }
+  .detail h2 { font-size: 1.35rem; margin: 0; }
+  .contract { color: var(--muted); font-size: 0.78em; font-weight: 400; }
+  .org { font-size: 0.9rem; color: var(--muted); margin: 0.2rem 0 0; }
+  .summary { margin: 0.7rem 0 0; max-width: 40rem; font-size: 0.98rem; }
+
+  @media (min-width: 720px) {
+    .role {
+      grid-template-columns: 150px 44px 1fr;
+      align-items: start;
+    }
+    .when { padding-top: 0.2rem; }
+  }
+</style>

@@ -1,0 +1,158 @@
+---
+import Page from '../layouts/Page.astro';
+import Icon from '../components/Icon.astro';
+import { SITE } from '../data/site';
+import { WRITING } from '../data/writing';
+
+const recent = WRITING.slice(0, 2);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Adam Langshaw',
+  url: SITE.url,
+  jobTitle: 'Opinions Managing Editor, The Stanford Daily',
+  alumniOf: { '@type': 'CollegeOrUniversity', name: 'Stanford University' },
+  homeLocation: { '@type': 'Place', name: 'Weston, Florida' },
+  award: 'Hoover Institution First-Year Distinguished Essay Award (2026)',
+  sameAs: [
+    'https://www.linkedin.com/in/adamlangshaw/',
+    'https://stanforddaily.com/author/adamlangshaw/',
+    'https://x.com/adamhlangshaw',
+    'https://instagram.com/adamlangshaw',
+  ],
+};
+---
+
+<Page title="Home" jsonLd={jsonLd}>
+  <section class="hero">
+    <div class="hero-body">
+      <h1>Adam Langshaw</h1>
+      <p class="tagline">{SITE.tagline}</p>
+
+      <div class="highlights">
+        <p>
+          <strong>First-Year Distinguished Essay Award</strong>,
+          <a href="/honors/">Hoover Institution</a>, 2026
+        </p>
+        <p><strong>Opinions Managing Editor</strong>, The Stanford Daily</p>
+      </div>
+
+      <div class="bio reading">
+        <p>
+          Adam Langshaw is a Stanford undergraduate in the Class of 2029, studying public
+          policy and mathematics with a minor in computer science, on the pre-med track.
+        </p>
+        <p>
+          His work sits between health policy and medicine. He has co-authored research on
+          health equity in cystic fibrosis and on immigrant patients' access to care, and
+          he is Opinions Managing Editor of <em>The Stanford Daily</em>, writing on
+          politics, higher education, and health policy.
+        </p>
+        <p>
+          He grew up in Weston, Florida. Away from work he is usually around football,
+          skiing, or a set of turntables.
+        </p>
+      </div>
+
+      <div class="paths">
+        <p class="eyebrow">Recent writing</p>
+        <ul class="recent">
+          {
+            recent.map((a) => (
+              <li>
+                <a href={a.url} rel="noopener">{a.title}</a>
+                <span class="src">{a.category} &middot; The Stanford Daily</span>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="jump">
+          <a href="/honors/">Honors &amp; awards <Icon name="arrow" /></a>
+          <a href="/experience/">Experience <Icon name="arrow" /></a>
+          <a href="/research/">Research <Icon name="arrow" /></a>
+        </p>
+      </div>
+    </div>
+
+    <div class="portrait">
+      <img
+        src="/img/photos/portrait.jpg"
+        width="1000"
+        height="1400"
+        alt="Portrait of Adam Langshaw"
+        fetchpriority="high"
+      />
+    </div>
+  </section>
+</Page>
+
+<style>
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    margin-top: clamp(2.5rem, 6vw, 4rem);
+  }
+  h1 {
+    font-size: clamp(2.6rem, 7vw, 3.9rem);
+    margin: 0;
+  }
+  .tagline {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(1.15rem, 2.4vw, 1.4rem);
+    color: var(--muted);
+    margin: 0.7rem 0 0;
+  }
+  .highlights {
+    margin: 1.7rem 0 0;
+    padding: 1rem 0;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    font-size: 0.95rem;
+    color: var(--muted);
+    max-width: 40rem;
+  }
+  .highlights p { margin: 0.3rem 0; }
+  .highlights strong { color: var(--ink); font-weight: 600; }
+  .bio { margin-top: 1.6rem; }
+  .bio p { margin: 0 0 0.85rem; }
+  .paths { margin-top: 1.7rem; }
+  .recent {
+    list-style: none;
+    margin: 0.6rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+  .recent li { display: flex; flex-direction: column; }
+  .recent a { font-family: var(--serif); font-size: 1.18rem; }
+  .recent .src { font-size: 0.82rem; color: var(--muted); }
+  .jump {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 1.6rem;
+    margin: 1.3rem 0 0;
+    font-size: 0.95rem;
+  }
+  .jump a { display: inline-flex; align-items: center; gap: 0.35rem; }
+  .jump :global(svg) { transition: transform 0.15s ease; }
+  .jump a:hover :global(svg) { transform: translateX(2px); }
+  .portrait {
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--card);
+    max-width: 340px;
+  }
+  .portrait img { width: 100%; height: auto; object-fit: cover; }
+
+  @media (min-width: 880px) {
+    .hero {
+      grid-template-columns: minmax(0, 1fr) 340px;
+      gap: 3.5rem;
+      align-items: start;
+    }
+  }
+</style>

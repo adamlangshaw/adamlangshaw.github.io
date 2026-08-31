@@ -1,0 +1,79 @@
+---
+import Page from '../layouts/Page.astro';
+import Icon from '../components/Icon.astro';
+import { CONTACT } from '../data/site';
+
+const rows = [
+  { icon: 'mail', label: 'Email', value: CONTACT.emailPersonal, href: `mailto:${CONTACT.emailPersonal}`, sub: 'Personal' },
+  { icon: 'mail', label: 'Email', value: CONTACT.emailStanford, href: `mailto:${CONTACT.emailStanford}`, sub: 'Stanford' },
+  { icon: 'instagram', label: 'Instagram', value: CONTACT.instagram.handle, href: CONTACT.instagram.url },
+  { icon: 'x', label: 'X', value: CONTACT.x.handle, href: CONTACT.x.url },
+  { icon: 'linkedin', label: 'LinkedIn', value: CONTACT.linkedin.handle, href: CONTACT.linkedin.url },
+  { icon: null, label: 'The Stanford Daily', value: 'Author archive', href: CONTACT.dailyArchive },
+] as const;
+---
+
+<Page title="Contact" description="Contact Adam Langshaw by email, Instagram, X, or LinkedIn.">
+  <header class="page-head">
+    <h1>Contact</h1>
+    <p class="lede">Reach me by email, or find me in the usual places.</p>
+  </header>
+
+  <ul class="grid rule-top">
+    {
+      rows.map((r) => (
+        <li class="row">
+          <span class="ic">
+            {r.icon ? (
+              <Icon name={r.icon} />
+            ) : (
+              <img src="/img/logo/stanforddaily.png" alt="" />
+            )}
+          </span>
+          <div>
+            <p class="label eyebrow">{r.label}</p>
+            <p class="value">
+              <a href={r.href} rel="noopener">{r.value}</a>
+            </p>
+            {'sub' in r && r.sub && <p class="sub">{r.sub}</p>}
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+</Page>
+
+<style>
+  .grid {
+    list-style: none;
+    margin: 2.5rem 0 0;
+    padding-top: 0;
+    max-width: 44rem;
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 22px 1fr;
+    gap: 0.9rem;
+    align-items: start;
+    padding: 1.2rem 0.25rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .ic {
+    width: 20px;
+    height: 20px;
+    margin-top: 0.25rem;
+    color: var(--muted);
+    font-size: 20px;
+    display: block;
+  }
+  .ic img { width: 100%; height: 100%; object-fit: contain; border-radius: 3px; }
+  .label { margin: 0; }
+  .value { font-family: var(--serif); font-size: 1.25rem; margin: 0.2rem 0 0; }
+  .sub { font-size: 0.8rem; color: var(--muted); margin: 0.1rem 0 0; }
+
+  @media (min-width: 620px) {
+    .grid { grid-template-columns: 1fr 1fr; column-gap: 2.5rem; }
+  }
+</style>
