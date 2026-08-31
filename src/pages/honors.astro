@@ -1,12 +1,14 @@
 ---
 import Page from '../layouts/Page.astro';
 import Icon from '../components/Icon.astro';
+import { SAME_AS } from '../data/site';
 
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Person',
   name: 'Adam Langshaw',
   url: 'https://adamlangshaw.com/',
+  sameAs: SAME_AS,
   award: [
     'Hoover Institution First-Year Distinguished Essay Award (2026)',
     'National Merit Scholarship (2025)',

@@ -8,8 +8,12 @@ export default defineConfig({
   build: { format: 'directory' },
   integrations: [
     sitemap({
-      lastmod: new Date(),
       changefreq: 'monthly',
+      serialize(item) {
+        // Plain YYYY-MM-DD lastmod (no time/milliseconds).
+        item.lastmod = new Date().toISOString().slice(0, 10);
+        return item;
+      },
     }),
   ],
   redirects: {

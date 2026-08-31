@@ -3,17 +3,42 @@ import Page from '../layouts/Page.astro';
 import Icon from '../components/Icon.astro';
 import { CONTACT } from '../data/site';
 
-const rows = [
+type Row = {
+  icon: 'mail' | 'instagram' | 'x' | 'linkedin' | null;
+  img?: string;
+  label: string;
+  value: string;
+  href: string;
+  sub?: string;
+};
+
+const rows: Row[] = [
   { icon: 'mail', label: 'Email', value: CONTACT.emailPersonal, href: `mailto:${CONTACT.emailPersonal}`, sub: 'Personal' },
   { icon: 'mail', label: 'Email', value: CONTACT.emailStanford, href: `mailto:${CONTACT.emailStanford}`, sub: 'Stanford' },
   { icon: 'instagram', label: 'Instagram', value: CONTACT.instagram.handle, href: CONTACT.instagram.url },
   { icon: 'x', label: 'X', value: CONTACT.x.handle, href: CONTACT.x.url },
   { icon: 'linkedin', label: 'LinkedIn', value: CONTACT.linkedin.handle, href: CONTACT.linkedin.url },
-  { icon: null, label: 'The Stanford Daily', value: 'Author archive', href: CONTACT.dailyArchive },
-] as const;
+  {
+    icon: null,
+    img: '/img/logo/stanford.png',
+    label: 'Stanford Profiles',
+    value: 'profiles.stanford.edu/langshaw',
+    href: CONTACT.stanfordProfiles,
+  },
+  {
+    icon: null,
+    img: '/img/logo/stanforddaily.png',
+    label: 'The Stanford Daily',
+    value: 'Author archive',
+    href: CONTACT.dailyArchive,
+  },
+];
 ---
 
-<Page title="Contact" description="Contact Adam Langshaw by email, Instagram, X, or LinkedIn.">
+<Page
+  title="Contact"
+  description="Contact Adam Langshaw by email, or find him on Instagram, X, LinkedIn, and Stanford Profiles."
+>
   <header class="page-head">
     <h1>Contact</h1>
     <p class="lede">Reach me by email, or find me in the usual places.</p>
@@ -24,18 +49,14 @@ const rows = [
       rows.map((r) => (
         <li class="row">
           <span class="ic">
-            {r.icon ? (
-              <Icon name={r.icon} />
-            ) : (
-              <img src="/img/logo/stanforddaily.png" alt="" />
-            )}
+            {r.icon ? <Icon name={r.icon} /> : <img src={r.img} alt="" />}
           </span>
           <div>
             <p class="label eyebrow">{r.label}</p>
             <p class="value">
               <a href={r.href} rel="noopener">{r.value}</a>
             </p>
-            {'sub' in r && r.sub && <p class="sub">{r.sub}</p>}
+            {r.sub && <p class="sub">{r.sub}</p>}
           </div>
         </li>
       ))

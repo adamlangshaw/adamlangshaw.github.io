@@ -1,7 +1,7 @@
 ---
 import Page from '../layouts/Page.astro';
 import Icon from '../components/Icon.astro';
-import { SITE } from '../data/site';
+import { SITE, SAME_AS } from '../data/site';
 import { WRITING } from '../data/writing';
 
 const recent = WRITING.slice(0, 2);
@@ -15,12 +15,7 @@ const jsonLd = {
   alumniOf: { '@type': 'CollegeOrUniversity', name: 'Stanford University' },
   homeLocation: { '@type': 'Place', name: 'Weston, Florida' },
   award: 'Hoover Institution First-Year Distinguished Essay Award (2026)',
-  sameAs: [
-    'https://www.linkedin.com/in/adamlangshaw/',
-    'https://stanforddaily.com/author/adamlangshaw/',
-    'https://x.com/adamhlangshaw',
-    'https://instagram.com/adamlangshaw',
-  ],
+  sameAs: SAME_AS,
 };
 ---
 
