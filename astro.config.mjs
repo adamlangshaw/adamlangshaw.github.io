@@ -6,7 +6,12 @@ export default defineConfig({
   site: 'https://adamlangshaw.com',
   trailingSlash: 'always',
   build: { format: 'directory' },
-  integrations: [sitemap()],
+  integrations: [
+    sitemap({
+      lastmod: new Date(),
+      changefreq: 'monthly',
+    }),
+  ],
   redirects: {
     '/about': '/',
     '/influences': '/',
