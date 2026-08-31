@@ -22,5 +22,14 @@ export const CONTACT = {
   instagram: { handle: '@adamlangshaw', url: 'https://instagram.com/adamlangshaw' },
   x: { handle: '@adamhlangshaw', url: 'https://x.com/adamhlangshaw' },
   linkedin: { handle: 'in/adamlangshaw', url: 'https://www.linkedin.com/in/adamlangshaw/' },
+  stanfordProfiles: 'https://profiles.stanford.edu/langshaw',
   dailyArchive: 'https://stanforddaily.com/author/adamlangshaw/',
 };
+
+export const SAME_AS = [
+  'https://www.linkedin.com/in/adamlangshaw/',
+  'https://profiles.stanford.edu/langshaw',
+  'https://stanforddaily.com/author/adamlangshaw/',
+  'https://x.com/adamhlangshaw',
+  'https://instagram.com/adamlangshaw',
+];
