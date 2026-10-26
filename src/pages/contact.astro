@@ -15,14 +15,15 @@ type Row = {
 const rows: Row[] = [
   { icon: 'mail', label: 'Email', value: CONTACT.emailPersonal, href: `mailto:${CONTACT.emailPersonal}`, sub: 'Personal' },
   { icon: 'mail', label: 'Email', value: CONTACT.emailStanford, href: `mailto:${CONTACT.emailStanford}`, sub: 'Stanford' },
+  { icon: 'mail', label: 'Email', value: CONTACT.emailDaily, href: `mailto:${CONTACT.emailDaily}`, sub: 'The Stanford Daily' },
   { icon: 'instagram', label: 'Instagram', value: CONTACT.instagram.handle, href: CONTACT.instagram.url },
   { icon: 'x', label: 'X', value: CONTACT.x.handle, href: CONTACT.x.url },
-  { icon: 'linkedin', label: 'LinkedIn', value: CONTACT.linkedin.handle, href: CONTACT.linkedin.url },
+  { icon: 'linkedin', label: 'LinkedIn', value: 'View LinkedIn profile', href: CONTACT.linkedin.url },
   {
     icon: null,
     img: '/img/logo/stanford.png',
     label: 'Stanford Profiles',
-    value: 'profiles.stanford.edu/langshaw',
+    value: 'View Stanford profile',
     href: CONTACT.stanfordProfiles,
   },
   {
@@ -91,7 +92,7 @@ const rows: Row[] = [
   }
   .ic img { width: 100%; height: 100%; object-fit: contain; border-radius: 3px; }
   .label { margin: 0; }
-  .value { font-family: var(--serif); font-size: 1.25rem; margin: 0.2rem 0 0; }
+  .value { overflow-wrap: anywhere; font-family: var(--serif); font-size: 1.25rem; margin: 0.2rem 0 0; }
   .sub { font-size: 0.8rem; color: var(--muted); margin: 0.1rem 0 0; }
 
   @media (min-width: 620px) {

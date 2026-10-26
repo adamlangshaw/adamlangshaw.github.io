@@ -7,14 +7,7 @@ export default defineConfig({
   trailingSlash: 'always',
   build: { format: 'directory' },
   integrations: [
-    sitemap({
-      changefreq: 'monthly',
-      serialize(item) {
-        // Plain YYYY-MM-DD lastmod (no time/milliseconds).
-        item.lastmod = new Date().toISOString().slice(0, 10);
-        return item;
-      },
-    }),
+    sitemap(),
   ],
   redirects: {
     '/about': '/',

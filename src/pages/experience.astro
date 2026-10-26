@@ -5,7 +5,7 @@ import { EXPERIENCE } from '../data/experience';
 
 <Page
   title="Experience"
-  description="Research, technical, and editorial experience. Adam Langshaw, Stanford University."
+  description="Adam Langshaw’s experience as a Hoover Student Fellow for 2026–27, Stanford Daily editor, and contributor to research, technology, and Stanford Athletics."
 >
   <header class="page-head">
     <h1>Experience</h1>
@@ -15,7 +15,7 @@ import { EXPERIENCE } from '../data/experience';
   <ol class="roles rule-top">
     {
       EXPERIENCE.map((r) => (
-        <li class="role">
+        <li class="role" id={r.id}>
           <span class="when tabnums">{r.dates}</span>
           <span class="mark">
             <img src={r.logo} alt={`${r.org} logo`} loading="lazy" />

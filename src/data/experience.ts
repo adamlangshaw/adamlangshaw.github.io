@@ -1,5 +1,6 @@
 export type Role = {
   role: string;
+  id?: string;
   contract?: boolean;
   org: string;
   meta?: string;
@@ -10,6 +11,15 @@ export type Role = {
 
 // Reverse chronological: ongoing roles first (by start), then past.
 export const EXPERIENCE: Role[] = [
+  {
+    id: 'hoover-student-fellow',
+    role: 'Hoover Student Fellow',
+    org: 'Hoover Institution',
+    dates: 'Oct 2026 - present',
+    meta: '2026–27 fellowship',
+    logo: '/img/logo/hooverlogo.svg',
+    summary: 'Works with Senior Fellow Eric Hanushek through the Hoover Institution Student Fellowship Program, providing research support in education policy and economics. Participates in faculty mentorship, research activities, and programming across the Hoover Institution.',
+  },
   {
     role: 'Student Manager, Football',
     org: 'Stanford Athletics',
@@ -25,7 +35,7 @@ export const EXPERIENCE: Role[] = [
     dates: 'Jan 2026 - present',
     logo: '/img/logo/stanforddaily.png',
     summary:
-      "Commission, edit, and publish the opinion section's columns and op-eds across politics, higher education, and health policy.",
+      "Commission, edit, and publish the opinion section's columns and op-eds across politics, higher education, and health policy. Also a member of The Stanford Daily Editorial Board.",
   },
   {
     role: 'Vertical AI Integration',

@@ -2,29 +2,47 @@
 import Page from '../layouts/Page.astro';
 import Icon from '../components/Icon.astro';
 import { WRITING } from '../data/writing';
-import { CONTACT } from '../data/site';
+import { EDITORIALS } from '../data/editorials';
+import { CONTACT, SITE } from '../data/site';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Writing by Adam Langshaw',
+  numberOfItems: WRITING.length,
+  itemListElement: WRITING.map((a, i) => ({
+    '@type': 'ListItem', position: i + 1,
+    item: {
+      '@type': 'Article', headline: a.title, url: a.url, datePublished: a.date,
+      author: { '@type': 'Person', '@id': `${SITE.url}/#person`, name: SITE.name, url: `${SITE.url}/` },
+      publisher: { '@type': 'Organization', name: 'The Stanford Daily', url: 'https://stanforddaily.com/' },
+      articleSection: a.category,
+    },
+  })),
+};
 ---
 
 <Page
   title="Writing"
-  description="Opinion and sports columns by Adam Langshaw for The Stanford Daily, covering health policy, higher education, and politics."
+  jsonLd={jsonLd}
+  description="Opinion and sports writing by Adam Langshaw for The Stanford Daily, plus collective editorials from the Editorial Board on which he serves."
 >
   <header class="page-head">
     <h1>Writing</h1>
-    <p class="lede">Every column for <em>The Stanford Daily</em>, newest first.</p>
+    <p class="lede">Opinion and sports writing for <em>The Stanford Daily</em>, newest first.</p>
+    <p class="reading">Adam is Opinions Managing Editor and a member of The Stanford Daily Editorial Board.</p>
   </header>
 
   <ul class="pieces rule-top">
     {
       WRITING.map((a) => (
         <li>
-          <a class="piece" href={a.url} rel="noopener">
-            <img class="thumb" src={a.image} alt={a.alt} loading="lazy" width="900" height="576" />
+          <a class:list={["piece", { "text-only": !a.image }]} href={a.url} rel="noopener">
+            {a.image && <img class="thumb" src={a.image} alt={a.alt ?? ""} loading="lazy" width="900" height="576" />}
             <span class="mid">
               <span class="eyebrow tag">{a.category}</span>
               <h2 class="t">{a.title}</h2>
             </span>
-            <span class="date tabnums">{a.display}</span>
+            <time class="date tabnums" datetime={a.date}>{a.display}</time>
           </a>
         </li>
       ))
@@ -34,6 +52,19 @@ import { CONTACT } from '../data/site';
   <p class="archive">
     <a href={CONTACT.dailyArchive} rel="noopener">Author archive at The Stanford Daily <Icon name="arrow" /></a>
   </p>
+  <section class="editorials rule-top" aria-labelledby="editorial-board">
+    <h2 id="editorial-board">Editorial Board</h2>
+    <p class="reading">Collective editorials by the board on which Adam serves. These represent the board’s work, rather than individual authorship.</p>
+    <ul class="pieces">
+      {EDITORIALS.map((a) => (
+        <li><a class="piece" href={a.url} rel="noopener">
+          <img class="thumb" src={a.image} alt={a.alt} loading="lazy" width="900" height="675" />
+          <span class="mid"><span class="eyebrow tag">{a.byline}</span><h3 class="t">{a.title}</h3></span>
+          <time class="date tabnums" datetime={a.date}>{a.display}</time>
+        </a></li>
+      ))}
+    </ul>
+  </section>
 </Page>
 
 <style>
@@ -66,6 +97,10 @@ import { CONTACT } from '../data/site';
   }
   .piece:hover .t { color: var(--accent); }
   .date { font-size: 0.8rem; color: var(--muted); white-space: nowrap; grid-column: 2; }
+  .text-only { grid-template-columns: 1fr; }
+  .text-only .date { grid-column: 1; }
+  .editorials { max-width: 60rem; margin-top: 3rem; padding-top: 1.5rem; }
+  .editorials h2 { margin: 0; }
   .archive {
     margin-top: 1.8rem;
     font-size: 0.95rem;
@@ -75,5 +110,7 @@ import { CONTACT } from '../data/site';
   @media (min-width: 640px) {
     .piece { grid-template-columns: 150px 1fr auto; }
     .date { grid-column: auto; }
+    .text-only { grid-template-columns: 1fr auto; }
+    .text-only .date { grid-column: auto; }
   }
 </style>

@@ -4,12 +4,21 @@ export type Article = {
   date: string; // ISO
   display: string; // e.g. "Jun 4, 2026"
   url: string;
-  image: string; // path under /img/writing/
-  alt: string;
+  image?: string; // path under /img/writing/
+  alt?: string;
 };
 
 // Newest first.
 export const WRITING: Article[] = [
+  {
+    title: 'Our lawsuit, everyone’s freedom',
+    image: '/img/writing/lawsuit.webp',
+    alt: 'Stanford’s Main Quad with Hoover Tower in the background. Photo: Michael Yu / The Stanford Daily.',
+    category: 'Opinion',
+    date: '2026-09-22',
+    display: 'Sep 22, 2026',
+    url: 'https://stanforddaily.com/2026/09/22/our-lawsuit-everyones-freedom/',
+  },
   {
     title: 'Why Stanford must follow Harvard on grade reform',
     category: 'Opinion',

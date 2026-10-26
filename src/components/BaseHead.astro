@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import { SITE } from '../data/site';
+import { SITE, NAV } from '../data/site';
 
 interface Props {
   title: string;
@@ -10,9 +10,34 @@ interface Props {
 }
 
 const { title, description = SITE.description, path, jsonLd } = Astro.props;
+const isNotFound = path === '/404.html' || path === '/404/';
 const canonical = new URL(path, SITE.url).href;
 const fullTitle =
   path === '/' ? "Adam Langshaw · Stanford '29, The Stanford Daily" : `${title} · ${SITE.name}`;
+const pageSchema = {
+  '@context': 'https://schema.org',
+  '@type': path === '/' ? 'ProfilePage' : path === '/contact/' ? 'ContactPage' : isNotFound ? 'WebPage' : 'CollectionPage',
+  '@id': `${canonical}#webpage`,
+  url: canonical,
+  name: fullTitle,
+  description,
+  inLanguage: 'en',
+  isPartOf: { '@id': `${SITE.url}/#website` },
+  about: { '@id': `${SITE.url}/#person` },
+  ...(path === '/' ? { mainEntity: { '@id': `${SITE.url}/#person` } } : {}),
+};
+const schemas = [
+  { '@context': 'https://schema.org', '@type': 'WebSite', '@id': `${SITE.url}/#website`, url: `${SITE.url}/`, name: SITE.name, inLanguage: 'en' },
+  pageSchema,
+  ...(path === '/' || isNotFound ? [] : [{
+    '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE.url}/` },
+      { '@type': 'ListItem', position: 2, name: NAV.find((item) => item.href === path)?.label ?? title, item: canonical },
+    ],
+  }]),
+  ...(jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : []),
+];
 ---
 
 <meta charset="utf-8" />
@@ -24,6 +49,8 @@ const fullTitle =
 <meta name="theme-color" content="#faf9f6" media="(prefers-color-scheme: light)" />
 <meta name="theme-color" content="#16140f" media="(prefers-color-scheme: dark)" />
 
+<meta name="robots" content={isNotFound ? "noindex, follow" : "index, follow, max-image-preview:large"} />
+<meta property="og:locale" content="en_US" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content={SITE.name} />
 <meta property="og:title" content={fullTitle} />
@@ -39,10 +66,10 @@ const fullTitle =
 <link rel="sitemap" href="/sitemap-index.xml" />
 
 {
-  jsonLd && (
+  schemas.length > 0 && (
     <script
       type="application/ld+json"
-      set:html={JSON.stringify(jsonLd)}
+      set:html={JSON.stringify(schemas).replace(/</g, '\\u003c')}
     />
   )
 }

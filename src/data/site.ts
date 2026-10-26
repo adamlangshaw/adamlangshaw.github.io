@@ -3,7 +3,7 @@ export const SITE = {
   url: 'https://adamlangshaw.com',
   tagline: 'Medicine, policy, technology.',
   description:
-    'Adam Langshaw is a Stanford undergraduate studying public policy and mathematics, Opinions Managing Editor of The Stanford Daily, and a Hoover Institution Distinguished Essay Award winner. Writing and research on health policy and medicine.',
+    'Adam Langshaw is a Stanford sophomore, Hoover Student Fellow for 2026–27, and Opinions Managing Editor and Editorial Board member at The Stanford Daily.',
 };
 
 export const NAV: { label: string; href: string }[] = [
@@ -19,6 +19,7 @@ export const NAV: { label: string; href: string }[] = [
 export const CONTACT = {
   emailPersonal: 'me@adamlangshaw.com',
   emailStanford: 'langshaw@stanford.edu',
+  emailDaily: 'alangshaw@stanforddaily.com',
   instagram: { handle: '@adamlangshaw', url: 'https://instagram.com/adamlangshaw' },
   x: { handle: '@adamhlangshaw', url: 'https://x.com/adamhlangshaw' },
   linkedin: { handle: 'in/adamlangshaw', url: 'https://www.linkedin.com/in/adamlangshaw/' },

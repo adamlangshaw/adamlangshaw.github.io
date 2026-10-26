@@ -12,7 +12,14 @@ const jsonLd = {
   name: 'Adam Langshaw',
   url: SITE.url,
   jobTitle: 'Opinions Managing Editor, The Stanford Daily',
-  alumniOf: { '@type': 'CollegeOrUniversity', name: 'Stanford University' },
+  '@id': `${SITE.url}/#person`,
+  description: SITE.description,
+  image: `${SITE.url}/img/photos/portrait.jpg`,
+  affiliation: [
+    { '@type': 'CollegeOrUniversity', name: 'Stanford University', url: 'https://www.stanford.edu/' },
+    { '@type': 'OrganizationRole', roleName: 'Hoover Student Fellow, 2026–27', affiliation: { '@type': 'Organization', name: 'Hoover Institution', url: 'https://www.hoover.org/' } },
+    { '@type': 'Organization', name: 'The Stanford Daily', url: 'https://stanforddaily.com/' },
+  ],
   homeLocation: { '@type': 'Place', name: 'Weston, Florida' },
   award: 'Hoover Institution First-Year Distinguished Essay Award (2026)',
   sameAs: SAME_AS,
@@ -26,22 +33,24 @@ const jsonLd = {
       <p class="tagline">{SITE.tagline}</p>
 
       <div class="highlights">
+        <p><strong>Hoover Student Fellow</strong>, <a href="/experience/#hoover-student-fellow">Hoover Institution</a>, <span class="year">2026–27</span></p>
         <p>
           <strong>First-Year Distinguished Essay Award</strong>,
           <a href="/honors/">Hoover Institution</a>, 2026
         </p>
-        <p><strong>Opinions Managing Editor</strong>, The Stanford Daily</p>
+        <p><strong>Opinions Managing Editor &amp; Editorial Board member</strong>, The Stanford Daily</p>
       </div>
 
       <div class="bio reading">
         <p>
-          Adam Langshaw is a Stanford undergraduate in the Class of 2029, studying public
+          Adam Langshaw is a Stanford sophomore in the Class of 2029, studying public
           policy and mathematics with a minor in computer science, on the pre-med track.
+          He has been accepted as a Hoover Student Fellow for 2026–27.
         </p>
         <p>
           His work sits between health policy and medicine. He has co-authored research on
-          health equity in cystic fibrosis and on immigrant patients' access to care, and
-          he is Opinions Managing Editor of <em>The Stanford Daily</em>, writing on
+          health equity in cystic fibrosis and on immigrant patients' access to care.
+          He is Opinions Managing Editor and a member of <em>The Stanford Daily</em> Editorial Board, writing on
           politics, higher education, and health policy.
         </p>
         <p>
@@ -63,6 +72,7 @@ const jsonLd = {
           }
         </ul>
         <p class="jump">
+          <a href="/writing/">All writing <Icon name="arrow" /></a>
           <a href="/honors/">Honors &amp; awards <Icon name="arrow" /></a>
           <a href="/experience/">Experience <Icon name="arrow" /></a>
           <a href="/research/">Research <Icon name="arrow" /></a>
@@ -109,6 +119,7 @@ const jsonLd = {
     color: var(--muted);
     max-width: 40rem;
   }
+  .year { white-space: nowrap; }
   .highlights p { margin: 0.3rem 0; }
   .highlights strong { color: var(--ink); font-weight: 600; }
   .bio { margin-top: 1.6rem; }

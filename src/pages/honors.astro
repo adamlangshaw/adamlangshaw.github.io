@@ -6,6 +6,7 @@ import { SAME_AS } from '../data/site';
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Person',
+  '@id': 'https://adamlangshaw.com/#person',
   name: 'Adam Langshaw',
   url: 'https://adamlangshaw.com/',
   sameAs: SAME_AS,
@@ -28,6 +29,7 @@ const jsonLd = {
   </header>
 
   <article class="feature">
+    <div class="feature-text">
     <p class="eyebrow accent">2026 &middot; Hoover Institution, Stanford</p>
     <h2>First-Year Distinguished Essay Award</h2>
     <p class="ctx">
@@ -53,8 +55,13 @@ const jsonLd = {
     </blockquote>
     <p class="panel">
       Selected by a review committee of Russell Berman, Norman Naimark, and John Cochrane.
-      &nbsp;<a href="https://www.hoover.org/" rel="noopener">Hoover announcement <Icon name="arrow" /></a>
+      &nbsp;<a href="https://www.hoover.org/news/hoover-institution-congratulates-2026-winners-distinguished-undergraduate-essay-competition" rel="noopener">Hoover announcement <Icon name="arrow" /></a>
     </p>
+    </div>
+    <figure class="feature-photo">
+      <img src="/img/photos/hoover-tower.webp" alt="Hoover Tower rising above palm trees at Stanford University" width="800" height="1200" loading="lazy" />
+      <figcaption><a href="https://commons.wikimedia.org/wiki/File:Stanford_University,_Palo_Alto,_CA_USA_-_Hoover_Tower_-_panoramio.jpg">Photo: MARELBU</a> · <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>. Resized; cropped in layout.</figcaption>
+    </figure>
   </article>
 
   <section class="band">
@@ -64,7 +71,7 @@ const jsonLd = {
       <p>
         National Merit $2,500 Scholarship, National Merit Scholarship Corporation. One of
         about 2,500 scholarship recipients from roughly 3.5 million PSAT takers nationally.
-        <a href="https://www.local10.com/" rel="noopener">Local 10 coverage</a>
+        <a href="https://www.local10.com/news/local/2025/05/14/8-broward-county-public-school-seniors-awarded-national-merit-scholarships/" rel="noopener">Local 10 coverage</a>
       </p>
     </div>
     <div class="band-pic band-pic-nm">
@@ -78,7 +85,7 @@ const jsonLd = {
       <h3>Salutatorian, Cypress Bay High School</h3>
       <p>
         Class of 2025, weighted GPA 5.6061. Weston, Florida.
-        <a href="https://www.sun-sentinel.com/" rel="noopener">Sun Sentinel coverage</a>
+        <a href="https://www.sun-sentinel.com/2025/06/19/class-of-2025-broward-countys-high-school-valedictorians-salutatorians/" rel="noopener">Sun Sentinel coverage</a>
       </p>
     </div>
     <div class="band-pic band-pic-sal">
@@ -95,11 +102,26 @@ const jsonLd = {
     max-width: 58rem;
     border: 1px solid var(--rule);
     border-radius: 12px;
-    padding: clamp(1.6rem, 4vw, 2.4rem);
-    background: var(--card);
+    display: grid;
+    overflow: hidden;
+    background: var(--band);
+    color: var(--band-ink);
+  }
+  .feature .accent, .feature a { color: var(--band-accent); }
+  .feature .ctx, .feature .panel { color: var(--band-muted); }
+  .feature blockquote { border-left-color: var(--band-accent); }
+  .feature-text { padding: clamp(1.6rem, 4vw, 2.4rem); min-width: 0; }
+  .feature-photo { margin: 0; position: relative; min-height: 360px; }
+  .feature-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 45% 30%; position: absolute; inset: 0; }
+  .feature-photo figcaption { position: absolute; z-index: 1; bottom: 0; padding: 0.75rem; background: #16140fe6; color: #ece7dd; font-size: 0.7rem; }
+  .feature-photo a { color: #ece7dd; }
+  .feature-photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, var(--band) 1%, transparent 32%); pointer-events: none; }
+  @media (min-width: 900px) {
+    .feature { grid-template-columns: minmax(0, 1fr) 300px; }
+    .feature-photo::after { background: linear-gradient(90deg, var(--band) 1%, transparent 52%); }
   }
   .feature h2 { font-size: clamp(1.5rem, 3.5vw, 1.8rem); margin: 0.6rem 0 0; max-width: 40rem; }
-  .feature .ctx { font-size: 0.9rem; color: var(--muted); margin: 0.5rem 0 0; }
+  .feature .ctx { font-size: 0.9rem; color: var(--band-muted); margin: 0.5rem 0 0; }
   .feature .summary { font-size: 1.02rem; line-height: 1.62; margin: 1.2rem 0 0; max-width: 42rem; }
   .feature blockquote {
     margin: 1.3rem 0 0;
@@ -110,7 +132,7 @@ const jsonLd = {
     line-height: 1.4;
     max-width: 38rem;
   }
-  .feature .panel { font-size: 0.88rem; color: var(--muted); margin: 1.4rem 0 0; }
+  .feature .panel { font-size: 0.88rem; color: var(--band-muted); margin: 1.4rem 0 0; }
   .feature .panel a { display: inline-flex; align-items: center; gap: 0.3rem; }
 
   .band {

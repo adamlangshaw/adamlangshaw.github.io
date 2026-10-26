@@ -6,7 +6,6 @@ export type PressItem = {
   url: string;
   linkLabel: string;
   logo: string; // path under /img/logo/
-  todo?: string;
 };
 
 export const PRESS: PressItem[] = [
@@ -16,16 +15,25 @@ export const PRESS: PressItem[] = [
     headline:
       'Hoover Institution congratulates the 2026 winners of its Distinguished Undergraduate Essay Competition',
     note: 'Names Adam Langshaw as a winner of the 2026 competition.',
-    url: 'https://www.hoover.org/',
+    url: 'https://www.hoover.org/news/hoover-institution-congratulates-2026-winners-distinguished-undergraduate-essay-competition',
     linkLabel: 'hoover.org',
     logo: '/img/logo/hooverlogo.svg',
+  },
+  {
+    outlet: 'IMACS',
+    date: 'May 18, 2026',
+    headline: 'From Broward County to Stanford: how EMF math builds fluent university-level learners',
+    note: 'On the EMF math track Adam came up through.',
+    url: 'https://www.imacs.org/how-emf-math-builds-fluent-university-level-learners/',
+    linkLabel: 'imacs.org',
+    logo: '/img/logo/imacs.png',
   },
   {
     outlet: 'South Florida Sun Sentinel',
     date: 'Jun 19, 2025',
     headline: "Class of 2025: Broward County's high school valedictorians and salutatorians",
     note: 'Listed as salutatorian of Cypress Bay High School, weighted GPA 5.6061.',
-    url: 'https://www.sun-sentinel.com/',
+    url: 'https://www.sun-sentinel.com/2025/06/19/class-of-2025-broward-countys-high-school-valedictorians-salutatorians/',
     linkLabel: 'sun-sentinel.com',
     logo: '/img/logo/sunsentinel.png',
   },
@@ -34,18 +42,9 @@ export const PRESS: PressItem[] = [
     date: 'May 14, 2025',
     headline: '8 Broward County Public School seniors awarded National Merit Scholarships',
     note: 'Named among the Broward recipients.',
-    url: 'https://www.local10.com/',
+    url: 'https://www.local10.com/news/local/2025/05/14/8-broward-county-public-school-seniors-awarded-national-merit-scholarships/',
     linkLabel: 'local10.com',
     logo: '/img/logo/local10.png',
   },
-  {
-    outlet: 'IMACS',
-    date: '2025',
-    headline: 'From Broward County to Stanford: how EMF math builds fluent university-level learners',
-    note: 'On the EMF math track Adam came up through.',
-    url: 'https://www.imacs.org/',
-    linkLabel: 'imacs.org',
-    logo: '/img/logo/imacs.png',
-    todo: 'IMACS to add name + link before launch',
-  },
+
 ];
