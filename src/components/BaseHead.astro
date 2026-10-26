@@ -14,7 +14,7 @@ const { title, description = SITE.description, path, jsonLd } = Astro.props;
 const isNotFound = path === '/404.html' || path === '/404/';
 const canonical = new URL(path, SITE.url).href;
 const fullTitle =
-  path === '/' ? "Adam Langshaw · Stanford '29, The Stanford Daily" : `${title} · ${SITE.name}`;
+  path === '/' ? "Adam Langshaw | Stanford '29, The Stanford Daily" : `${title} | ${SITE.name}`;
 const essay = ESSAYS.find((a) => a.url === path);
 const isEssay = Boolean(essay);
 const pageSchema = {

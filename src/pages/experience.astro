@@ -26,7 +26,7 @@ import { EXPERIENCE } from '../data/experience';
             </h2>
             <p class="org">
               {r.org}
-              {r.meta && <span class="meta"> &middot; {r.meta}</span>}
+              {r.meta && <span class="meta">{r.meta}</span>}
             </p>
             <p class="summary">{r.summary}</p>
           </div>
@@ -62,6 +62,7 @@ import { EXPERIENCE } from '../data/experience';
   .detail h2 { font-size: 1.35rem; margin: 0; }
   .contract { color: var(--muted); font-size: 0.78em; font-weight: 400; }
   .org { font-size: 0.9rem; color: var(--muted); margin: 0.2rem 0 0; }
+  .meta { display: block; }
   .summary { margin: 0.7rem 0 0; max-width: 40rem; font-size: 0.98rem; }
 
   @media (min-width: 720px) {

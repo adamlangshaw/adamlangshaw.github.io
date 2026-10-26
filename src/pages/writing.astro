@@ -11,7 +11,7 @@ const jsonLd = {
   name: 'Writing by Adam Langshaw',
   numberOfItems: ESSAYS.length + WRITING.length,
   itemListElement: [
-    ...ESSAYS.map((a) => ({ ...a, url: new URL(a.url, SITE.url).href, image: undefined, publisherName: SITE.name })),
+    ...ESSAYS.map((a) => ({ ...a, url: new URL(a.url, SITE.url).href, publisherName: SITE.name })),
     ...WRITING.map((a) => ({ ...a, publisherName: 'The Stanford Daily' })),
   ].map((a, i) => ({
     '@type': 'ListItem', position: i + 1,
@@ -43,8 +43,9 @@ const jsonLd = {
   <section class="essays rule-top" aria-labelledby="essays">
     <h2 id="essays">Essays</h2>
     {ESSAYS.map((a) => (
-      <a class="piece text-only" href={a.url}>
-        <span class="mid"><span class="eyebrow tag">{a.category}</span><h3 class="t">{a.title}</h3><span class="essay-context">{a.description}</span></span>
+      <a class="piece" href={a.url}>
+        <img class="thumb" src={a.image} alt={a.alt} width="900" height="600" loading="lazy" />
+        <span class="mid"><span class="eyebrow tag">{a.category}</span><h3 class="t">{a.title}</h3><span class="essay-context">{a.description}</span>{'recognition' in a && <span class="recognition">{a.recognition}</span>}</span>
         <span class="date tabnums">Written <time datetime={a.originalDate}>{a.originalDisplay}</time><br />Published <time datetime={a.date}>{a.display}</time></span>
       </a>
     ))}
@@ -89,6 +90,7 @@ const jsonLd = {
   .essays { max-width: 60rem; margin-top: 2rem; padding-top: 1.5rem; }
   .essays h2 { margin: 0; font-size: 1.5rem; }
   .essay-context { display: block; color: var(--muted); font-size: 0.9rem; margin-top: 0.5rem; max-width: 55ch; }
+  .recognition { display: block; color: var(--accent); font-size: 0.85rem; margin-top: 0.4rem; }
   .bylined-heading { margin: 2.5rem 0 0; font-size: 1.5rem; }
   .pieces { list-style: none; margin: 2rem 0 0; padding: 0; max-width: 60rem; }
   .piece {

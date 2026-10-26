@@ -18,6 +18,7 @@ const jsonLd = {
   author: { '@type': 'Person', '@id': `${SITE.url}/#person`, name: SITE.name, url: `${SITE.url}/` },
   publisher: { '@type': 'Person', '@id': `${SITE.url}/#person`, name: SITE.name },
   dateCreated: meta.originalDate, datePublished: meta.date, dateModified: meta.date, inLanguage: 'en',
+  image: new URL(meta.image, SITE.url).href,
   articleSection: 'Academic essays', wordCount,
   about: ['Affordable Care Act', 'Premium tax credits', 'Health insurance affordability'],
   citation: essay.references.map((r) => r.url),
@@ -31,16 +32,16 @@ const money = (value: string) => new Intl.NumberFormat('en-US', {style: 'currenc
   <article class="essay" aria-labelledby="essay-title">
     <header class="essay-head">
       <a class="back" href="/writing/">Journalism &amp; Essays <Icon name="arrow" /></a>
-      <p class="eyebrow">Academic essay · Health policy</p>
+      <p class="descriptors"><span>Academic essay</span><span>Health policy</span></p>
       <h1 id="essay-title">{meta.title}</h1>
-      <p class="byline">By Adam Langshaw <span aria-hidden="true">·</span> {readingMinutes} minute read</p>
-      <p class="dateline">Originally written <time datetime={meta.originalDate}>{meta.originalDisplay}</time> · Web edition published <time datetime={meta.date}>October 25, 2026</time></p>
+      <p class="byline">By Adam Langshaw <span>{readingMinutes} minute read</span></p>
+      <p class="dateline">Originally written <time datetime={meta.originalDate}>{meta.originalDisplay}</time><span>Web edition published <time datetime={meta.date}>October 25, 2026</time></span></p>
       <p class="edition-note">Adapted from a March 2026 paper for Economics 28N at Stanford University. This shorter web edition replaces the original quote-range tables with reproducible federal-rule calculations and hypothetical plan prices, and updates the supporting sources.</p>
     </header>
     <nav class="contents" aria-label="Essay contents">
       <p class="eyebrow">In this essay</p>
       <ol>{essay.sections.map((s) => <li><a href={`#${s.id}`}>{s.title}</a></li>)}</ol>
-      <a href="#calculation-method">Calculation method</a> · <a href="#references">Sources</a>
+      <div class="contents-links"><a href="#calculation-method">Calculation method</a><a href="#references">Sources</a></div>
     </nav>
     <div class="prose">
       {essay.sections.map((s) => (
@@ -91,7 +92,10 @@ const money = (value: string) => new Intl.NumberFormat('en-US', {style: 'currenc
   .essay-head .eyebrow { margin-top: 2rem; color: var(--accent); }
   h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); line-height: 1.08; margin: 0.75rem 0 0; text-wrap: balance; }
   .byline { font-size: 0.95rem; margin-bottom: 0.3rem; }
-  .byline span { margin-inline: 0.35rem; }
+  .byline { display: flex; flex-wrap: wrap; gap: 0.4rem 1.5rem; }
+  .dateline > span { display: block; }
+  .descriptors { display: flex; flex-wrap: wrap; gap: 0.4rem 1.5rem; margin-top: 2rem; font-size: 0.9rem; color: var(--muted); }
+  .contents-links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; }
   .dateline, .edition-note { font-size: 0.85rem; color: var(--muted); }
   .award-note { padding-block: 1rem; border-block: 1px solid var(--rule); font-size: 0.95rem; }
   .award-note :global(svg) { flex-shrink: 0; }

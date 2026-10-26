@@ -38,7 +38,7 @@ export const PRESS: PressItem[] = [
     logo: '/img/logo/sunsentinel.png',
   },
   {
-    outlet: 'Local 10 · WPLG Miami',
+    outlet: 'Local 10 (WPLG Miami)',
     date: 'May 14, 2025',
     headline: '8 Broward County Public School seniors awarded National Merit Scholarships',
     note: 'Named among the Broward recipients.',

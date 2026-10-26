@@ -19,6 +19,7 @@ const jsonLd = {
   author: { '@type': 'Person', '@id': `${SITE.url}/#person`, name: SITE.name, url: `${SITE.url}/` },
   publisher: { '@type': 'Person', '@id': `${SITE.url}/#person`, name: SITE.name },
   dateCreated: meta.originalDate, datePublished: meta.date, dateModified: meta.date, inLanguage: 'en',
+  image: new URL(meta.image, SITE.url).href,
   articleSection: 'Essays', wordCount,
   about: ['Healthcare reform', 'Universal health coverage', 'Health policy'],
   citation: essay.references.filter((r) => r.url).map((r) => r.url),
@@ -31,10 +32,10 @@ const paragraphHtml = (text: string) => escapeHtml(text).replace(/\[(\d+)\]/g, (
   <article class="essay" aria-labelledby="essay-title">
     <header class="essay-head">
       <a class="back" href="/writing/">Writing <Icon name="arrow" /></a>
-      <p class="eyebrow">Essay · Health policy</p>
+      <p class="descriptors"><span>Academic essay</span><span>Health policy</span></p>
       <h1 id="essay-title">{title}</h1>
-      <p class="byline">By Adam Langshaw <span aria-hidden="true">·</span> {readingMinutes} minute read</p>
-      <p class="dateline">Originally written <time datetime={meta.originalDate}>{meta.originalDisplay}</time> · Web edition published <time datetime={meta.date}>October 25, 2026</time></p>
+      <p class="byline">By Adam Langshaw <span>{readingMinutes} minute read</span></p>
+      <p class="dateline">Originally written <time datetime={meta.originalDate}>{meta.originalDisplay}</time><span>Web edition published <time datetime={meta.date}>October 25, 2026</time></span></p>
       <p class="award-note"><a href="/honors/#hoover-essay-award">2026 First-Year Distinguished Essay Award, Hoover Institution <Icon name="arrow" /></a></p>
       <p class="edition-note">Originally written for Economics 28N at Stanford University. This web edition revises factual descriptions and clarifies the evidence supporting the argument. The award recognized the original course essay. The policy judgments are the author’s own.</p>
     </header>
@@ -74,7 +75,10 @@ const paragraphHtml = (text: string) => escapeHtml(text).replace(/\[(\d+)\]/g, (
   .essay-head .eyebrow { margin-top: 2rem; color: var(--accent); }
   h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); line-height: 1.08; margin: 0.75rem 0 0; text-wrap: balance; }
   .byline { font-size: 0.95rem; margin-bottom: 0.3rem; }
-  .byline span { margin-inline: 0.35rem; }
+  .byline { display: flex; flex-wrap: wrap; gap: 0.4rem 1.5rem; }
+  .dateline > span { display: block; }
+  .descriptors { display: flex; flex-wrap: wrap; gap: 0.4rem 1.5rem; margin-top: 2rem; font-size: 0.9rem; color: var(--muted); }
+  .contents-links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; }
   .dateline, .edition-note { font-size: 0.85rem; color: var(--muted); }
   .award-note { padding-block: 1rem; border-block: 1px solid var(--rule); font-size: 0.95rem; }
   .award-note :global(svg) { flex-shrink: 0; }
