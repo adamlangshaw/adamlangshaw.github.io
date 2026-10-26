@@ -50,8 +50,8 @@ const jsonLd = {
       </a>
     ))}
   </section>
-  <h2 class="bylined-heading">The Stanford Daily</h2>
-  <ul class="pieces rule-top">
+  <h2 class="bylined-heading rule-top">The Stanford Daily</h2>
+  <ul class="pieces">
     {
       WRITING.map((a) => (
         <li>
@@ -91,7 +91,8 @@ const jsonLd = {
   .essays h2 { margin: 0; font-size: 1.5rem; }
   .essay-context { display: block; color: var(--muted); font-size: 0.9rem; margin-top: 0.5rem; max-width: 55ch; }
   .recognition { display: block; color: var(--accent); font-size: 0.85rem; margin-top: 0.4rem; }
-  .bylined-heading { margin: 2.5rem 0 0; font-size: 1.5rem; }
+  .bylined-heading { max-width: 60rem; margin: 2.5rem 0 0; padding-top: 1.5rem; font-size: 1.5rem; }
+  .bylined-heading + .pieces { margin-top: 1rem; }
   .pieces { list-style: none; margin: 2rem 0 0; padding: 0; max-width: 60rem; }
   .piece {
     display: grid;

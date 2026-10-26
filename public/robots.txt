@@ -1,4 +1,17 @@
 User-agent: *
 Allow: /
 
+# Search discovery and user-requested page retrieval.
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
 Sitemap: https://adamlangshaw.com/sitemap-index.xml
