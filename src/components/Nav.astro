@@ -14,7 +14,7 @@ const current = norm(path);
           <li>
             <a
               href={item.href}
-              aria-current={norm(item.href) === current ? 'page' : undefined}
+              aria-current={norm(item.href) === current ? 'page' : item.href !== '/' && path.startsWith(item.href) ? 'location' : undefined}
             >
               {item.label}
             </a>

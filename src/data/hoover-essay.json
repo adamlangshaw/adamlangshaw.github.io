@@ -1,0 +1,301 @@
+{
+  "sections": [
+    {
+      "title": "Introduction",
+      "id": "introduction",
+      "paragraphs": [
+        "Debates over healthcare reform in the United States frequently invoke two claims: that the nation should adopt universal healthcare, and that healthcare itself is a human right. These phrases appear together in political speeches and advocacy commentary, often as though they represent a single idea. They do not. Universal healthcare concerns system structure and whether all individuals receive coverage or access to medical services. The claim that healthcare is a human right is primarily a philosophical and moral assertion about what society owes its members. Conflating them obscures the policy questions that actually matter.",
+        "This paper argues that universal healthcare and the rights claim are conceptually distinct, that universal coverage admits of multiple definitions none of which any existing system fully satisfies, and that the gap between nominal coverage and meaningful access is large enough to render much of the standard reform debate analytically imprecise. Understanding these distinctions is a prerequisite for evaluating any serious reform proposal."
+      ]
+    },
+    {
+      "title": "What Is Universal Healthcare?",
+      "id": "what-is-universal-healthcare",
+      "paragraphs": [
+        "\"Universal healthcare\" is deployed with confidence by politicians and advocates who rarely specify what they mean by it. The ambiguity is consequential. The term can refer to at least three meaningfully different things: universal insurance coverage, universal access to care, or universal eligibility for a defined benefit package. An advocate who means the first may be debating an opponent thinking of the second, and neither may realize they are not talking about the same thing.",
+        "Universal insurance coverage means every individual within a population is enrolled in some form of health plan. This is the version most commonly discussed in political discourse. The Affordable Care Act of 2010 moved the United States incrementally in this direction through Medicaid expansion, subsidized marketplaces, and an individual mandate, yet did not achieve universal enrollment [1]. Affordability, eligibility restrictions, enrollment barriers, and state decisions about Medicaid expansion all help explain the remaining uninsured population [5]. Achieving universal enrollment requires not only making coverage available but ensuring that eligible people enroll—a distinction with significant implications for mandates and individual liberty.",
+        "Having insurance is not the same as having access to care. A person may hold an insurance card and still face provider shortages, long wait times, high deductibles that deter utilization, or network restrictions. Canada operates a single-payer system covering all citizens yet produces specialist wait times that routinely extend for months [3]. A useful analogy: every person in a city has a ticket to a stadium that seats only a quarter of them. The tickets are universal; access is not. The United States offers shorter wait times and greater specialist capacity for the insured but has tens of millions with no coverage at all. Neither system fully satisfies universal access. The standard requires not only financial coverage but adequate provider supply, geographic distribution of services, and minimal cost-sharing barriers—infrastructure questions that go well beyond insurance design.",
+        "The third formulation, universal eligibility for defined benefits, is narrower still. The claim is not that everyone receives unlimited care but that every person is entitled to a specified service package. The Essential Health Benefits (EHB) framework under the ACA reflects this logic: qualifying plans must cover ten categories of services deemed essential [1]. This version of universality is compatible with pluralistic systems in which individuals purchase supplemental coverage beyond the defined floor, but it raises its own difficult questions about who determines the benefit package and on what basis services are included or excluded—questions that are, in practice, answered by political negotiation rather than principled derivation.",
+        "Taken together, universal healthcare is less a policy than a direction, and serious debate about it requires specifying which version one has in mind."
+      ]
+    },
+    {
+      "title": "Healthcare as a Right",
+      "id": "healthcare-as-a-right",
+      "paragraphs": [
+        "The claim that healthcare is a human right is among the most frequently repeated phrases in American healthcare debates, yet it is rarely subjected to rigorous analysis. To evaluate it seriously requires asking what kind of right is being invoked: legal, constitutional, or moral and philosophical. Each category has different sources of authority, enforcement mechanisms, and policy implications.",
+        "A legal right is formally recognized and enforceable within a jurisdiction's body of law. In the United States, limited healthcare entitlements exist in this form. The Emergency Medical Treatment and Labor Act (EMTALA) of 1986 requires hospitals receiving Medicare funding to stabilize anyone presenting at an emergency department regardless of ability to pay [4]. Medicaid provides a legal entitlement to coverage for eligible low-income individuals, though eligibility criteria vary significantly by state [5]. These protections are real but narrow—they do not sum to a comprehensive legal right to healthcare, and one can construct such a right through legislation without ever invoking human rights language.",
+        "A constitutional right carries greater authority because it is grounded in foundational law and cannot be easily altered by legislative majorities. The U.S. Constitution does not establish a general entitlement to publicly financed healthcare. Harris v. McRae addressed the absence of a constitutional entitlement to the financial resources needed to exercise a protected choice; it should not be read as resolving every constitutional duty to provide medical care in every setting [6]. International instruments, including the International Covenant on Economic, Social and Cultural Rights, recognize health-related rights, but the United States has not ratified that covenant [7].",
+        "The third category, moral or philosophical rights, operates independently of legal recognition. When advocates assert that healthcare is a human right, they are most commonly making this kind of claim: that human dignity, the capacity for flourishing, and vulnerability to suffering together generate a social obligation to ensure medical access. A moral right can exist where no legal right has been established, and vice versa. The policy force of a moral rights claim depends entirely on whether and how it is translated into law and institutional practice."
+      ]
+    },
+    {
+      "title": "Positive and Negative Rights",
+      "id": "positive-and-negative-rights",
+      "paragraphs": [
+        "Central to any healthcare rights claim is the distinction between positive and negative rights. A negative right demands only that others refrain from interference. A positive right demands affirmative provision—that the state supply the right-holder with the good or service in question. A positive right to healthcare is what most advocates have in mind when invoking rights language, and it carries the most significant policy and resource implications.",
+        "The two types of rights can come into direct tension. Enforcing a robust positive right through a comprehensive public system may require constraining the negative rights of individuals seeking options outside it. Canada's single-payer system illustrates this directly: several provinces have prohibited or severely restricted the purchase of private insurance for services covered under the public plan [3]. The enforcement of a positive right thus requires curtailing negative freedoms— a tradeoff frequently obscured in rhetoric that presents expanded healthcare access as an unambiguous gain for liberty.",
+        "Positive rights are also resource-intensive in ways negative rights are not. The state satisfies negative rights largely by refraining from action; positive rights require active provision, which demands resources, institutions, personnel, and expenditure. Recognizing a positive right to healthcare therefore immediately raises questions about scope: which services are included, at what quality, and subject to what limits. A declaration that healthcare is a right tells us the obligation exists. It does not tell us how the obligation is discharged.",
+        "The libertarian objection is pointed here. Drawing on the work of Robert Nozick and J.S. Mill, this tradition argues that positive rights are morally problematic because they impose obligations on third parties who have not consented to bear them [8]. Taxpayers are compelled to fund provision; healthcare workers may face constraints on practice; private actors face regulatory requirements serving the entitlement. In this view, the more defensible formulation is a negative right: the state should not prevent individuals from seeking or providing healthcare, but is not obligated to supply it. This objection does not resolve the debate, but it demonstrates that reasonable people can disagree about whether healthcare constitutes a positive right without acting in bad faith—a recognition conspicuously absent from political discourse, where invoking \"death panels\" or accusing opponents of wanting people to \"die in the streets\" substitutes for engagement with hard philosophical questions about liberty, obligation, and scarcity."
+      ]
+    },
+    {
+      "title": "Rights and Coverage: The Logical Relationship",
+      "id": "rights-and-coverage-the-logical-relationship",
+      "paragraphs": [
+        "Universal coverage can be pursued and achieved on entirely pragmatic grounds, with no appeal to rights language. Taiwan's National Health Insurance system, implemented in 1995, was designed as an actuarial and administrative consolidation of existing fragmented programs, achieving near-universal coverage without centering a rights justification [9]. Germany's statutory health insurance, dating to Bismarck's social reforms of the 1880s, was introduced as a political strategy to contain labor unrest rather than as recognition of a natural right to health [10]. In both cases, near-universal coverage was achieved through institutional design and political will, with moral philosophy largely beside the point.",
+        "The reverse is equally instructive. South Africa's post-apartheid constitution includes one of the most expansive healthcare rights of any national charter, yet its public health system remains chronically underfunded and deeply inequitable, with wealthy citizens accessing a well-resourced private sector while the majority depend on strained public facilities [11]. Rights declarations without corresponding institutional infrastructure, financing, and political commitment change very little about who actually receives care. The relationship between declaring a right and achieving coverage is contingent, not logical, and conflating the two risks assuming that declaring the goal is equivalent to achieving it."
+      ]
+    },
+    {
+      "title": "Essential Health Benefits and the Definition of Universal Eligibility",
+      "id": "essential-health-benefits-and-the-definition-of-universal-eligibility",
+      "paragraphs": [
+        "The EHB framework under the ACA offers a concrete instantiation of universal eligibility for a defined benefit package. Qualifying plans must cover ten service categories including emergency care, hospitalization, maternity care, mental health services, and prescription drugs [1]. EHBs operationalize a floor without collapsing the distinction between coverage and access: a person may be enrolled in an EHB-compliant plan and still face high deductibles or narrow networks that limit practical use of those benefits.",
+        "The selection of which services belong in the required package is not a neutral technical exercise. It is a distributive decision with real winners and losers, contested since the ACA's passage [12]. Insurers have an incentive to minimize required coverage while patient advocates push for inclusion of additional services. State benchmark plans vary in ways that produce meaningful differences in what counts as covered across state lines, revealing that \"universal\" eligibility under the ACA is universal only within a jurisdiction. The content of the floor is a political construction. This matters for reform: any proposal that expands universality through a defined benefit package inherits these same political and administrative dynamics, and must grapple with the question of who decides what is essential and by what authority."
+      ]
+    },
+    {
+      "title": "Does Universal Healthcare Require a Single Payer?",
+      "id": "does-universal-healthcare-require-a-single-payer",
+      "paragraphs": [
+        "It does not. The single-payer model, in which one entity finances all healthcare expenditures while providers may remain private, is one path to broad coverage. Treating it as synonymous with universality forecloses consideration of structural alternatives that have achieved comparable results through different means.",
+        "The multi-payer systems of Germany, the Netherlands, and Switzerland each achieve near-universal coverage through regulated private insurance, mandatory enrollment, and substantial public subsidy [10, 13]. What these systems share is not a single payer but a set of structural commitments: mandatory participation, community rating that prohibits pricing based on health status, defined minimum benefit packages, and financing mechanisms that spread cost across the population. The single-payer model achieves universality by eliminating the market for basic coverage entirely; multi-payer alternatives achieve it by making exit from that market legally and financially untenable.",
+        "The ACA pursued a regulated multi-payer approach. Its individual mandate was intended to encourage healthy people to join the risk pool alongside people with greater medical needs, complementing guaranteed issue and community rating. Congress reduced the federal penalty to zero beginning in 2019 [14]. That change raised concerns about adverse selection, but it did not by itself establish that the market would collapse: KFF’s analysis of 2019 found that the individual market remained financially healthy on average and that the risk pool appeared relatively stable [29]. The broader lesson is that participation incentives, subsidies, and insurance protections must be evaluated together. The effects of removing one mechanism cannot be inferred from the architecture alone.",
+        "The single-payer model carries certain structural advantages: it eliminates coverage gaps from job loss or insurer insolvency, reduces multi-payer administrative overhead, and addresses adverse selection by removing the private market for basic coverage rather than attempting to regulate it into stability. These are real efficiency arguments. They are not arguments that single payer is the only path to universal coverage.",
+        "Fundamentally, the appeal of single payer often rests on an implicit promise that cannot survive contact with scarcity. No system is free; single-payer financing shifts costs from premiums to taxation, altering who pays and when rather than eliminating the expenditure. Access remains constrained by provider supply, geography, and wait times regardless of financing structure. Every system must ration; single payer relocates those decisions from markets to administrators without eliminating them. The case for single payer is that it may distribute constrained resources more equitably than the alternative. That is a somewhat defensible argument. It is a narrower one than is typically made."
+      ]
+    },
+    {
+      "title": "Would Medicare for All Achieve Universal Access?",
+      "id": "would-medicare-for-all-achieve-universal-access",
+      "paragraphs": [
+        "No, though that answer depends on what access means. If access means nominal enrollment in a coverage system, Medicare for All would achieve it by definition. If access means the reliable, timely receipt of needed medical care, the picture is considerably less certain.",
+        "Medicare for All proposals commonly seek to replace much of the existing insurance structure with a federally financed program and substantially reduce patient cost-sharing. Expanding insurance, however, does not itself add physicians, hospital beds, or specialist appointments. Oregon’s randomized Medicaid experiment found increased emergency-department use after coverage expansion; it was not an experiment in the ACA’s later Medicaid expansion, nor does that result alone establish nationwide increases in wait times [15]. Provider participation also requires care in interpretation. MedPAC reported that, among nonpediatric office-based physicians accepting new patients in 2021, 89 percent accepted new Medicare patients and 88 percent accepted new privately insured patients [16]. Existing access problems deserve attention, but these figures do not support a general claim that Medicare beneficiaries uniquely struggle to find participating physicians. Extending public payment rates to a larger population would still require an explicit assessment of provider capacity and financing.",
+        "Eliminating cost-sharing removes a demand-side constraint. When care is free at the point of service, utilization increases, and a system that cannot expand supply to match must ration through other mechanisms. As discussed in the following section, the most politically palatable such mechanism is wait times—precisely what single-payer systems with no cost-sharing have produced elsewhere.",
+        "The distributional consequences deserve candor. The currently uninsured, concentrated among low-income and underserved populations, would gain coverage they do not now have, and some subset would receive care they currently forgo. That is a real benefit. But the currently well-insured majority would enter a system with compressed reimbursement rates, increased demand, and rationing mechanisms that do not exist in their present arrangements. Medicare for All would, in effect, compress the distribution of access: pulling up the floor while lowering the ceiling. Whether that tradeoff is worth making is a legitimate policy question. It is not the same as achieving universal access and presenting it as such obscures what is actually being proposed. Medicare for All is a solution to the coverage problem. Its access outcomes depend almost entirely on supply-side investments and provider payment decisions that advocates treat as secondary. They are not secondary. They are the substance of the promise."
+      ]
+    },
+    {
+      "title": "Cost Sharing and the Meaning of \"Free at the Point of Service\"",
+      "id": "cost-sharing-and-the-meaning-of-free-at-the-point-of-service",
+      "paragraphs": [
+        "The adoption of universal healthcare does not imply little or no cost-sharing. Cost-sharing— deductibles, copayments, coinsurance—is a demand-side instrument whose function is to moderate utilization by ensuring patients bear some marginal cost of consumption. Whether a universal system incorporates it is a separate question from whether it achieves universal coverage.",
+        "Functioning universal systems illustrate that broad coverage can coexist with cost-sharing. Germany retains copayments for prescriptions and hospital stays, but abolished its quarterly physician-visit charge in 2013 [28]. Switzerland combines mandatory insurance with deductibles and other patient payments, while the Netherlands also uses a mandatory deductible [13]. These are policy choices about financing and utilization, not evidence that insurance coverage must be incomplete. Their merits depend in part on whether patients can afford necessary care.",
+        "The case for limiting cost-sharing is genuine. High deductibles demonstrably deter care among low-income populations, reducing not only discretionary but also necessary utilization, particularly among patients with chronic conditions [17]. A nominally insured person who cannot afford a $1,500 deductible is, for practical purposes, uninsured for routine care. The targeted response to this problem—limiting cost-sharing for low-income enrollees while maintaining it for those with greater means, as reflected in the ACA's cost-sharing reduction subsidies—preserves the demand-side moderation function where overconsumption is a realistic concern while removing it as a barrier where financial hardship makes it prohibitive.",
+        "The deeper issue is that framing universal healthcare as synonymous with free at the point of service mistakes a financing preference for a structural requirement. There is no free lunch, and healthcare is no exception. Eliminating cost-sharing shifts expenditure from point-of-service payment to taxation, changing the timing and distribution of who pays without changing the aggregate cost. Someone always picks up the check; the policy question is only who and through what mechanism. Suppressing the price signal at the point of service without a compensating rationing mechanism produces excess demand, and that excess demand is cleared through wait times, benefit restrictions, or administrative gatekeeping. The cost does not disappear. It is paid in a different currency."
+      ]
+    },
+    {
+      "title": "Rationing as a Structural Feature of Universal Systems",
+      "id": "rationing-as-a-structural-feature-of-universal-systems",
+      "paragraphs": [
+        "Rationing is not a policy choice that universal systems may or may not elect to make. It is an arithmetic consequence of finite resources meeting unlimited demand. Every healthcare system rations. The relevant questions are through what mechanisms, according to what principles, and with what distributional consequences.",
+        "The United States currently rations through price. The ability to pay, the generosity of one's insurance plan, and the accident of employment determine who receives care, when, and of what quality. Universal systems promise to replace price rationing with something more principled. What they cannot do is eliminate rationing altogether.",
+        "In practice, universal systems have converged on a small set of rationing instruments. The most common is administrative gatekeeping through primary care referral requirements. The United Kingdom's NHS operates largely on this basis: a general practitioner (GP) functions as the entry point to the system, and specialist referral is required for most non-emergency care [18]. This concentrates rationing decisions in clinical hands rather than markets, which incorporates medical judgment but introduces delays and the possibility that rationing reflects resource pressure rather than patient need.",
+        "Wait times are the most visible mechanism in universal systems and the equilibrium outcome of suppressing price signals without expanding supply. Canada's experience is instructive: median wait times from GP referral to specialist treatment have in some provinces and specialties extended beyond six months, and elective surgical wait times are routinely measured in months to years [3]. These are not administrative failures. They are the system functioning as designed under resource constraints, allocating scarce capacity on a roughly first-come basis rather than by ability to pay.",
+        "A third mechanism is explicit benefit limitation, in which the coverage system defines a finite package and excludes other services entirely. England's National Institute for Health and Care Excellence conducts formal cost-effectiveness evaluations and recommends coverage decisions based on a threshold cost per quality-adjusted life year [18]. This is rationing by committee— explicit and transparent, but politically contentious because it requires public institutions to assign values to health outcomes and deny coverage for treatments that fall below the threshold. Benefit limitation also raises questions that extend into individual liberty: who determines the package, on what authority, and what recourse exists for individuals who would prefer to purchase services outside it. Those questions are taken up in the following section.",
+        "What unites these mechanisms is that none resolve the underlying tension between unlimited potential demand and finite resources. They relocate rationing decisions from individuals transacting in a market to administrators, clinicians, and policymakers. A universal system that is honest about rationing can subject those decisions to democratic scrutiny. A universal system that denies rationing occurs will make the same decisions invisibly, and less accountably."
+      ]
+    },
+    {
+      "title": "Universal Coverage and Individual Freedom",
+      "id": "universal-coverage-and-individual-freedom",
+      "paragraphs": [
+        "A common critique of the American system is that people without insurance can be left without needed care. EMTALA provides an important but limited protection: participating hospitals must offer an appropriate medical screening examination and, when an emergency medical condition is found, stabilizing treatment or an appropriate transfer, without making ability to pay a condition of that emergency response [4]. It does not guarantee routine treatment, elective surgery, or freedom from medical bills. Emergency access therefore cannot substitute for dependable access to primary, specialist, and continuing care. Honest comparison must recognize both this existing emergency obligation and the substantial gaps it leaves.",
+        "Guaranteeing universal coverage does not preserve, and in most implementations actively constrains, individual freedom to choose providers, service types, and quantities of care. The most direct constraint operates through network design. A universal coverage guarantee administered through a single public program extends the network logic to its limit: covered care is care from whatever providers have agreed to participate at the program's negotiated rates. The freedom to seek care outside that arrangement may be preserved, restricted, or eliminated depending on whether the universal system permits parallel private markets, as the United Kingdom does, or prohibits them for covered services, as several Canadian provinces have done [3].",
+        "Provider choice is further constrained by gatekeeping structures. As discussed in the rationing section, administrative gatekeeping through primary care referral requirements is among the most common mechanisms universal systems use to manage demand. Individuals do not have direct access to specialists but must obtain referrals through a designated primary care provider—a meaningful restriction on the freedom to seek care as one judges appropriate, experienced as such by patients whose clinical judgment about their own condition differs from their gatekeeper's.",
+        "The tension between universal coverage and individual freedom is sharpest on the question of service type and quantity. A universal benefit package defines what is covered and necessarily leaves some things out. Where private purchase is restricted as well, the question becomes whether a universal floor also creates a ceiling. Mill’s harm principle gives a reason to protect voluntary choices unless restrictions can be justified by harm to others [8]. The relevant empirical question is whether parallel private care expands capacity or diverts scarce staff and facilities from the public system. That cannot be settled simply by describing a transaction as voluntary. My view is that restrictions on private purchase require a specific justification, rather than an assumption that visible differences in access are themselves sufficient grounds for prohibition. Nozick’s account of individual rights sharpens that challenge to state authority [8].",
+        "The deeper philosophical objection is to the locus of decision-making authority. In a system where an unelected committee determines, through a process most citizens have no meaningful input into, which treatments are covered, the individual's relationship to their own medical care is mediated entirely by institutional judgment. That judgment may be technically sophisticated and procedurally rigorous. It may even produce better aggregate outcomes than a market-driven system. But there is a categorical difference between a system in which an individual navigates a market, makes tradeoffs, and bears the consequences of their choices, and one in which those choices are made on their behalf by administrators optimizing for population-level cost-effectiveness. The former respects the individual as an agent. The latter treats them as a unit in a collective resource allocation problem. When the decisions in question concern whether a treatment is covered, whether a procedure is approved, or whether care is available at all, this is not an abstraction about political philosophy. It is a question of who decides whether you live or die, and the answer, in a system administered by unelected committees, is someone who has never met you."
+      ]
+    },
+    {
+      "title": "Why America Does Not Have Universal Healthcare",
+      "id": "why-america-does-not-have-universal-healthcare",
+      "paragraphs": [
+        "The question of why the United States has not achieved universal healthcare is frequently answered with a single-variable explanation: political obstruction, insurance industry lobbying, or the ideological peculiarities of American conservatism. These factors are real. But they are proximate causes that sit atop deeper structural, historical, and philosophical conditions that make the United States different from the peer nations most often cited as models.",
+        "The historical timing of American healthcare’s development is among the important explanations. Germany’s statutory system originated in the nineteenth century, while the United Kingdom and Canada built major components of their present systems in the twentieth century [10]. The United States reinforced employer-sponsored insurance through wartime wage controls and the subsequent tax treatment of employer-paid premiums [19]. A large private infrastructure developed around that model. Once many Americans were covered through employment, systemic change meant altering arrangements on which they already depended. Path dependency narrows the range of politically feasible options.",
+        "The federal structure of American government compounds this. Healthcare is distributed across federal agencies, state Medicaid programs, and a state-regulated private market. This fragmentation creates multiple points at which reform can be blocked, diluted, or reversed. The Supreme Court’s 2012 decision made the ACA’s Medicaid expansion optional for states [20]. State decisions not to expand subsequently left low-income adults in coverage gaps. Other federal countries also face coordination problems; the American challenge is the particular combination of divided authority and an already fragmented insurance system.",
+        "The ideological climate is also distinct. The United States was founded in explicit rejection of concentrated state power, and that founding disposition has produced a political culture in which government-administered social provision carries an association with socialism that it does not carry in most of Western Europe, where social democratic institutions were built through a different historical experience and enjoy different baseline legitimacy [21]. This is not simply confusion on the part of the American public. It reflects a coherent set of values about the proper relationship between the individual and the state—values this paper has engaged seriously throughout—that any reform proposal must address rather than dismiss.",
+        "The scale of the undertaking also matters. The United States has a much larger population than Canada, the Netherlands, or Switzerland, spread across a continental geography with substantial differences in income, infrastructure, and health status [22]. Size does not prove that universal coverage is impossible, and administrative complexity need not grow in direct proportion to population. It does mean that comparisons should address governance, existing institutions, and regional provider capacity, rather than treating another country’s arrangements as directly transferable.",
+        "The cost structure of American healthcare is exceptional. The United States spends substantially more per person than comparable countries; prices are an important part of that difference [23]. Drug pricing also raises a tradeoff between present affordability and incentives for future innovation. Economic research examines how expected returns influence pharmaceutical research and development [24]. That relationship deserves a place in the reform calculus, but it does not establish that every current price is necessary for innovation or that foreign systems contribute nothing to research. A credible proposal should explain how it would preserve valuable innovation while addressing avoidable costs.",
+        "The United States is not Denmark. It is not Canada. It is a continental federal republic of 330 million people with a deeply embedded private healthcare infrastructure, a political culture built around individual liberty and suspicion of state administration, a unique role in sustaining global biomedical innovation, and a cost structure that reflects all of those things simultaneously. The difficulty of achieving universal coverage here is not a political failure awaiting the right moment. It is a structural condition that reform proposals must reckon with on its own terms."
+      ]
+    },
+    {
+      "title": "Why Medicaid, Medicare, and the ACA Do Not Constitute Universal Healthcare",
+      "id": "why-medicaid-medicare-and-the-aca-do-not-constitute-universal-healthcare",
+      "paragraphs": [
+        "The existence of Medicaid, Medicare, and the ACA is sometimes offered as evidence that the United States already has a functional near-universal system. It does not, and the reasons are illuminating about what universal coverage actually requires.",
+        "Each program covers a defined population rather than the population as a whole. Medicare covers Americans 65 and older and certain disabled individuals. Medicaid covers low-income individuals who meet eligibility criteria that vary significantly by state. The ACA extended coverage through Medicaid expansion and subsidized marketplace plans but left enrollment voluntary and, after the penalty's elimination, essentially unenforceable [1, 5]. The result is a system of categorical coverage in which eligibility depends on age, income, disability status, employment, and state of residence—not existence within the jurisdiction.",
+        "Coverage gaps remain between these categorical programs. In states that have not expanded Medicaid, some adults earn too little to qualify for marketplace premium tax credits but do not qualify for Medicaid under their state’s rules. An offer of employer coverage that meets the ACA’s affordability and coverage standards can also limit eligibility for marketplace subsidies. Immigration-related eligibility restrictions leave additional gaps [5]. These are distinct barriers, and addressing them requires attention to their specific rules rather than a single explanation for uninsurance.",
+        "The Medicaid expansion gap warrants particular attention because it represents a failure mode specific to the American federal structure. The ACA was designed on the assumption that all states would expand Medicaid to cover adults up to 138 percent of the federal poverty level, with the federal government bearing the overwhelming share of the cost. When the Supreme Court made expansion optional in 2012, it created the perverse situation in which the lowest-income adults in non-expanding states—those earning too little to qualify for marketplace subsidies calibrated to begin at the poverty line—were left with no coverage option at all [20]. The law's subsidy structure had assumed Medicaid would catch them. Without expansion, nothing did. More than a decade after the ACA's passage, several states had still not expanded, leaving millions of the poorest Americans in a coverage gap that exists not because no program was designed to reach them but because the program designed to reach them was never implemented where they live. This is a gap at the foundation of the coverage architecture, concentrated among the population universal coverage is most commonly invoked to protect.",
+        "The programs also differ from universal systems in their structural fragmentation. A universal system establishes a single coherent coverage guarantee applicable to all residents. The American patchwork establishes different entitlements administered by different agencies under different rules with different benefit packages and provider networks. A Medicaid enrollee in Mississippi and a Medicare beneficiary in Massachusetts are nominally both covered by public programs but inhabit entirely different healthcare systems with different access characteristics, different provider participation rates, and different benefit structures. Calling this universal healthcare requires defining universal so broadly as to drain the word of meaning."
+      ]
+    },
+    {
+      "title": "Conclusion and Policy Recommendations",
+      "id": "conclusion-and-policy-recommendations",
+      "paragraphs": [
+        "This paper has argued that universal healthcare and the claim that healthcare is a human right are conceptually distinct; that universal coverage admits of multiple definitions none of which are fully satisfied by any existing system; and that the gap between nominal coverage and meaningful access is large enough to render much of the standard reform debate analytically imprecise. A system can declare healthcare a right without delivering it. It can enroll everyone in a coverage program without ensuring anyone can see a doctor in a reasonable timeframe. It can eliminate cost-sharing at the point of service without eliminating cost. And it can pursue universality through mechanisms that curtail the individual freedoms its advocates often claim to be protecting.",
+        "The implications for policy follow from the analysis. My objection to Medicare for All is that a coverage guarantee alone would not resolve the supply-side constraints that prevent coverage from translating into access. If a proposal extended current Medicare payment rates without adequate capacity or payment adjustments, provider supply would be a central risk. Its elimination of cost-sharing would suppress demand signals and produce rationing through wait times rather than through price—a substitution that redistributes access without expanding it. Its administrative consolidation of the entire American healthcare market into a single federal program would require a detailed fiscal and operational transition plan. The case for Medicare for All rests on the intuition that simplicity and universality are the same thing. They are not.",
+        "A more defensible reform path follows from the structural realities this paper has described. The most productive near-term reform is not to replace the existing categorical program architecture but to rationalize it. Folding the ACA marketplace population into an expanded Medicaid program, with a standardized national benefit package and uniform eligibility thresholds that eliminate the coverage gap created by non-expanding states, would extend coverage to the most vulnerable uninsured population through a mechanism that already exists and is administered by states within federal requirements and financed jointly by states and the federal government [30]. Implementing that proposal would require new legislation, financing, and coordination with states. It is not single-payer. It is a consolidation of two overlapping public programs serving adjacent populations, with the administrative simplification and coverage extension that consolidation would produce. On the supply side—the more fundamental constraint on meaningful access—the priority should be expanding the primary care and rural provider workforce through medical school loan forgiveness, expanded scope of practice for nurse practitioners and physician assistants, targeted infrastructure investment in underserved markets, and even a reconstruction of our current medical training system to increase throughput.",
+        "Any serious recommendation must also confront the fiscal context without euphemism. The federal government is running structural deficits that represent deferred taxation—obligations being transferred to future generations who had no vote in incurring them. Medicare and Medicaid already constitute two of the largest line items in the federal budget, and their projected growth trajectories are among the primary drivers of long-run fiscal imbalance [25]. My policy conclusion is that benefits must be cut. Not restructured, not rationalized, not right-sized. Cut. The EHB framework mandates coverage of ten broad service categories whose breadth was determined more by political negotiation than by any principled assessment of what a fiscally sustainable floor should include. Narrowing that definition to a genuinely essential core—emergency and acute care, primary care, catastrophic coverage, and a defined set of established high-value preventive services—is one approach I favor. Whether it would finance broader coverage depends on the actual benefits removed, effects on health, provider payments, and enrollment; international spending comparisons alone cannot establish those savings [26].",
+        "The political economy of benefit reduction is deeply unfavorable, and that unfavorability is not randomly distributed. Older Americans consume healthcare at dramatically higher rates than younger ones, are more likely to vote, and are more organized around the defense of existing entitlements. Medicare's benefit structure reflects this political reality as much as any clinical or actuarial logic: it is generous in ways that serve a population with high electoral participation and resistant to reform for the same reason [27]. The result is a system that protects the benefits of the most politically active demographic while leaving the youngest and poorest Americans in coverage gaps, financed through deficit spending those same young Americans will eventually pay. Any reform coalition serious about fiscal sustainability must reckon with the fact that the population most harmed by the current trajectory is also the least politically organized to demand its correction.",
+        "What this paper has ultimately argued is that the terms in which American healthcare reform is most commonly debated—universal coverage as a rights imperative, single payer as the natural expression of that imperative, and free at the point of service as the measure of success—are conceptually imprecise in ways that produce bad policy. A clearer framework would distinguish coverage from access, rights claims from policy mechanisms, and financing design from structural adequacy. It would acknowledge that scarcity is real, that rationing is inevitable, that individual liberty has meaningful value, and that the scale and institutional complexity of the American system make it resistant to solutions derived from the experience of much smaller and more homogeneous polities. Reform built on that foundation would be less rhetorically satisfying and more likely to work."
+      ]
+    }
+  ],
+  "references": [
+    {
+      "number": 1,
+      "text": "Patient Protection and Affordable Care Act, Pub. L. No. 111-148, 124 Stat. 119 (2010).",
+      "url": "https://www.congress.gov/111/plaws/publ148/PLAW-111publ148.pdf"
+    },
+    {
+      "number": 2,
+      "text": "Sommers, B. D., Blendon, R. J., Orav, E. J., & Epstein, A. M. (2016). Changes in utilization and health among low-income adults after Medicaid expansion or expanded private insurance. JAMA Internal Medicine, 176(10), 1501–1509.",
+      "url": null
+    },
+    {
+      "number": 3,
+      "text": "Barua, B., & Esmail, N. (2023). Waiting Your Turn: Wait Times for Health Care in Canada. Fraser Institute.",
+      "url": null
+    },
+    {
+      "number": 4,
+      "text": "Emergency Medical Treatment and Labor Act, 42 U.S.C. § 1395dd (1986).",
+      "url": "https://www.cms.gov/medicare/regulations-guidance/legislation/emergency-medical-treatment-labor-act"
+    },
+    {
+      "number": 5,
+      "text": "Kaiser Family Foundation. (2024). Key Facts about the Uninsured Population. KFF Health Policy Research.",
+      "url": "https://www.kff.org/uninsured/key-facts-about-the-uninsured-population/"
+    },
+    {
+      "number": 6,
+      "text": "Harris v. McRae, 448 U.S. 297 (1980). (Establishing that the Constitution does not confer an entitlement to public funding for healthcare.)",
+      "url": "https://supreme.justia.com/cases/federal/us/448/297/"
+    },
+    {
+      "number": 7,
+      "text": "International Covenant on Economic, Social and Cultural Rights, art. 12, Dec. 16, 1966, 993 U.N.T.S. 3.",
+      "url": "https://www.ohchr.org/en/instruments-mechanisms/instruments/international-covenant-economic-social-and-cultural-rights"
+    },
+    {
+      "number": 8,
+      "text": "Nozick, R. (1974). Anarchy, State, and Utopia. Basic Books. See also Mill, J.S. (1859). On Liberty. John W. Parker and Son.",
+      "url": null
+    },
+    {
+      "number": 9,
+      "text": "Lu, J. R., & Hsiao, W. C. (2003). Does universal health insurance make health care unaffordable? Lessons from Taiwan. Health Affairs, 22(3), 77–88.",
+      "url": null
+    },
+    {
+      "number": 10,
+      "text": "Busse, R., Blümel, M., Knieps, F., & Bärnighausen, T. (2017). Statutory health insurance in Germany: A health system shaped by 135 years of solidarity, self-governance, and competition. The Lancet, 390(10097), 882–897.",
+      "url": "https://doi.org/10.1016/S0140-6736(17)31280-1"
+    },
+    {
+      "number": 11,
+      "text": "Mayosi, B. M., & Benatar, S. R. (2014). Health and health care in South Africa — 20 years after Mandela. New England Journal of Medicine, 371(14), 1344–1353.",
+      "url": null
+    },
+    {
+      "number": 12,
+      "text": "Corlette, S., & Monahan, C. (2014). Implementation of the Affordable Care Act's Essential Health Benefits. Georgetown University Health Policy Institute.",
+      "url": null
+    },
+    {
+      "number": 13,
+      "text": "Okma, K. G. H., & Marmor, T. R. (2016). The comparative study of health care reform: An assessment. Journal of Comparative Policy Analysis, 18(5), 486–503.",
+      "url": null
+    },
+    {
+      "number": 14,
+      "text": "Tax Cuts and Jobs Act, Pub. L. No. 115-97, 131 Stat. 2054 (2017). (Reducing the individual mandate penalty to $0 effective 2019.)",
+      "url": "https://www.congress.gov/115/plaws/publ97/PLAW-115publ97.pdf"
+    },
+    {
+      "number": 15,
+      "text": "Taubman, S. L., Allen, H. L., Wright, B. J., Baicker, K., & Finkelstein, A. N. (2014). Medicaid increases emergency-department use: Evidence from Oregon's Health Insurance Experiment. Science, 343(6168), 263–268.",
+      "url": "https://doi.org/10.1126/science.1246183"
+    },
+    {
+      "number": 16,
+      "text": "Medicare Payment Advisory Commission (MedPAC). (2025). Report to the Congress: Medicare Payment Policy, Chapter 4: Physician and other health professional services.",
+      "url": "https://www.medpac.gov/wp-content/uploads/2025/03/Mar25_Ch4_MedPAC_Report_To_Congress_SEC.pdf"
+    },
+    {
+      "number": 17,
+      "text": "Baicker, K., & Goldman, D. (2011). Patient cost-sharing and healthcare spending growth. Journal of Economic Perspectives, 25(2), 47–68.",
+      "url": null
+    },
+    {
+      "number": 18,
+      "text": "National Institute for Health and Care Excellence. (2013). Guide to the Methods of Technology Appraisal. NICE.",
+      "url": null
+    },
+    {
+      "number": 19,
+      "text": "Thomasson, M. A. (2002). From sickness to health: The twentieth-century development of U.S. health insurance. Explorations in Economic History, 39(3), 233–253.",
+      "url": null
+    },
+    {
+      "number": 20,
+      "text": "National Federation of Independent Business v. Sebelius, 567 U.S. 519 (2012).",
+      "url": null
+    },
+    {
+      "number": 21,
+      "text": "Hacker, J. S. (2002). The Divided Welfare State: The Battle over Public and Private Social Benefits in the United States. Cambridge University Press.",
+      "url": null
+    },
+    {
+      "number": 22,
+      "text": "Organisation for Economic Co-operation and Development. (2023). Health at a Glance 2023: OECD Indicators. OECD Publishing.",
+      "url": null
+    },
+    {
+      "number": 23,
+      "text": "Anderson, G. F., Hussey, P., & Petrosyan, V. (2019). It's still the prices, stupid: Why the US spends so much on health care, and a tribute to Uwe Reinhardt. Health Affairs, 38(1), 87–95.",
+      "url": "https://doi.org/10.1377/hlthaff.2018.05144"
+    },
+    {
+      "number": 24,
+      "text": "Lakdawalla, D. N. (2018). Economics of the pharmaceutical industry. Journal of Economic Literature, 56(2), 397–449.",
+      "url": "https://doi.org/10.1257/jel.20161327"
+    },
+    {
+      "number": 25,
+      "text": "Congressional Budget Office. (2024). The Long-Term Budget Outlook: 2024 to 2054. CBO.",
+      "url": "https://www.cbo.gov/publication/59711"
+    },
+    {
+      "number": 26,
+      "text": "Papanicolas, I., Woskie, L. R., & Jha, A. K. (2018). Health care spending in the United States and other high-income countries. JAMA, 319(10), 1024–1039.",
+      "url": "https://doi.org/10.1001/jama.2018.1150"
+    },
+    {
+      "number": 27,
+      "text": "Campbell, A. L. (2003). How Policies Make Citizens: Senior Political Activism and the American Welfare State. Princeton University Press.",
+      "url": null
+    },
+    {
+      "number": 28,
+      "text": "Commonwealth Fund. International Health Care System Profiles: Germany. Cost-sharing and out-of-pocket spending.",
+      "url": "https://www.commonwealthfund.org/international-health-policy-center/countries/germany"
+    },
+    {
+      "number": 29,
+      "text": "Fehr, R., McDermott, D., & Cox, C. (2020). Individual Insurance Market Performance in 2019. KFF.",
+      "url": "https://www.kff.org/private-insurance/individual-insurance-market-performance-in-2019/"
+    },
+    {
+      "number": 30,
+      "text": "Centers for Medicare & Medicaid Services. Medicaid program overview.",
+      "url": "https://www.medicaid.gov/medicaid"
+    }
+  ]
+}

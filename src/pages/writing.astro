@@ -26,7 +26,7 @@ const jsonLd = {
 <Page
   title="Writing"
   jsonLd={jsonLd}
-  description="Opinion and sports writing by Adam Langshaw for The Stanford Daily, plus collective editorials from the Editorial Board on which he serves."
+  description="Essays on health policy and public life by Adam Langshaw, alongside opinion and sports writing for The Stanford Daily and collective Editorial Board work."
 >
   <header class="page-head">
     <h1>Writing</h1>
@@ -34,6 +34,14 @@ const jsonLd = {
     <p class="reading">Adam is Opinions Managing Editor and a member of The Stanford Daily Editorial Board.</p>
   </header>
 
+  <section class="essays rule-top" aria-labelledby="essays">
+    <h2 id="essays">Essays</h2>
+    <a class="piece text-only" href="/writing/coverage-rights-and-reform/">
+      <span class="mid"><span class="eyebrow tag">Health policy · Hoover essay award</span><h3 class="t">Coverage, Rights, and the Rhetoric of Reform</h3><span class="essay-context">A conceptual analysis of universal healthcare in America. Revised web edition of the 2026 award-winning course essay.</span></span>
+      <time class="date tabnums" datetime="2026-10-25">Oct 25, 2026</time>
+    </a>
+  </section>
+  <h2 class="bylined-heading">The Stanford Daily</h2>
   <ul class="pieces rule-top">
     {
       WRITING.map((a) => (
@@ -70,6 +78,10 @@ const jsonLd = {
 </Page>
 
 <style>
+  .essays { max-width: 60rem; margin-top: 2rem; padding-top: 1.5rem; }
+  .essays h2 { margin: 0; font-size: 1.5rem; }
+  .essay-context { display: block; color: var(--muted); font-size: 0.9rem; margin-top: 0.5rem; max-width: 55ch; }
+  .bylined-heading { margin: 2.5rem 0 0; font-size: 1.5rem; }
   .pieces { list-style: none; margin: 2rem 0 0; padding: 0; max-width: 60rem; }
   .piece {
     display: grid;

@@ -8,6 +8,7 @@ const year = new Date().getFullYear();
     <span>&copy; {year} {SITE.name}</span>
     <ul>
       {NAV.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+      <li><a href="/credits/">Photo credits</a></li>
     </ul>
   </div>
 </footer>

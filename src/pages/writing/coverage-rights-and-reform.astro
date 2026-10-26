@@ -1,0 +1,97 @@
+---
+import Page from '../../layouts/Page.astro';
+import Icon from '../../components/Icon.astro';
+import { SITE } from '../../data/site';
+import essay from '../../data/hoover-essay.json';
+
+const title = 'Coverage, Rights, and the Rhetoric of Reform';
+const subtitle = 'A Conceptual Analysis of Universal Healthcare in America';
+const description = 'Adam Langshaw examines universal healthcare, rights, insurance coverage, access to care, and the tradeoffs of reform. Revised web edition of his 2026 Hoover essay award winner.';
+const url = `${SITE.url}/writing/coverage-rights-and-reform/`;
+const wordCount = essay.sections.reduce((n, section) => n + section.paragraphs.join(' ').split(/\s+/).length, 0);
+const readingMinutes = Math.ceil(wordCount / 225);
+const jsonLd = {
+  '@context': 'https://schema.org', '@type': 'Article', '@id': `${url}#article`,
+  headline: `${title}: ${subtitle}`, description, url,
+  mainEntityOfPage: { '@id': `${url}#webpage` },
+  author: { '@type': 'Person', '@id': `${SITE.url}/#person`, name: SITE.name, url: `${SITE.url}/` },
+  publisher: { '@type': 'Person', '@id': `${SITE.url}/#person`, name: SITE.name },
+  datePublished: '2026-10-25', dateModified: '2026-10-25', inLanguage: 'en',
+  articleSection: 'Essays', wordCount,
+  about: ['Healthcare reform', 'Universal health coverage', 'Health policy'],
+  citation: essay.references.filter((r) => r.url).map((r) => r.url),
+};
+const escapeHtml = (text: string) => text.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
+const paragraphHtml = (text: string) => escapeHtml(text).replace(/\[(\d+)\]/g, (_, number) => `<a class="citation" href="#reference-${number}" aria-label="Reference ${number}">[${number}]</a>`);
+---
+
+<Page title={title} description={description} jsonLd={jsonLd}>
+  <article class="essay" aria-labelledby="essay-title">
+    <header class="essay-head">
+      <a class="back" href="/writing/">Writing <Icon name="arrow" /></a>
+      <p class="eyebrow">Essay · Health policy</p>
+      <h1 id="essay-title">{title}</h1>
+      <p class="subtitle">{subtitle}</p>
+      <p class="byline">By Adam Langshaw <span aria-hidden="true">·</span> {readingMinutes} minute read</p>
+      <p class="dateline">Written March 20, 2026 · Web edition published <time datetime="2026-10-25">October 25, 2026</time></p>
+      <p class="award-note"><a href="/honors/#hoover-essay-award">2026 First-Year Distinguished Essay Award, Hoover Institution <Icon name="arrow" /></a></p>
+      <p class="edition-note">Originally written for Economics 28N at Stanford University. This web edition revises factual descriptions and clarifies the evidence supporting the argument. The award recognized the original course essay. The policy judgments are the author’s own.</p>
+    </header>
+
+    <nav class="contents" aria-label="Essay contents">
+      <p class="eyebrow">In this essay</p>
+      <ol>{essay.sections.map((section) => <li><a href={`#${section.id}`}>{section.title}</a></li>)}</ol>
+      <a href="#references">References</a>
+    </nav>
+
+    <div class="prose">
+      {essay.sections.map((section) => (
+        <section aria-labelledby={section.id}>
+          <h2 id={section.id}>{section.title}</h2>
+          {section.paragraphs.map((paragraph) => <p set:html={paragraphHtml(paragraph)} />)}
+        </section>
+      ))}
+      <section class="references" aria-labelledby="references">
+        <h2 id="references">References</h2>
+        <ol>{essay.references.map((reference) => (
+          <li id={`reference-${reference.number}`} value={reference.number}>
+            {reference.text}
+            {reference.url && <> <a href={reference.url} rel="noopener">Source <span class="sr-only">for reference {reference.number}</span> ↗</a></>}
+          </li>
+        ))}</ol>
+      </section>
+    </div>
+    <p class="essay-end"><a href="/writing/">All writing <Icon name="arrow" /></a><a href="/honors/#hoover-essay-award">About the award <Icon name="arrow" /></a></p>
+  </article>
+</Page>
+
+<style>
+  .essay { max-width: 48rem; margin: clamp(2.5rem, 6vw, 4rem) auto 0; }
+  .back, .award-note a, .essay-end a { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .back { font-size: 0.9rem; }
+  .back :global(svg) { transform: rotate(180deg); order: -1; }
+  .essay-head .eyebrow { margin-top: 2rem; color: var(--accent); }
+  h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); line-height: 1.08; margin: 0.75rem 0 0; text-wrap: balance; }
+  .subtitle { font-family: var(--serif); font-size: clamp(1.2rem, 3vw, 1.65rem); line-height: 1.35; color: var(--muted); margin: 1rem 0 1.5rem; }
+  .byline { font-size: 0.95rem; margin-bottom: 0.3rem; }
+  .byline span { margin-inline: 0.35rem; }
+  .dateline, .edition-note { font-size: 0.85rem; color: var(--muted); }
+  .award-note { padding-block: 1rem; border-block: 1px solid var(--rule); font-size: 0.95rem; }
+  .award-note :global(svg) { flex-shrink: 0; }
+  .edition-note { line-height: 1.7; }
+  .contents { margin: 2.5rem 0 3rem; padding: 1.3rem 1.5rem; border: 1px solid var(--rule); border-radius: 8px; background: var(--card); font-size: 0.92rem; }
+  .contents .eyebrow { margin-top: 0; }
+  .contents ol { padding-left: 1.3rem; }
+  .contents li { margin: 0.4rem 0; }
+  .prose { max-width: 68ch; margin-inline: auto; font-size: 1.06rem; line-height: 1.85; }
+  .prose h2 { font-size: clamp(1.55rem, 3vw, 1.95rem); line-height: 1.25; margin: 2.6rem 0 1rem; scroll-margin-top: 1.5rem; }
+  .prose p { margin: 0 0 1.3rem; }
+  .prose :global(.citation) { white-space: nowrap; font-size: 0.85em; }
+  .references { margin-top: 3rem; border-top: 1px solid var(--rule); }
+  .references ol { padding-left: 1.5rem; font-size: 0.88rem; line-height: 1.65; overflow-wrap: anywhere; }
+  .references li { padding-left: 0.25rem; margin-bottom: 1rem; scroll-margin-top: 2rem; }
+  .references li:target { background: var(--card); outline: 1px solid var(--rule); }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .essay-end { border-top: 1px solid var(--rule); padding-top: 1.5rem; margin-top: 3rem; display: flex; flex-wrap: wrap; gap: 1rem 2rem; font-size: 0.95rem; }
+  @media print { .contents, .back, .essay-end { display: none; } .essay { margin-top: 0; max-width: none; } .prose { max-width: none; font-size: 11pt; } }
+</style>

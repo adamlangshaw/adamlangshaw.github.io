@@ -6,4 +6,4 @@
 - License: Creative Commons Attribution 3.0 Unported, https://creativecommons.org/licenses/by/3.0/
 - Original: 2350 × 3525 pixels, uploaded September 14, 2013.
 - Changes: resized to 800 × 1200 and encoded as WebP; responsive CSS crops the displayed image.
-- Attribution and license are also linked visibly beneath the image on Honors.
+- Attribution and license are also linked from the site-wide Photo credits page, reachable from the footer.

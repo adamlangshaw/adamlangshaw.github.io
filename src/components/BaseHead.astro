@@ -14,9 +14,10 @@ const isNotFound = path === '/404.html' || path === '/404/';
 const canonical = new URL(path, SITE.url).href;
 const fullTitle =
   path === '/' ? "Adam Langshaw · Stanford '29, The Stanford Daily" : `${title} · ${SITE.name}`;
+const isEssay = path === '/writing/coverage-rights-and-reform/';
 const pageSchema = {
   '@context': 'https://schema.org',
-  '@type': path === '/' ? 'ProfilePage' : path === '/contact/' ? 'ContactPage' : isNotFound ? 'WebPage' : 'CollectionPage',
+  '@type': path === '/' ? 'ProfilePage' : path === '/contact/' ? 'ContactPage' : isNotFound || isEssay || path === '/credits/' ? 'WebPage' : 'CollectionPage',
   '@id': `${canonical}#webpage`,
   url: canonical,
   name: fullTitle,
@@ -24,7 +25,7 @@ const pageSchema = {
   inLanguage: 'en',
   isPartOf: { '@id': `${SITE.url}/#website` },
   about: { '@id': `${SITE.url}/#person` },
-  ...(path === '/' ? { mainEntity: { '@id': `${SITE.url}/#person` } } : {}),
+  ...(path === '/' ? { mainEntity: { '@id': `${SITE.url}/#person` } } : isEssay ? { mainEntity: { '@id': `${canonical}#article` } } : {}),
 };
 const schemas = [
   { '@context': 'https://schema.org', '@type': 'WebSite', '@id': `${SITE.url}/#website`, url: `${SITE.url}/`, name: SITE.name, inLanguage: 'en' },
@@ -33,7 +34,8 @@ const schemas = [
     '@context': 'https://schema.org', '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE.url}/` },
-      { '@type': 'ListItem', position: 2, name: NAV.find((item) => item.href === path)?.label ?? title, item: canonical },
+      ...(isEssay ? [{ '@type': 'ListItem', position: 2, name: 'Writing', item: `${SITE.url}/writing/` }] : []),
+      { '@type': 'ListItem', position: isEssay ? 3 : 2, name: NAV.find((item) => item.href === path)?.label ?? title, item: canonical },
     ],
   }]),
   ...(jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : []),
@@ -51,7 +53,12 @@ const schemas = [
 
 <meta name="robots" content={isNotFound ? "noindex, follow" : "index, follow, max-image-preview:large"} />
 <meta property="og:locale" content="en_US" />
-<meta property="og:type" content="website" />
+<meta property="og:type" content={isEssay ? "article" : "website"} />
+{isEssay && <>
+  <meta property="article:published_time" content="2026-10-25" />
+  <meta property="article:modified_time" content="2026-10-25" />
+  <meta property="article:author" content={`${SITE.url}/`} />
+</>}
 <meta property="og:site_name" content={SITE.name} />
 <meta property="og:title" content={fullTitle} />
 <meta property="og:description" content={description} />

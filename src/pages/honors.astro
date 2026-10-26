@@ -28,7 +28,7 @@ const jsonLd = {
     <p class="lede">Recognition for writing and for academic work.</p>
   </header>
 
-  <article class="feature">
+  <article class="feature" id="hoover-essay-award">
     <div class="feature-text">
     <p class="eyebrow accent">2026 &middot; Hoover Institution, Stanford</p>
     <h2>First-Year Distinguished Essay Award</h2>
@@ -53,6 +53,7 @@ const jsonLd = {
       The policy implication is that benefits must be cut. Not restructured, not
       rationalized, not right-sized. Cut.
     </blockquote>
+    <p class="panel"><a href="/writing/coverage-rights-and-reform/">Read the essay <Icon name="arrow" /></a></p>
     <p class="panel">
       Selected by a review committee of Russell Berman, Norman Naimark, and John Cochrane.
       &nbsp;<a href="https://www.hoover.org/news/hoover-institution-congratulates-2026-winners-distinguished-undergraduate-essay-competition" rel="noopener">Hoover announcement <Icon name="arrow" /></a>
@@ -60,7 +61,6 @@ const jsonLd = {
     </div>
     <figure class="feature-photo">
       <img src="/img/photos/hoover-tower.webp" alt="Hoover Tower rising above palm trees at Stanford University" width="800" height="1200" loading="lazy" />
-      <figcaption><a href="https://commons.wikimedia.org/wiki/File:Stanford_University,_Palo_Alto,_CA_USA_-_Hoover_Tower_-_panoramio.jpg">Photo: MARELBU</a> · <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>. Resized; cropped in layout.</figcaption>
     </figure>
   </article>
 
@@ -113,8 +113,6 @@ const jsonLd = {
   .feature-text { padding: clamp(1.6rem, 4vw, 2.4rem); min-width: 0; }
   .feature-photo { margin: 0; position: relative; min-height: 360px; }
   .feature-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 45% 30%; position: absolute; inset: 0; }
-  .feature-photo figcaption { position: absolute; z-index: 1; bottom: 0; padding: 0.75rem; background: #16140fe6; color: #ece7dd; font-size: 0.7rem; }
-  .feature-photo a { color: #ece7dd; }
   .feature-photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, var(--band) 1%, transparent 32%); pointer-events: none; }
   @media (min-width: 900px) {
     .feature { grid-template-columns: minmax(0, 1fr) 300px; }
