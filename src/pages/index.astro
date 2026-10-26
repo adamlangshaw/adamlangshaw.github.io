@@ -3,6 +3,7 @@ import Page from '../layouts/Page.astro';
 import Icon from '../components/Icon.astro';
 import { SITE, SAME_AS } from '../data/site';
 import { WRITING } from '../data/writing';
+import { PRESS } from '../data/press';
 
 const recent = WRITING.slice(0, 2);
 
@@ -23,6 +24,8 @@ const jsonLd = {
   homeLocation: { '@type': 'Place', name: 'Weston, Florida' },
   award: 'Hoover Institution First-Year Distinguished Essay Award (2026)',
   sameAs: SAME_AS,
+  mainEntityOfPage: { '@id': `${SITE.url}/#webpage` },
+  subjectOf: PRESS.map((p) => ({ '@type': 'Article', '@id': p.url, url: p.url, headline: p.headline })),
 };
 ---
 

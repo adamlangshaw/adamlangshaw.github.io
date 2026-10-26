@@ -2,10 +2,32 @@
 import Page from '../layouts/Page.astro';
 import Icon from '../components/Icon.astro';
 import { PRESS } from '../data/press';
+import { SITE } from '../data/site';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  '@id': `${SITE.url}/press/#coverage`,
+  name: 'Press coverage of Adam Langshaw',
+  numberOfItems: PRESS.length,
+  itemListElement: PRESS.map((p, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    item: {
+      '@type': 'Article',
+      '@id': p.url,
+      url: p.url,
+      headline: p.headline,
+      description: p.note,
+      publisher: { '@type': 'Organization', name: p.outlet },
+    },
+  })),
+};
 ---
 
 <Page
   title="Press"
+  jsonLd={jsonLd}
   description="Media coverage of Adam Langshaw, including the Hoover Institution Distinguished Essay Award and academic honors."
 >
   <header class="page-head">

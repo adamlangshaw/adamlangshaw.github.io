@@ -12,7 +12,9 @@ const jsonLd = {
   itemListElement: WRITING.map((a, i) => ({
     '@type': 'ListItem', position: i + 1,
     item: {
-      '@type': 'Article', headline: a.title, url: a.url, datePublished: a.date,
+      '@type': 'Article', '@id': a.url, headline: a.title, url: a.url, datePublished: a.date,
+      ...(a.image ? { image: new URL(a.image, SITE.url).href } : {}),
+      inLanguage: 'en',
       author: { '@type': 'Person', '@id': `${SITE.url}/#person`, name: SITE.name, url: `${SITE.url}/` },
       publisher: { '@type': 'Organization', name: 'The Stanford Daily', url: 'https://stanforddaily.com/' },
       articleSection: a.category,
