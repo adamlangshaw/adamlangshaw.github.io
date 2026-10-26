@@ -33,7 +33,6 @@ const paragraphHtml = (text: string) => escapeHtml(text).replace(/\[(\d+)\]/g, (
       <a class="back" href="/writing/">Writing <Icon name="arrow" /></a>
       <p class="eyebrow">Essay · Health policy</p>
       <h1 id="essay-title">{title}</h1>
-      <p class="subtitle">{subtitle}</p>
       <p class="byline">By Adam Langshaw <span aria-hidden="true">·</span> {readingMinutes} minute read</p>
       <p class="dateline">Originally written <time datetime={meta.originalDate}>{meta.originalDisplay}</time> · Web edition published <time datetime={meta.date}>October 25, 2026</time></p>
       <p class="award-note"><a href="/honors/#hoover-essay-award">2026 First-Year Distinguished Essay Award, Hoover Institution <Icon name="arrow" /></a></p>
@@ -74,7 +73,6 @@ const paragraphHtml = (text: string) => escapeHtml(text).replace(/\[(\d+)\]/g, (
   .back :global(svg) { transform: rotate(180deg); order: -1; }
   .essay-head .eyebrow { margin-top: 2rem; color: var(--accent); }
   h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); line-height: 1.08; margin: 0.75rem 0 0; text-wrap: balance; }
-  .subtitle { font-family: var(--serif); font-size: clamp(1.2rem, 3vw, 1.65rem); line-height: 1.35; color: var(--muted); margin: 1rem 0 1.5rem; }
   .byline { font-size: 0.95rem; margin-bottom: 0.3rem; }
   .byline span { margin-inline: 0.35rem; }
   .dateline, .edition-note { font-size: 0.85rem; color: var(--muted); }
