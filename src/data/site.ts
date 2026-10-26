@@ -1,7 +1,6 @@
 export const SITE = {
   name: 'Adam Langshaw',
   url: 'https://adamlangshaw.com',
-  tagline: 'Medicine, policy, technology.',
   description:
     'Adam Langshaw is a Stanford sophomore, Hoover Student Fellow for 2026–27, and Opinions Managing Editor and Editorial Board member at The Stanford Daily.',
 };
