@@ -1,6 +1,7 @@
 ---
 import Page from '../layouts/Page.astro';
 import Icon from '../components/Icon.astro';
+import { ESSAYS } from '../data/essays';
 import { WRITING } from '../data/writing';
 import { EDITORIALS } from '../data/editorials';
 import { CONTACT, SITE } from '../data/site';
@@ -8,15 +9,20 @@ const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'ItemList',
   name: 'Writing by Adam Langshaw',
-  numberOfItems: WRITING.length,
-  itemListElement: WRITING.map((a, i) => ({
+  numberOfItems: ESSAYS.length + WRITING.length,
+  itemListElement: [
+    ...ESSAYS.map((a) => ({ ...a, url: new URL(a.url, SITE.url).href, image: undefined, publisherName: SITE.name })),
+    ...WRITING.map((a) => ({ ...a, publisherName: 'The Stanford Daily' })),
+  ].map((a, i) => ({
     '@type': 'ListItem', position: i + 1,
     item: {
       '@type': 'Article', '@id': a.url, headline: a.title, url: a.url, datePublished: a.date,
       ...(a.image ? { image: new URL(a.image, SITE.url).href } : {}),
       inLanguage: 'en',
       author: { '@type': 'Person', '@id': `${SITE.url}/#person`, name: SITE.name, url: `${SITE.url}/` },
-      publisher: { '@type': 'Organization', name: 'The Stanford Daily', url: 'https://stanforddaily.com/' },
+      publisher: a.publisherName === SITE.name
+        ? { '@type': 'Person', '@id': `${SITE.url}/#person`, name: SITE.name, url: `${SITE.url}/` }
+        : { '@type': 'Organization', name: 'The Stanford Daily', url: 'https://stanforddaily.com/' },
       articleSection: a.category,
     },
   })),
@@ -24,22 +30,24 @@ const jsonLd = {
 ---
 
 <Page
-  title="Writing"
+  title="Journalism & Essays"
   jsonLd={jsonLd}
   description="Essays on health policy and public life by Adam Langshaw, alongside opinion and sports writing for The Stanford Daily and collective Editorial Board work."
 >
   <header class="page-head">
-    <h1>Writing</h1>
-    <p class="lede">Opinion and sports writing for <em>The Stanford Daily</em>, newest first.</p>
-    <p class="reading">Adam is Opinions Managing Editor and a member of The Stanford Daily Editorial Board.</p>
+    <h1>Journalism &amp; Essays</h1>
+    <p class="lede">Opinion, sports reporting, and academic essays.</p>
+    <p class="reading">Adam is Opinions Managing Editor and a member of <em>The Stanford Daily</em> Editorial Board. His academic essays explore health policy and public life.</p>
   </header>
 
   <section class="essays rule-top" aria-labelledby="essays">
     <h2 id="essays">Essays</h2>
-    <a class="piece text-only" href="/writing/coverage-rights-and-reform/">
-      <span class="mid"><span class="eyebrow tag">Health policy · Hoover essay award</span><h3 class="t">Coverage, Rights, and the Rhetoric of Reform</h3><span class="essay-context">A conceptual analysis of universal healthcare in America. Revised web edition of the 2026 award-winning course essay.</span></span>
-      <time class="date tabnums" datetime="2026-10-25">Oct 25, 2026</time>
-    </a>
+    {ESSAYS.map((a) => (
+      <a class="piece text-only" href={a.url}>
+        <span class="mid"><span class="eyebrow tag">{a.category}</span><h3 class="t">{a.title}</h3><span class="essay-context">{a.description}</span></span>
+        <time class="date tabnums" datetime={a.date}>{a.display}</time>
+      </a>
+    ))}
   </section>
   <h2 class="bylined-heading">The Stanford Daily</h2>
   <ul class="pieces rule-top">
@@ -50,7 +58,7 @@ const jsonLd = {
             {a.image && <img class="thumb" src={a.image} alt={a.alt ?? ""} loading="lazy" width="900" height="576" />}
             <span class="mid">
               <span class="eyebrow tag">{a.category}</span>
-              <h2 class="t">{a.title}</h2>
+              <h3 class="t">{a.title}</h3>
             </span>
             <time class="date tabnums" datetime={a.date}>{a.display}</time>
           </a>

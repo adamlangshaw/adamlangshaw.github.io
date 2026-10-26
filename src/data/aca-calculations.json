@@ -1,0 +1,64 @@
+{
+  "fplYear": 2025,
+  "coverageYear": 2026,
+  "individualFpl": "15650",
+  "contributionRows": [
+    {
+      "fplPercent": 170,
+      "annualIncome": "26605.00",
+      "applicablePercent": "5.154",
+      "monthlyContribution": "114.27"
+    },
+    {
+      "fplPercent": 225,
+      "annualIncome": "35212.50",
+      "applicablePercent": "7.520",
+      "monthlyContribution": "220.67"
+    },
+    {
+      "fplPercent": 350,
+      "annualIncome": "54775.00",
+      "applicablePercent": "9.960",
+      "monthlyContribution": "454.63"
+    },
+    {
+      "fplPercent": 425,
+      "annualIncome": "66512.50",
+      "applicablePercent": null,
+      "monthlyContribution": null
+    }
+  ],
+  "example": {
+    "fplPercent": 225,
+    "annualIncome": "35212.50",
+    "benchmark": "750.00",
+    "monthlyContribution": "220.67",
+    "taxCredit": "529.33",
+    "plans": [
+      {
+        "name": "Bronze",
+        "premium": "650.00",
+        "taxCredit": "529.33",
+        "netPremium": "120.67"
+      },
+      {
+        "name": "Benchmark Silver",
+        "premium": "750.00",
+        "taxCredit": "529.33",
+        "netPremium": "220.67"
+      },
+      {
+        "name": "Gold",
+        "premium": "800.00",
+        "taxCredit": "529.33",
+        "netPremium": "270.67"
+      },
+      {
+        "name": "Catastrophic",
+        "premium": "559.00",
+        "taxCredit": "0.00",
+        "netPremium": "559.00"
+      }
+    ]
+  }
+}

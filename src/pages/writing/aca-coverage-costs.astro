@@ -1,0 +1,128 @@
+---
+import Page from '../../layouts/Page.astro';
+import Icon from '../../components/Icon.astro';
+import { SITE } from '../../data/site';
+import { ESSAYS } from '../../data/essays';
+import essay from '../../data/aca-essay.json';
+import calculations from '../../data/aca-calculations.json';
+
+const meta = ESSAYS.find((a) => a.url === '/writing/aca-coverage-costs/')!;
+const description = 'Adam Langshaw explains 2026 ACA premium tax credits, cost-sharing reductions, and state coverage differences, with verified worked calculations.';
+const url = new URL(meta.url, SITE.url).href;
+const wordCount = essay.sections.reduce((n, s) => n + [...s.paragraphs, ...(s.afterTable ?? [])].join(' ').split(/\s+/).length, 0);
+const readingMinutes = Math.ceil(wordCount / 225);
+const jsonLd = {
+  '@context': 'https://schema.org', '@type': 'Article', '@id': `${url}#article`,
+  headline: meta.title, description, url,
+  mainEntityOfPage: { '@id': `${url}#webpage` },
+  author: { '@type': 'Person', '@id': `${SITE.url}/#person`, name: SITE.name, url: `${SITE.url}/` },
+  publisher: { '@type': 'Person', '@id': `${SITE.url}/#person`, name: SITE.name },
+  datePublished: meta.date, dateModified: meta.date, inLanguage: 'en',
+  articleSection: 'Academic essays', wordCount,
+  about: ['Affordable Care Act', 'Premium tax credits', 'Health insurance affordability'],
+  citation: essay.references.map((r) => r.url),
+};
+const escapeHtml = (text: string) => text.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
+const paragraphHtml = (text: string) => escapeHtml(text).replace(/\[([\d, ]+)\]/g, (_, numbers) => numbers.split(',').map((n: string) => { const number = n.trim(); return `<a class="citation" href="#reference-${number}" aria-label="Reference ${number}">[${number}]</a>`; }).join(' '));
+const money = (value: string) => new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(Number(value));
+---
+
+<Page title={meta.title} description={description} jsonLd={jsonLd}>
+  <article class="essay" aria-labelledby="essay-title">
+    <header class="essay-head">
+      <a class="back" href="/writing/">Journalism &amp; Essays <Icon name="arrow" /></a>
+      <p class="eyebrow">Academic essay · Health policy</p>
+      <h1 id="essay-title">{meta.title}</h1>
+      <p class="subtitle">{meta.subtitle}</p>
+      <p class="byline">By Adam Langshaw <span aria-hidden="true">·</span> {readingMinutes} minute read</p>
+      <p class="dateline">Published <time datetime={meta.date}>October 25, 2026</time> · 2026 coverage-year analysis</p>
+      <p class="edition-note">Adapted from a March 2026 paper for Economics 28N at Stanford University. This shorter web edition replaces the original quote-range tables with reproducible federal-rule calculations and hypothetical plan prices, and updates the supporting sources.</p>
+    </header>
+    <nav class="contents" aria-label="Essay contents">
+      <p class="eyebrow">In this essay</p>
+      <ol>{essay.sections.map((s) => <li><a href={`#${s.id}`}>{s.title}</a></li>)}</ol>
+      <a href="#calculation-method">Calculation method</a> · <a href="#references">Sources</a>
+    </nav>
+    <div class="prose">
+      {essay.sections.map((s) => (
+        <section aria-labelledby={s.id}>
+          <h2 id={s.id}>{s.title}</h2>
+          {s.paragraphs.map((p) => <p set:html={paragraphHtml(p)} />)}
+          {s.table === 'contributions' && (
+            <div class="table-wrap" tabindex="0" role="region" aria-label="Federal benchmark contribution examples">
+              <table>
+                <caption>2026 federal benchmark contributions for one person</caption>
+                <thead><tr><th scope="col">Income as % FPL</th><th scope="col">Annual income</th><th scope="col">Applicable rate</th><th scope="col">Monthly contribution</th></tr></thead>
+                <tbody>{calculations.contributionRows.map((r) => <tr><th scope="row">{r.fplPercent}%</th><td>{money(r.annualIncome)}</td><td>{r.applicablePercent ? `${Number(r.applicablePercent)}%` : 'No federal credit'}</td><td>{r.monthlyContribution ? money(r.monthlyContribution) : 'Full plan premium'}</td></tr>)}</tbody>
+              </table>
+              <p class="table-note">For an otherwise eligible single adult in the contiguous states. Income is annual household MAGI. Contributions assume the benchmark costs more than the calculated contribution; otherwise the credit is zero. These are federal formula examples, not plan quotes. Sources: <a href="#reference-2">IRS</a> and <a href="#reference-3">HealthCare.gov</a>.</p>
+            </div>
+          )}
+          {s.table === 'plans' && (
+            <div class="table-wrap" tabindex="0" role="region" aria-label="Hypothetical monthly plan premiums and tax credits">
+              <table>
+                <caption>Illustration: $750 benchmark, income of $35,212.50</caption>
+                <thead><tr><th scope="col">Plan</th><th scope="col">Monthly premium</th><th scope="col">Federal credit</th><th scope="col">Monthly payment</th></tr></thead>
+                <tbody>{calculations.example.plans.map((p) => <tr><th scope="row">{p.name}</th><td>{money(p.premium)}</td><td>{money(p.taxCredit)}</td><td>{money(p.netPremium)}</td></tr>)}</tbody>
+              </table>
+              <p class="table-note">Hypothetical prices; the benchmark is the second-lowest-cost Silver plan, not every Silver plan. The example applies no tax credit to Catastrophic coverage. Payments exclude deductibles and other medical spending. Each row uses the $220.67 rounded monthly contribution before calculating the credit.</p>
+            </div>
+          )}
+          {s.afterTable?.map((p) => <p set:html={paragraphHtml(p)} />)}
+        </section>
+      ))}
+      <section class="method" aria-labelledby="calculation-method">
+        <h2 id="calculation-method">Calculation method</h2>
+        <p>Income equals the selected poverty percentage multiplied by the 2025 single-person guideline of $15,650. Applicable rates are linearly interpolated within the IRS’s 2026 bands. Monthly contribution equals annual MAGI multiplied by the applicable rate, divided by twelve, rounded to cents. The plan illustration subtracts that contribution from the $750 benchmark, caps the credit at the eligible plan’s premium, and subtracts the credit from the chosen premium. Above 400% FPL, the illustration applies no federal credit. The calculation excludes state aid, tobacco surcharges, partial-year changes, and tax-return reconciliation. Children and mixed-eligibility households require separate treatment. Rules and sources were checked for this 2026 web edition.</p>
+      </section>
+      <section class="references" aria-labelledby="references">
+        <h2 id="references">Sources</h2>
+        <ol>{essay.references.map((r) => <li id={`reference-${r.number}`} value={r.number}>{r.text} <a href={r.url} rel="noopener">Source <span class="sr-only">for reference {r.number}</span> ↗</a></li>)}</ol>
+      </section>
+    </div>
+    <p class="essay-end"><a href="/writing/">Journalism &amp; Essays <Icon name="arrow" /></a><a href="/writing/coverage-rights-and-reform/">Coverage, Rights, and Reform <Icon name="arrow" /></a></p>
+  </article>
+</Page>
+
+<style>
+  .essay { max-width: 48rem; margin: clamp(2.5rem, 6vw, 4rem) auto 0; }
+  .back, .award-note a, .essay-end a { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .back { font-size: 0.9rem; }
+  .back :global(svg) { transform: rotate(180deg); order: -1; }
+  .essay-head .eyebrow { margin-top: 2rem; color: var(--accent); }
+  h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); line-height: 1.08; margin: 0.75rem 0 0; text-wrap: balance; }
+  .subtitle { font-family: var(--serif); font-size: clamp(1.2rem, 3vw, 1.65rem); line-height: 1.35; color: var(--muted); margin: 1rem 0 1.5rem; }
+  .byline { font-size: 0.95rem; margin-bottom: 0.3rem; }
+  .byline span { margin-inline: 0.35rem; }
+  .dateline, .edition-note { font-size: 0.85rem; color: var(--muted); }
+  .award-note { padding-block: 1rem; border-block: 1px solid var(--rule); font-size: 0.95rem; }
+  .award-note :global(svg) { flex-shrink: 0; }
+  .edition-note { line-height: 1.7; }
+  .contents { margin: 2.5rem 0 3rem; padding: 1.3rem 1.5rem; border: 1px solid var(--rule); border-radius: 8px; background: var(--card); font-size: 0.92rem; }
+  .contents .eyebrow { margin-top: 0; }
+  .contents ol { padding-left: 1.3rem; }
+  .contents li { margin: 0.4rem 0; }
+  .prose { max-width: 68ch; margin-inline: auto; font-size: 1.06rem; line-height: 1.85; }
+  .prose h2 { font-size: clamp(1.55rem, 3vw, 1.95rem); line-height: 1.25; margin: 2.6rem 0 1rem; scroll-margin-top: 1.5rem; }
+  .prose p { margin: 0 0 1.3rem; }
+  .prose :global(.citation) { white-space: nowrap; font-size: 0.85em; }
+  .references { margin-top: 3rem; border-top: 1px solid var(--rule); }
+  .references ol { padding-left: 1.5rem; font-size: 0.88rem; line-height: 1.65; overflow-wrap: anywhere; }
+  .references li { padding-left: 0.25rem; margin-bottom: 1rem; scroll-margin-top: 2rem; }
+  .references li:target { background: var(--card); outline: 1px solid var(--rule); }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .essay-end { border-top: 1px solid var(--rule); padding-top: 1.5rem; margin-top: 3rem; display: flex; flex-wrap: wrap; gap: 1rem 2rem; font-size: 0.95rem; }
+  @media print { .contents, .back, .essay-end { display: none; } .essay { margin-top: 0; max-width: none; } .prose { max-width: none; font-size: 11pt; } }
+  .table-wrap { margin: 1.75rem 0; overflow-x: auto; border: 1px solid var(--rule); border-radius: 8px; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.86rem; line-height: 1.5; font-variant-numeric: tabular-nums; }
+  caption { text-align: left; font-weight: 600; padding: 1rem; background: var(--card); color: var(--ink); }
+  th, td { padding: 0.7rem 0.75rem; border-top: 1px solid var(--rule); text-align: right; vertical-align: top; }
+  th:first-child, td:first-child { text-align: left; }
+  thead th { font-weight: 600; color: var(--muted); }
+  tbody th { font-weight: 500; }
+  .table-note { padding: 0.85rem 1rem; margin: 0 !important; border-top: 1px solid var(--rule); color: var(--muted); font-size: 0.8rem; line-height: 1.65; background: var(--card); }
+  .method { margin-top: 2.5rem; padding: 1.3rem 1.5rem; border: 1px solid var(--rule); border-radius: 8px; background: var(--card); }
+  .method h2 { margin-top: 0; }
+  .method p { font-size: 0.9rem; margin-bottom: 0; }
+  @media (max-width: 480px) { th, td { padding: 0.6rem 0.4rem; } table { font-size: 0.78rem; } }
+</style>

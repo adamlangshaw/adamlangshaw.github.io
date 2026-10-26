@@ -14,7 +14,7 @@ const isNotFound = path === '/404.html' || path === '/404/';
 const canonical = new URL(path, SITE.url).href;
 const fullTitle =
   path === '/' ? "Adam Langshaw · Stanford '29, The Stanford Daily" : `${title} · ${SITE.name}`;
-const isEssay = path === '/writing/coverage-rights-and-reform/';
+const isEssay = path.startsWith('/writing/') && path !== '/writing/';
 const pageSchema = {
   '@context': 'https://schema.org',
   '@type': path === '/' ? 'ProfilePage' : path === '/contact/' ? 'ContactPage' : isNotFound || isEssay || path === '/credits/' ? 'WebPage' : 'CollectionPage',

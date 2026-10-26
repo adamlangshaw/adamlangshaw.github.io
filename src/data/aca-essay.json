@@ -1,0 +1,132 @@
+{
+  "sections": [
+    {
+      "id": "the-price-on-the-plan",
+      "title": "The price on the plan is only the beginning",
+      "paragraphs": [
+        "A health insurance plan can become more expensive without its subsidized enrollee paying the entire increase. A cheaper plan can leave someone with greater costs when they need care. And the same low income can lead to Medicaid in one state and a gap in coverage in another. These are central features of the Affordable Care Act’s design, not marginal exceptions.",
+        "The ACA expanded access through regulated insurance marketplaces, premium tax credits, and Medicaid expansion. It also left important decisions to states and preserved a system in which eligibility and financial assistance depend on several interacting rules. Understanding affordability requires following that interaction from the advertised premium to the household’s actual payment and exposure to medical bills.",
+        "Florida, California, and Ohio make the distinction visible. Their different arrangements illustrate what state choices can change. A three-state comparison cannot, however, establish that every difference in insurance prices is caused by those choices. The first task is to separate the subsidy formula from the market price."
+      ]
+    },
+    {
+      "id": "how-the-subsidy-works",
+      "title": "How the subsidy changes the bill",
+      "paragraphs": [
+        "The federal premium tax credit is tied to a local benchmark: the second-lowest-cost Silver plan available to the eligible coverage household. In a simplified full-year example, the credit is the benchmark premium minus an income-based contribution, subject to a floor of zero and a cap at the eligible plan premium. The enrollee can generally apply that credit to an eligible Bronze, Silver, Gold, or Platinum plan. Catastrophic coverage does not qualify for the credit. Eligibility also depends on factors such as access to qualifying employer or government coverage. [1]",
+        "For 2026, the federal contribution schedule rises with income, reaching 9.96 percent at 300–400 percent of the federal poverty level. Federal credits are generally unavailable above 400 percent following the expiration of the temporary enhanced subsidies. The calculations here use the IRS’s 2026 schedule and the 2025 poverty guideline of $15,650 for one person in the contiguous states. Marketplace assistance for a coverage year uses the prior year’s poverty guidelines; Medicaid uses the applicable current guidelines. [2, 3]"
+      ],
+      "table": "contributions",
+      "afterTable": [
+        "Consider a single adult at 225 percent of that guideline, earning $35,212.50 annually. The applicable percentage is 7.52 percent: 6.60 percent plus half the increase to 8.44 percent between 200 and 250 percent of poverty. Multiplying income by that rate and dividing by twelve gives a monthly benchmark contribution of $220.67, rounded to cents. A benchmark premium of $750 would therefore support an illustrative monthly credit of $529.33. [2]",
+        "That same income-based contribution can apply when the benchmark costs more in another location, because a higher benchmark can generate a larger credit. It follows that comparing gross premiums alone cannot establish which subsidized household pays more. The difference between the chosen plan and its local benchmark matters."
+      ]
+    },
+    {
+      "id": "one-household-four-plans",
+      "title": "One household, four different bills",
+      "paragraphs": [
+        "The following example holds income and the benchmark fixed. The plan premiums are hypothetical inputs, not quotes from Florida, California, or Ohio. Assume a single, nonsmoking 28-year-old U.S. citizen with stable full-year income of $35,212.50, no eligibility for qualifying employer or government coverage, and eligibility for the federal tax credit. It excludes state assistance and uses the rounded contribution above."
+      ],
+      "table": "plans",
+      "afterTable": [
+        "The lower-priced Bronze plan leaves a smaller monthly bill. It does not necessarily leave the household better off after medical spending. At this income, an eligible person who chooses Silver can receive federal cost-sharing reductions, which lower deductibles, copayments, coinsurance, and the out-of-pocket limit. Those reductions do not follow the person into Bronze or Gold. Premium assistance and assistance with using care are separate benefits. [4]",
+        "The Catastrophic row exposes a different boundary. Being under thirty makes this person eligible to consider that category where it is offered, but does not make the plan eligible for premium tax credits. Its entire hypothetical $559 premium remains payable. Subtracting the Silver-based credit from it would manufacture a low price the rules do not allow. [1, 5]"
+      ]
+    },
+    {
+      "id": "what-states-change",
+      "title": "What changes across Florida, California, and Ohio",
+      "paragraphs": [
+        "California and Ohio cover qualifying low-income adults through Medicaid expansion. Florida has not adopted the expansion. For an otherwise eligible adult without dependent children, this can determine whether a low income opens a public coverage pathway or leaves a gap. In a non-expansion state, a person below the usual federal Marketplace subsidy floor may qualify for neither that assistance nor a state Medicaid category. The result depends on eligibility circumstances, not income alone. [6, 7, 8, 13]",
+        "California also operates its own exchange and supplements federal assistance. Its 2026 state premium subsidy program provides additional help to eligible Covered California enrollees at or below 165 percent of poverty. Ohio and Florida use the federal enrollment platform. These distinctions affect the route through which people obtain insurance and, for those receiving additional assistance, their net premiums. The worked example above is at 225 percent of poverty and therefore does not include California’s low-income state premium subsidy. [9, 10]",
+        "Children complicate household comparisons further because their Medicaid and CHIP eligibility can differ from their parents’. A family of four is not necessarily buying Marketplace coverage for all four people. A reproducible comparison must identify the members actually covered, the location, coverage year, plan, and benchmark, as well as household income. Otherwise, an apparent interstate price difference may compare different insurance arrangements.",
+        "Even after those inputs are matched, a comparison describes outcomes rather than isolating causes. Provider prices, local competition, age, tobacco use, and the coverage household can affect premiums. State policy matters, but attributing the entire difference between two quotes to Medicaid expansion or exchange administration would claim more than the evidence establishes. [11]"
+      ]
+    },
+    {
+      "id": "why-silver-can-be-surprising",
+      "title": "Why Silver does not always sit between Bronze and Gold",
+      "paragraphs": [
+        "There is another reason the cheapest premium is an unreliable guide to plan value. When direct federal reimbursements for cost-sharing reductions ended, the obligation to provide those reductions remained. Insurers could incorporate the expense into premiums, especially Silver premiums. Because federal tax credits are benchmarked to Silver, a higher Silver benchmark can increase credits usable for eligible plans in other categories. This mechanism is commonly called silver loading.",
+        "That can make Bronze or Gold unusually attractive to some subsidized buyers. It does not establish that Gold is always cheaper than Silver, or that choosing Gold is best for someone who would lose substantial Silver cost-sharing reductions. CBO’s 2017 analysis anticipated higher benchmark premiums and credits after reimbursement termination; its $194 billion figure was a projected net deficit increase over 2017–2026, not a measurement of tax-credit spending alone. [12]"
+      ]
+    },
+    {
+      "id": "what-affordability-should-mean",
+      "title": "What an affordability comparison should measure",
+      "paragraphs": [
+        "The ACA’s price cannot be read from a single premium. For one household, the decisive rule is Medicaid eligibility. For another, it is the distance between the chosen plan and the local benchmark. For a third, it is the cost-sharing protection available only with Silver. Above the federal subsidy ceiling, gross premiums regain a much more direct importance.",
+        "The law’s complexity imposes a cost of its own. Households must understand several interacting systems to evaluate a monthly payment that still does not reveal their full financial exposure. Clearer comparisons should show the net premium, deductible, out-of-pocket limit, provider network, and relevant eligibility assumptions together.",
+        "That is the central policy lesson: extending coverage and making it usable require more than lowering the number displayed beside a plan. A serious assessment of affordability must follow the household through the rules that determine what it pays, what it receives, and what happens when care becomes necessary."
+      ]
+    }
+  ],
+  "references": [
+    {
+      "number": 1,
+      "text": "Internal Revenue Service. Questions and answers on the Premium Tax Credit: eligibility, benchmark premiums, and credit calculation.",
+      "url": "https://www.irs.gov/affordable-care-act/individuals-and-families/questions-and-answers-on-the-premium-tax-credit"
+    },
+    {
+      "number": 2,
+      "text": "Internal Revenue Service. Revenue Procedure 2025-25, Section 3: applicable percentage table for 2026.",
+      "url": "https://www.irs.gov/pub/irs-drop/rp-25-25.pdf"
+    },
+    {
+      "number": 3,
+      "text": "HealthCare.gov. Federal poverty level: guideline amounts and the years used for Marketplace and Medicaid eligibility.",
+      "url": "https://www.healthcare.gov/glossary/federal-poverty-level-fpl/"
+    },
+    {
+      "number": 4,
+      "text": "HealthCare.gov. Cost-sharing reductions: Silver-plan enrollment and reduced out-of-pocket costs.",
+      "url": "https://www.healthcare.gov/lower-costs/save-on-out-of-pocket-costs/"
+    },
+    {
+      "number": 5,
+      "text": "HealthCare.gov. Catastrophic health plans: eligibility and coverage.",
+      "url": "https://www.healthcare.gov/choose-a-plan/catastrophic-health-plans/"
+    },
+    {
+      "number": 6,
+      "text": "Covered California. Medi-Cal: adult eligibility and program administration.",
+      "url": "https://www.coveredca.com/coverage-basics/medi-cal"
+    },
+    {
+      "number": 7,
+      "text": "Ohio Department of Medicaid. Group VIII / MAGI Adult eligibility and forthcoming changes.",
+      "url": "https://benefits.ohio.gov/home/news-and-events/all-news/changes-to-medicaid-eligibility-group-vii"
+    },
+    {
+      "number": 8,
+      "text": "HealthCare.gov. Medicaid expansion and coverage options in states that have not expanded.",
+      "url": "https://www.healthcare.gov/medicaid-chip/medicaid-expansion-and-you/"
+    },
+    {
+      "number": 9,
+      "text": "Covered California. 2026 California State Premium Subsidy Program policy explainer, February 20, 2026.",
+      "url": "https://hbex.coveredca.com/stakeholders/PDFs/2026-02_StatePremiumSub_PolicyExplainer-Final.pdf"
+    },
+    {
+      "number": 10,
+      "text": "Centers for Medicare & Medicaid Services. Marketplace 2026 Open Enrollment Period Report: National Snapshot; states using HealthCare.gov.",
+      "url": "https://www.cms.gov/newsroom/fact-sheets/marketplace-2026-open-enrollment-period-report-national-snapshot-2"
+    },
+    {
+      "number": 11,
+      "text": "HealthCare.gov. How insurance companies set health premiums.",
+      "url": "https://www.healthcare.gov/how-plans-set-your-premiums/"
+    },
+    {
+      "number": 12,
+      "text": "Congressional Budget Office. The Effects of Terminating Payments for Cost-Sharing Reductions, August 15, 2017.",
+      "url": "https://www.cbo.gov/publication/53009"
+    },
+    {
+      "number": 13,
+      "text": "Centers for Medicare & Medicaid Services. Medicaid Adult Core Set state data, including Medicaid expansion classification.",
+      "url": "https://data.medicaid.gov/dataset/08befceb-ef7c-5329-b140-4f2246f4da75"
+    }
+  ]
+}
