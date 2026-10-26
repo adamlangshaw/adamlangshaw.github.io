@@ -17,7 +17,7 @@ const jsonLd = {
   mainEntityOfPage: { '@id': `${url}#webpage` },
   author: { '@type': 'Person', '@id': `${SITE.url}/#person`, name: SITE.name, url: `${SITE.url}/` },
   publisher: { '@type': 'Person', '@id': `${SITE.url}/#person`, name: SITE.name },
-  datePublished: meta.date, dateModified: meta.date, inLanguage: 'en',
+  dateCreated: meta.originalDate, datePublished: meta.date, dateModified: meta.date, inLanguage: 'en',
   articleSection: 'Academic essays', wordCount,
   about: ['Affordable Care Act', 'Premium tax credits', 'Health insurance affordability'],
   citation: essay.references.map((r) => r.url),
@@ -35,7 +35,7 @@ const money = (value: string) => new Intl.NumberFormat('en-US', {style: 'currenc
       <h1 id="essay-title">{meta.title}</h1>
       <p class="subtitle">{meta.subtitle}</p>
       <p class="byline">By Adam Langshaw <span aria-hidden="true">·</span> {readingMinutes} minute read</p>
-      <p class="dateline">Published <time datetime={meta.date}>October 25, 2026</time> · 2026 coverage-year analysis</p>
+      <p class="dateline">Originally written <time datetime={meta.originalDate}>{meta.originalDisplay}</time> · Web edition published <time datetime={meta.date}>October 25, 2026</time></p>
       <p class="edition-note">Adapted from a March 2026 paper for Economics 28N at Stanford University. This shorter web edition replaces the original quote-range tables with reproducible federal-rule calculations and hypothetical plan prices, and updates the supporting sources.</p>
     </header>
     <nav class="contents" aria-label="Essay contents">

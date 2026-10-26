@@ -1,9 +1,11 @@
 ---
 import Page from '../../layouts/Page.astro';
 import Icon from '../../components/Icon.astro';
+import { ESSAYS } from '../../data/essays';
 import { SITE } from '../../data/site';
 import essay from '../../data/hoover-essay.json';
 
+const meta = ESSAYS.find((a) => a.url === '/writing/coverage-rights-and-reform/')!;
 const title = 'Coverage, Rights, and the Rhetoric of Reform';
 const subtitle = 'A Conceptual Analysis of Universal Healthcare in America';
 const description = 'Adam Langshaw examines universal healthcare, rights, insurance coverage, access to care, and the tradeoffs of reform. Revised web edition of his 2026 Hoover essay award winner.';
@@ -16,7 +18,7 @@ const jsonLd = {
   mainEntityOfPage: { '@id': `${url}#webpage` },
   author: { '@type': 'Person', '@id': `${SITE.url}/#person`, name: SITE.name, url: `${SITE.url}/` },
   publisher: { '@type': 'Person', '@id': `${SITE.url}/#person`, name: SITE.name },
-  datePublished: '2026-10-25', dateModified: '2026-10-25', inLanguage: 'en',
+  dateCreated: meta.originalDate, datePublished: meta.date, dateModified: meta.date, inLanguage: 'en',
   articleSection: 'Essays', wordCount,
   about: ['Healthcare reform', 'Universal health coverage', 'Health policy'],
   citation: essay.references.filter((r) => r.url).map((r) => r.url),
@@ -33,7 +35,7 @@ const paragraphHtml = (text: string) => escapeHtml(text).replace(/\[(\d+)\]/g, (
       <h1 id="essay-title">{title}</h1>
       <p class="subtitle">{subtitle}</p>
       <p class="byline">By Adam Langshaw <span aria-hidden="true">·</span> {readingMinutes} minute read</p>
-      <p class="dateline">Written March 20, 2026 · Web edition published <time datetime="2026-10-25">October 25, 2026</time></p>
+      <p class="dateline">Originally written <time datetime={meta.originalDate}>{meta.originalDisplay}</time> · Web edition published <time datetime={meta.date}>October 25, 2026</time></p>
       <p class="award-note"><a href="/honors/#hoover-essay-award">2026 First-Year Distinguished Essay Award, Hoover Institution <Icon name="arrow" /></a></p>
       <p class="edition-note">Originally written for Economics 28N at Stanford University. This web edition revises factual descriptions and clarifies the evidence supporting the argument. The award recognized the original course essay. The policy judgments are the author’s own.</p>
     </header>

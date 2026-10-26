@@ -18,6 +18,7 @@ const jsonLd = {
     item: {
       '@type': 'Article', '@id': a.url, headline: a.title, url: a.url, datePublished: a.date,
       ...(a.image ? { image: new URL(a.image, SITE.url).href } : {}),
+      ...('originalDate' in a ? { dateCreated: a.originalDate } : {}),
       inLanguage: 'en',
       author: { '@type': 'Person', '@id': `${SITE.url}/#person`, name: SITE.name, url: `${SITE.url}/` },
       publisher: a.publisherName === SITE.name
@@ -45,7 +46,7 @@ const jsonLd = {
     {ESSAYS.map((a) => (
       <a class="piece text-only" href={a.url}>
         <span class="mid"><span class="eyebrow tag">{a.category}</span><h3 class="t">{a.title}</h3><span class="essay-context">{a.description}</span></span>
-        <time class="date tabnums" datetime={a.date}>{a.display}</time>
+        <span class="date tabnums">Written <time datetime={a.originalDate}>{a.originalDisplay}</time><br />Published <time datetime={a.date}>{a.display}</time></span>
       </a>
     ))}
   </section>
